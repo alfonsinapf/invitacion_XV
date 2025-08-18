@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirección de Spotify</title>
+    <script>
+    // Obtener parámetro redirect de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectUri = urlParams.get('redirect') || window.location.origin;
+    
+    // Construir URL de autenticación de Spotify
+    const spotifyAuthUrl = `https://accounts.spotify.com/authorize?client_id=d950ae09b4e14eb0b82b70151b1dcb82&response_type=token&redirect_uri=${encodeURIComponent(redirectUri)}&scope=playlist-modify-public%20playlist-modify-private%20user-read-private&show_dialog=true`;
+    
+    // Redirigir a Spotify
+    window.location.href = spotifyAuthUrl;
+    </script>
+</head>
+<body>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h2>Redirigiendo a Spotify...</h2>
+        <p>Por favor espera mientras te redirigimos al servicio de autenticación de Spotify.</p>
+        <p>Si no eres redirigido automáticamente en unos segundos, <a href="#" id="manualRedirect">haz clic aquí</a>.</p>
+    </div>
+    
+    <script>
+    document.getElementById('manualRedirect').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = spotifyAuthUrl;
+    });
+    
+    // Redirigir después de 3 segundos por si acaso
+    setTimeout(() => {
+        window.location.href = spotifyAuthUrl;
+    }, 3000);
+    </script>
+</body>
+</html>
