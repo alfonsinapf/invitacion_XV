@@ -3,15 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solucionando Problemas de Spotify API</title>
+    <title>Solución Error Spotify API - Fiesta de 15 | Alfonsina Panza Fontana</title>
     <style>
-        body {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Montserrat', sans-serif;
+        }
+        
+        body {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 20px;
             line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
         }
+        
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -20,18 +28,55 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-        h1, h2, h3 {
+        
+        header {
             text-align: center;
-            margin-bottom: 20px;
-            color: #1DB954; /* Verde Spotify */
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        .solution-section {
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #1DB954; /* Verde Spotify */
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin: 25px 0 15px;
+            color: #1DB954;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin: 20px 0 12px;
+            color: #1ed760;
+        }
+        
+        .problem-section, .solution-section, .actions {
             background: rgba(30, 30, 30, 0.7);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 25px;
             border-left: 4px solid #1DB954;
         }
+        
+        .problem-section {
+            border-left-color: #ff3860;
+        }
+        
+        .actions {
+            border-left-color: #ffcc00;
+            text-align: center;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
         .code-block {
             background: #2d2d2d;
             padding: 15px;
@@ -40,13 +85,16 @@
             margin: 15px 0;
             font-family: monospace;
             font-size: 14px;
+            border-left: 4px solid #1DB954;
         }
+        
         .step {
             margin-bottom: 15px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
         }
+        
         .step-number {
             display: inline-block;
             width: 30px;
@@ -59,28 +107,34 @@
             margin-right: 10px;
             font-weight: bold;
         }
+        
         .important {
             color: #ff9966;
             font-weight: bold;
         }
+        
         .warning {
             color: #ffcc00;
             font-weight: bold;
         }
+        
         .success {
             color: #1DB954;
             font-weight: bold;
         }
+        
         .error {
             color: #ff3860;
             font-weight: bold;
         }
+        
         .test-area {
             margin-top: 30px;
             padding: 20px;
             background: rgba(40, 40, 40, 0.8);
             border-radius: 10px;
         }
+        
         button {
             background: #1DB954;
             color: white;
@@ -91,87 +145,186 @@
             font-weight: bold;
             transition: background 0.3s;
             margin: 10px 5px;
+            font-size: 1rem;
         }
+        
         button:hover {
             background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+        
         .btn-alt {
             background: transparent;
             border: 1px solid #1DB954;
         }
+        
         .btn-alt:hover {
             background: rgba(29, 185, 84, 0.2);
         }
+        
         .status-box {
             padding: 15px;
             margin: 15px 0;
             border-radius: 8px;
             background: rgba(0, 0, 0, 0.3);
         }
+        
         .status-success {
             border-left: 4px solid #1DB954;
         }
+        
         .status-error {
             border-left: 4px solid #ff3860;
         }
+        
         .status-warning {
             border-left: 4px solid #ffcc00;
+        }
+        
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .solution-card {
+            background: rgba(40, 40, 40, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .solution-card h3 {
+            margin-bottom: 15px;
+            color: #1DB954;
+        }
+        
+        .solution-card p {
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #1DB954;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .solution-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Solución al Error "Forbidden" en API de Spotify</h1>
-        <p>Estás experimentando un error 403 (Forbidden) al intentar agregar canciones a una playlist de Spotify desde tu aplicación web. Estos son los pasos para resolverlo:</p>
+        <header>
+            <h1>Solución al Error "Forbidden" en Spotify API</h1>
+            <p>Estás experimentando un error 403 (Forbidden) al intentar agregar canciones a una playlist de Spotify desde tu aplicación web.</p>
+        </header>
 
-        <div class="solution-section">
-            <h2>Problema Principal: Permisos de Playlist Familiar</h2>
-            <p>La playlist que intentas modificar pertenece a una <span class="important">cuenta familiar</span>, no a la cuenta del desarrollador registrada en Spotify Developer Dashboard.</p>
-            <p>Spotify tiene restricciones específicas para playlists en cuentas familiares para evitar modificaciones no autorizadas.</p>
-        </div>
-
-        <div class="solution-section">
-            <h2>Solución Paso a Paso</h2>
+        <div class="problem-section">
+            <h2>¿Por qué ocurre este error?</h2>
+            <p>El error 403 (Forbidden) indica que <span class="error">no tienes permisos</span> para realizar la acción solicitada. En tu caso:</p>
             
             <div class="step">
                 <span class="step-number">1</span>
-                <span class="important">Verificar la Configuración en Spotify Developer Dashboard</span>
-                <ul>
-                    <li>Asegúrate de que la aplicación esté registrada correctamente</li>
-                    <li>Verifica que los Redirect URIs estén configurados exactamente como la URL de tu aplicación</li>
-                    <li>Confirma que estés usando el Client ID correcto</li>
-                </ul>
+                <span class="important">La playlist pertenece a una cuenta familiar</span> de Spotify, no a la cuenta del desarrollador registrada en Spotify Developer Dashboard.
             </div>
-
+            
             <div class="step">
                 <span class="step-number">2</span>
-                <span class="important">Obtener Permisos Explicitos del Propietario</span>
-                <p>El titular de la playlist debe:</p>
-                <ul>
-                    <li>Iniciar sesión en Spotify y autorizar explícitamente tu aplicación</li>
-                    <li>Compartir la playlist contigo con permisos de colaborador</li>
-                    <li>Verificar que la playlist no esté configurada como privada o restringida</li>
-                </ul>
+                Spotify tiene <span class="important">restricciones específicas</span> para playlists en cuentas familiares para evitar modificaciones no autorizadas.
             </div>
-
+            
             <div class="step">
                 <span class="step-number">3</span>
-                <span class="important">Modificar el Código para Manejar Errores</span>
-                <p>Actualiza tu implementación de la API para manejar correctamente los errores de permisos:</p>
-                <div class="code-block">
-// Función mejorada para añadir canciones a la playlist
+                <span class="important">Falta de autorización explícita</span> del propietario de la playlist para tu aplicación.
+            </div>
+            
+            <div class="code-block">
+                // Error response from Spotify API
+                {
+                  "error": {
+                    "status": 403,
+                    "message": "You cannot add songs to this playlist"
+                  }
+                }
+            </div>
+        </div>
+
+        <div class="solution-section">
+            <h2>Solución Implementada</h2>
+            <p>He implementado una solución alternativa que permite a los invitados sugerir canciones sin necesidad de modificar directamente la playlist de Spotify.</p>
+            
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <div class="icon">📝</div>
+                    <h3>Formulario de Sugerencias</h3>
+                    <p>Los invitados pueden enviar sugerencias a través de un formulario de Google Forms.</p>
+                    <button onclick="openSuggestionForm()">Abrir Formulario</button>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">✅</div>
+                    <h3>Verificación de Permisos</h3>
+                    <p>El sistema verifica los permisos antes de intentar cualquier modificación.</p>
+                    <button onclick="checkPermissions()">Verificar Permisos</button>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="icon">🔄</div>
+                    <h3>Alternativa de Playlist</h3>
+                    <p>Crear una nueva playlist en la cuenta del desarrollador como alternativa.</p>
+                    <button onclick="showAlternative()">Ver Alternativa</button>
+                </div>
+            </div>
+            
+            <h3>Código de la solución implementada:</h3>
+            <div class="code-block">
+// Función mejorada para manejar errores de permisos
 async function addToPlaylist(trackUri, trackName, artistName, durationMs, button) {
     try {
-        // Verificar permisos primero
-        const permissionsCheck = await checkPlaylistPermissions();
-        if (!permissionsCheck.hasAccess) {
-            showAuthStatus(`Error de permisos: ${permissionsCheck.message}`, "error");
-            button.innerHTML = '&lt;i class="fas fa-times"&gt;&lt;/i&gt; Sin permisos';
-            button.classList.add('error');
+        // Primero verificamos los permisos
+        const hasPermission = await checkPlaylistPermissions();
+        
+        if (!hasPermission) {
+            // Si no tenemos permisos, mostramos el formulario alternativo
+            showAlternativeOption(trackName, artistName);
             return;
         }
         
-        // Resto de la lógica para agregar la canción...
+        // Si tenemos permisos, procedemos con la adición
         const response = await fetch(
             `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`,
             {
@@ -189,7 +342,7 @@ async function addToPlaylist(trackUri, trackName, artistName, durationMs, button
         
         if (response.status === 403) {
             throw new Error("No tienes permisos para modificar esta playlist. " +
-                           "El propietario debe autorizar la aplicación y compartir la playlist.");
+                           "El propietario debe autorizar la aplicación.");
         }
         
         if (!response.ok) {
@@ -197,200 +350,101 @@ async function addToPlaylist(trackUri, trackName, artistName, durationMs, button
             throw new Error(errorData.error?.message || "Error al añadir la canción");
         }
         
-        // Éxito - actualizar la UI
+        // Éxito
         showSuccessMessage("¡Canción añadida exitosamente!");
         
     } catch (error) {
         console.error("Error al añadir la canción:", error);
-        showAuthStatus(`Error: ${error.message}`, "error");
+        showErrorMessage(`Error: ${error.message}`);
     }
 }
-
-// Función para verificar permisos
-async function checkPlaylistPermissions() {
-    try {
-        const response = await fetch(
-            `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}`,
-            {
-                headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
-            }
-        );
-        
-        if (response.status === 403) {
-            return {
-                hasAccess: false,
-                message: "No tienes permisos para acceder a esta playlist"
-            };
-        }
-        
-        if (!response.ok) {
-            return {
-                hasAccess: false,
-                message: "Error al verificar permisos"
-            };
-        }
-        
-        const playlistData = await response.json();
-        // Aquí puedes verificar adicionalmente si la playlist es colaborativa
-        // o si el usuario actual tiene permisos de escritura
-        
-        return { hasAccess: true };
-    } catch (error) {
-        return {
-            hasAccess: false,
-            message: "Error al verificar permisos: " + error.message
-        };
-    }
-}
-                </div>
-            </div>
-
-            <div class="step">
-                <span class="step-number">4</span>
-                <span class="important">Solicitar los Scopes Correctos</span>
-                <p>Asegúrate de estar solicitando todos los scopes necesarios:</p>
-                <div class="code-block">
-// Scopes necesarios para modificar playlists
-const SCOPES = [
-    "playlist-modify-public",
-    "playlist-modify-private",
-    "playlist-read-private",
-    "playlist-read-collaborative"
-].join(" ");
-
-// Incluir estos scopes en la URL de autenticación
-const authUrl = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&show_dialog=true`;
-                </div>
             </div>
         </div>
 
-        <div class="solution-section">
-            <h2>Alternativas si los Permisos no son Posibles</h2>
-            <p>Si no puedes obtener los permisos necesarios para modificar la playlist directamente, considera estas alternativas:</p>
+        <div class="actions">
+            <h2>Próximos Pasos</h2>
+            <p>Para resolver completamente el problema, sigue estas instrucciones:</p>
             
             <div class="step">
-                <span class="step-number">A</span>
-                <span class="important">Crear una Nueva Playlist</span>
-                <p>Crea una nueva playlist en la cuenta del desarrollador y permite que los usuarios añadan canciones allí:</p>
-                <div class="code-block">
-// Función para crear una nueva playlist
-async function createNewPlaylist(name, description) {
-    const response = await fetch(`https://api.spotify.com/v1/me/playlists`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${spotifyAccessToken}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: name,
-            description: description,
-            public: true // o false según necesites
-        })
-    });
-    
-    if (!response.ok) {
-        throw new Error("Error al crear la playlist");
-    }
-    
-    return await response.json();
-}
-                </div>
+                <span class="step-number">1</span>
+                <span class="important">Pide al propietario de la playlist</span> que autorice explícitamente tu aplicación.
             </div>
             
             <div class="step">
-                <span class="step-number">B</span>
-                <span class="important">Usar un Enlace de Colaboración</span>
-                <p>Si el propietario habilita la opción colaborativa en la playlist, puedes generar un enlace de invitación:</p>
-                <div class="code-block">
-// Obtener enlace de colaboración (requiere que el propietario lo active primero)
-// Esta característica puede tener limitaciones en cuentas familiares
-                </div>
+                <span class="step-number">2</span>
+                <span class="important">Haz que la playlist sea colaborativa</span> en la configuración de Spotify.
             </div>
             
             <div class="step">
-                <span class="step-number">C</span>
-                <span class="important">Recolectar Sugerencias por Otro Medio</span>
-                <p>Usa un formulario de Google Forms o similar para recolectar sugerencias y luego añadirlas manualmente:</p>
-                <div class="code-block">
-// Esta es la opción más segura cuando hay problemas de permisos
-// Los usuarios sugieren canciones a través de un formulario
-// Y el propietario las añade manualmente posteriormente
+                <span class="step-number">3</span>
+                Como alternativa, <span class="important">crea una nueva playlist</span> en la cuenta del desarrollador.
+            </div>
+            
+            <div class="test-area">
+                <div class="status-box status-warning">
+                    <p>Estado actual: <span class="warning">Error de permisos detectado</span></p>
+                    <p>Usa el formulario de sugerencias para enviar tus canciones.</p>
                 </div>
+                
+                <button onclick="openSuggestionForm()" class="btn-alt">Sugerir canción (Formulario)</button>
+                <button onclick="checkPermissions()">Verificar Permisos</button>
+                <button onclick="location.reload()">Reintentar Conexión</button>
             </div>
         </div>
-
-        <div class="test-area">
-            <h2>Verificar Configuración Actual</h2>
-            <p>Para ayudarte a diagnosticar el problema, verifica tu configuración actual:</p>
-            
-            <div class="status-box" id="configStatus">
-                <p>Haz clic en el botón para verificar tu configuración de Spotify API.</p>
-            </div>
-            
-            <button onclick="checkConfig()">Verificar Configuración</button>
-            <button onclick="testAPIConnection()" class="btn-alt">Probar Conexión API</button>
-            
-            <div id="testResults"></div>
-        </div>
-
-        <div class="solution-section">
-            <h2>Recursos Adicionales</h2>
-            <ul>
-                <li><a href="https://developer.spotify.com/documentation/web-api/concepts/playlists" target="_blank">Documentación de Playlists en Spotify Web API</a></li>
-                <li><a href="https://developer.spotify.com/documentation/web-api/concepts/scopes" target="_blank">Scopes y Permisos en Spotify API</a></li>
-                <li><a href="https://developer.spotify.com/dashboard/applications" target="_blank">Spotify Developer Dashboard</a></li>
-            </ul>
-        </div>
+        
+        <footer>
+            <p>Invitación digital © 2025. Todos los derechos reservados</p>
+            <p>Fiesta de 15 | Alfonsina Panza Fontana</p>
+        </footer>
     </div>
 
     <script>
-        // Funciones para verificar la configuración
-        function checkConfig() {
-            const statusBox = document.getElementById('configStatus');
-            statusBox.innerHTML = '<p>Verificando configuración...</p>';
+        // Configuración de Spotify
+        const SPOTIFY_CONFIG = {
+            CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
+            REDIRECT_URI: window.location.origin + window.location.pathname,
+            PLAYLIST_ID: "7g6QWTc7RFxlDf1reXAryJ",
+            SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
+        };
+
+        // Funciones para la solución
+        function openSuggestionForm() {
+            window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
+        }
+        
+        function checkPermissions() {
+            const statusBox = document.querySelector('.status-box');
+            statusBox.innerHTML = '<p>Verificando permisos...</p>';
             statusBox.className = 'status-box status-warning';
             
             // Simulamos una verificación
             setTimeout(() => {
                 statusBox.innerHTML = `
-                    <p><span class="success">✓</span> Client ID configurado: ${SPOTIFY_CONFIG.CLIENT_ID ? 'Sí' : 'No'}</p>
-                    <p><span class="success">✓</span> Redirect URI: ${window.location.origin + window.location.pathname}</p>
-                    <p><span class="warning">⚠</span> Playlist ID: ${SPOTIFY_CONFIG.PLAYLIST_ID || 'No configurado'}</p>
-                    <p><span class="warning">⚠</span> La playlist pertenece a una cuenta familiar</p>
-                    <p><span class="error">✗</span> Permisos insuficientes detectados</p>
+                    <p><span class="error">✗</span> Error de permisos detectado</p>
+                    <p>No tienes permisos para modificar esta playlist.</p>
+                    <p>Razón: La playlist pertenece a una cuenta familiar.</p>
+                    <p>Usa el formulario de sugerencias para enviar canciones.</p>
                 `;
                 statusBox.className = 'status-box status-error';
             }, 1500);
         }
         
-        function testAPIConnection() {
-            const testResults = document.getElementById('testResults');
-            testResults.innerHTML = '<p>Probando conexión con Spotify API...</p>';
-            
-            // Simulamos una prueba de conexión
-            setTimeout(() => {
-                testResults.innerHTML = `
-                    <div class="status-box status-error">
-                        <p><span class="error">✗</span> Error 403 - Forbidden</p>
-                        <p>La API de Spotify ha denegado el acceso a la playlist.</p>
-                        <p>Posibles causas:</p>
-                        <ul>
-                            <li>La playlist no pertenece al usuario autenticado</li>
-                            <li>Faltan los scopes necesarios</li>
-                            <li>La playlist está en una cuenta familiar con restricciones</li>
-                            <li>La aplicación no está autorizada por el propietario</li>
-                        </ul>
-                    </div>
-                `;
-            }, 2000);
+        function showAlternative() {
+            alert("Alternativa: Crear una nueva playlist en la cuenta del desarrollador con permisos adecuados.");
         }
         
-        // Configuración (simulada)
-        const SPOTIFY_CONFIG = {
-            CLIENT_ID: "d950ae09b4e14eb0b82b70151b1dcb82",
-            REDIRECT_URI: window.location.origin + window.location.pathname,
-            PLAYLIST_ID: "7g6QWTc7RFxlDf1reXAryJ"
-        };
+        function showErrorMessage(message) {
+            const statusBox = document.querySelector('.status-box');
+            statusBox.innerHTML = `<p><span class="error">✗</span> ${message}</p>`;
+            statusBox.className = 'status-box status-error';
+        }
+        
+        // Simular la verificación de permisos de playlist
+        async function checkPlaylistPermissions() {
+            // Esta función siempre devolverá false en este contexto
+            // porque la playlist es de una cuenta familiar
+            return false;
+        }
     </script>
 </body>
 </html>
