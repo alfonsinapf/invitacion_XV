@@ -6,13 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="invitaciones digitales para eventos">
     <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
-
     <link rel='stylesheet' href='assets/css/bootstrap.minc91c.css?v=1720025687'/>
     <link rel='stylesheet' href='assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/>
     <link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
     <style>
         /* Estilos para la sección de música */
@@ -23,14 +21,12 @@
             margin-top: 20px;
             backdrop-filter: blur(10px);
         }
-        
         .collab-panel {
             margin-top: 20px;
             padding: 15px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 10px;
         }
-        
         .auth-status {
             padding: 10px;
             margin: 10px 0;
@@ -38,31 +34,25 @@
             text-align: center;
             font-size: 14px;
         }
-        
         .status-connected {
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
         }
-        
         .status-error {
             background: rgba(220, 53, 69, 0.2);
             color: #dc3545;
         }
-        
         .status-warning {
             background: rgba(255, 193, 7, 0.2);
             color: #ffc107;
         }
-        
         .hidden {
             display: none !important;
         }
-        
         .search-box {
             display: flex;
             margin: 15px 0;
         }
-        
         #songSearch {
             flex: 1;
             padding: 10px 15px;
@@ -71,7 +61,6 @@
             background: rgba(255, 255, 255, 0.9);
             font-size: 14px;
         }
-        
         .search-btn {
             padding: 10px 20px;
             background: #1DB954;
@@ -82,23 +71,19 @@
             font-weight: 600;
             transition: background 0.3s;
         }
-        
         .search-btn:hover {
             background: #1ed760;
         }
-        
         .search-btn:disabled {
             background: #b3b3b3;
             cursor: not-allowed;
         }
-        
         .track-list {
             max-height: 400px;
             overflow-y: auto;
             margin: 15px 0;
             padding-right: 5px;
         }
-        
         .track-item {
             display: flex;
             justify-content: space-between;
@@ -109,18 +94,15 @@
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        
         .track-item:hover {
             background: rgba(50, 50, 50, 0.7);
         }
-        
         .track-info {
             display: flex;
             align-items: center;
             flex: 1;
             min-width: 0;
         }
-        
         .track-image {
             width: 50px;
             height: 50px;
@@ -129,7 +111,6 @@
             object-fit: cover;
             flex-shrink: 0;
         }
-        
         .track-image-placeholder {
             width: 50px;
             height: 50px;
@@ -143,12 +124,10 @@
             font-size: 20px;
             flex-shrink: 0;
         }
-        
         .track-details {
             flex-grow: 1;
             min-width: 0;
         }
-        
         .track-name {
             font-size: 15px;
             font-weight: 600;
@@ -158,7 +137,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
         .track-artist {
             font-size: 13px;
             color: #aaa;
@@ -166,7 +144,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
         .add-btn {
             padding: 8px 15px;
             background: #1DB954;
@@ -182,40 +159,32 @@
             transition: all 0.3s;
             flex-shrink: 0;
         }
-        
         .add-btn:hover:not(:disabled) {
             background: #1ed760;
             transform: scale(1.05);
         }
-        
         .add-btn:disabled {
             background: #535353;
             cursor: not-allowed;
             opacity: 0.8;
         }
-        
         .add-btn.added {
             background: #28a745;
         }
-        
         .add-btn.exists {
             background: #ffc107;
             color: #000;
         }
-        
         .add-btn.error {
             background: #dc3545;
         }
-        
         .fa-spinner {
             animation: spin 1s linear infinite;
         }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
         .success-message {
             display: none;
             padding: 12px;
@@ -226,43 +195,35 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        
         .no-results {
             text-align: center;
             color: #aaa;
             font-style: italic;
             padding: 15px;
         }
-        
         .btn-alt {
             background: transparent;
             border: 1px solid white;
             margin-right: 10px;
         }
-        
         /* Scrollbar personalizada */
         .track-list::-webkit-scrollbar {
             width: 8px;
         }
-        
         .track-list::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
         }
-        
         .track-list::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
         }
-        
         .track-list::-webkit-scrollbar-thumb:hover {
             background: rgba(255, 255, 255, 0.4);
         }
     </style>
 </head>
 <body>
-
-
     <!-- Audio -->
     <section class="audio">
         <div class="container">
@@ -280,7 +241,7 @@
             </div>
         </div>
     </section>
-    
+
     <!-- Portada -->
     <section class="portada parallax-portada d-flex justify-content-center align-items-center">
         <div class="logo-portada fade-in-portada">
@@ -306,7 +267,7 @@
                 </div>
                 <p class="num_cuenta">:</p>
                 <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="min"></p>
+                    <p class="num_cueta" id="min"></p>
                     <p class="text_cuenta">min</p>
                 </div>
                 <p class="num_cuenta">:</p>
@@ -317,7 +278,7 @@
             </div>
         </div>
     </section>
-    
+
     <!-- Ceremonia y Fiesta -->
     <section class="ceremonia-fiesta mb-5">
         <div class="container">
@@ -325,7 +286,6 @@
                 <div class="col-md-12 columna">
                     <img src="assets/img/icono-fiesta.svg" alt="" class="circle bounce-in">
                 </div>
-                
                 <div class="col-md-12 columna no-margin-top divFiesta animated">
                     <h4>FIESTA</h4>
                     <p>
@@ -396,7 +356,7 @@
             <h4>CONFIRMACIÓN DE ASISTENCIA</h4>
             <p>Cuento con tu presencia. </br>¡Confirmá tu asistencia!</p>
             <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSe3c7cS_A66K90gCLWpNwvR9sh8UUcwrn4ueuM7HO-2EGJ20Q/viewform?usp=header" class="btn">Confirmar asistencia</a>
-        </div>  
+        </div>
     </section>
 
     <!-- Dress Code -->
@@ -415,30 +375,18 @@
             <div class="animated">
                 <h4>¡PLAYLIST!</h4>
                 <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
-
                 <div class="music-player">
                     <div class="spotify-embed-guest">
-                        <iframe 
-                            src="https://open.spotify.com/embed/playlist/7g6QWTc7RFxlDf1reXAryJ?utm_source=generator&theme=0" 
-                            width="100%" 
-                            height="380" 
-                            frameborder="0" 
-                            allowfullscreen="" 
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                            loading="lazy"
-                            style="border-radius: 12px;">
+                        <iframe src="https://open.spotify.com/embed/playlist/7g6QWTc7RFxlDf1reXAryJ?utm_source=generator&theme=0" width="100%" height="380" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius: 12px;">
                         </iframe>
                     </div>
-                    
                     <div class="collab-panel">
                         <div id="authStatus" class="auth-status hidden"></div>
-                        
                         <div id="guestOptions">
                             <p>¿Quieres sugerir canciones para la playlist?</p>
                             <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
                             <button id="connectSpotifyBtn" class="btn">Conectar con Spotify</button>
                         </div>
-
                         <div id="spotifyAuthSection" class="hidden">
                             <div class="search-box">
                                 <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
@@ -447,7 +395,6 @@
                             <div id="searchResults"></div>
                         </div>
                     </div>
-                    
                     <div id="successMessage" class="success-message">
                         ¡Canción añadida exitosamente a la playlist!
                     </div>
@@ -463,66 +410,62 @@
             <br>
             <div class="animated divIntagram">
                 <span class="hashtag">@alfonp.font</span>
-                <p>¡Preparate para esta gran fiesta!<br>
-                Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
+                <p>¡Preparate para esta gran fiesta!<br> Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
                 <a target="_blank" href="https://www.instagram.com/alfonp.font/" class="btn">Ver instagram</a>
             </div>
         </div>
     </section>
 
-<!-- CBU -->
-<section class="cbu">
-    <div class="container">
-        <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
-        <div class="animated divCbu">
-            <p>El mejor regalo es que vengas,</br>
-            pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br>
-            ¡Muchas gracias!</p>
-            <a data-fancybox data-src="#hidden-cbu" href="javascript:;" class="btn">Hacer un regalo</a>
-
-            <!-- Datos CBU (hidden by default) -->
-            <div style="display: none;" id="hidden-cbu">
-                <span class="title">Datos Bancarios</span>
-                <ul>
-                    <li>Nombre del Titular: Alfonsina Panza Fontana</li>
-                    <li>CBU: 0140300603658455259699</li>
-                    <li>Alias: Alfonsiiina</li>
-                    <li>DNI: 50.646.413</li>
-                    <li>Cuenta DNI</li>
-                </ul>
-
-                <span class="title">Buzón de regalos</span>
-                <ul>
-                    <li>Si deseás hacer tu regalo personalmente, </br>
-                    El día del evento habrá un buzón para dejar obsequios.</li>
-                </ul>
+    <!-- CBU -->
+    <section class="cbu">
+        <div class="container">
+            <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
+            <div class="animated divCbu">
+                <p>El mejor regalo es que vengas,</br> pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br> ¡Muchas gracias!</p>
+                <a data-fancybox data-src="#hidden-cbu" href="javascript:;" class="btn">Hacer un regalo</a>
+                <!-- Datos CBU (hidden by default) -->
+                <div style="display: none;" id="hidden-cbu">
+                    <span class="title">Datos Bancarios</span>
+                    <ul>
+                        <li>Nombre del Titular: Alfonsina Panza Fontana</li>
+                        <li>CBU: 0140300603658455259699</li>
+                        <li>Alias: Alfonsiiina</li>
+                        <li>DNI: 50.646.413</li>
+                        <li>Cuenta DNI</li>
+                    </ul>
+                    <span class="title">Buzón de regalos</span>
+                    <ul>
+                        <li>Si deseás hacer tu regalo personalmente, </br> El día del evento habrá un buzón para dejar obsequios.</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-   <!-- Carga de Fotos y Videos -->
-<section class="carga-fotos-videos">
-    <div class="container text-center">
-        <br> <!-- Espacio adicional antes del título -->
-        <h3>¡Comparte tus fotos y videos!</h3>
-        <p>
-            Sube las fotos y videos que captures durante la fiesta<br> <!-- Salto de línea añadido -->
-            para que podamos compartir recuerdos inolvidables.
-        </p>
-
-        <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a> 
-
-        <div class="qr-container mt-4">
-            <br> <!-- Espacio adicional antes del QR -->
-            <p>O escanea el código QR para subir tus recuerdos:</p>
-            <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
-            </a>
-            <br><br> <!-- Espacios adicionales después del QR -->
+    <!-- Carga de Fotos y Videos -->
+    <section class="carga-fotos-videos">
+        <div class="container text-center">
+            <br>
+            <!-- Espacio adicional antes del título -->
+            <h3>¡Comparte tus fotos y videos!</h3>
+            <p>
+                Sube las fotos y videos que captures durante la fiesta<br>
+                <!-- Salto de línea añadido -->
+                para que podamos compartir recuerdos inolvidables.
+            </p>
+            <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a>
+            <div class="qr-container mt-4">
+                <br>
+                <!-- Espacio adicional antes del QR -->
+                <p>O escanea el código QR para subir tus recuerdos:</p>
+                <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
+                </a>
+                <br><br>
+                <!-- Espacios adicionales después del QR -->
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Agradecimiento -->
     <section class="gracias">
@@ -573,13 +516,13 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
-  <script>
+    <script>
         // Configuración de Spotify
         const SPOTIFY_CONFIG = {
             CLIENT_ID: "ba9385bd54cc4ba3b297ce5fca852fd9",
-            REDIRECT_URI: window.location.origin + window.location.pathname,
-            PLAYLIST_ID: "0a4iq5x0WHzzn0ox7ea77u",
-            SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
+            REDIRECT_URI: window.location.href.split('?')[0].split('#')[0],
+            PLAYLIST_ID: "7g6QWTc7RFxlDf1reXAryJ",
+            SCOPES: "playlist-modify-public"
         };
 
         // Estado de la aplicación
@@ -602,17 +545,22 @@
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
+            console.log("Inicializando Spotify integration...");
+            console.log("Client ID:", SPOTIFY_CONFIG.CLIENT_ID);
+            console.log("Redirect URI:", SPOTIFY_CONFIG.REDIRECT_URI);
+            
             // Configurar event listeners
             suggestBtn.addEventListener('click', openSuggestionForm);
             connectSpotifyBtn.addEventListener('click', connectWithSpotify);
             searchBtn.addEventListener('click', searchSong);
+            
             songSearch.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') searchSong();
             });
-            
+
             // Verificar autenticación existente al cargar
             checkSpotifyAuth();
-            
+
             // Escuchar mensajes de la ventana emergente
             window.addEventListener('message', handleAuthMessage);
         });
@@ -626,6 +574,8 @@
         function connectWithSpotify() {
             const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
             
+            console.log("URL de autenticación completa:", authUrl);
+            
             // Configurar dimensiones y posición de la ventana emergente
             const width = 500, height = 650;
             const left = (window.screen.width - width) / 2;
@@ -636,7 +586,7 @@
                 'SpotifyAuth',
                 `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
             );
-            
+
             // Verificar periódicamente si la ventana emergente se cerró
             const checkPopup = setInterval(() => {
                 if (spotifyAuthWindow && spotifyAuthWindow.closed) {
@@ -666,6 +616,7 @@
             isAuthenticated = true;
             setupAuthenticatedFeatures();
             showAuthStatus("¡Conectado exitosamente con Spotify!", "success");
+            
             // Cargar las canciones de la playlist al autenticarse
             loadPlaylistTracks();
         }
@@ -677,25 +628,33 @@
             const token = params.get("access_token");
             const error = params.get("error");
             
+            console.log("Hash actual:", hash);
+            console.log("Token encontrado:", token);
+            console.log("Error encontrado:", error);
+
             if (error) {
+                console.error("Error de autenticación:", error);
                 showAuthStatus(`Error: ${error}`, "error");
                 return;
             }
-            
+
             if (token) {
+                console.log("Token de acceso obtenido:", token);
                 handleSuccessfulAuth(token);
                 
                 // Limpiar el hash de la URL
                 window.history.replaceState({}, document.title, window.location.pathname);
-                
+
                 // Si estamos en la ventana emergente, enviar el token a la ventana principal
                 if (window.opener && !window.opener.closed) {
-                    window.opener.postMessage({
-                        type: 'spotifyAuth',
-                        token: token
+                    window.opener.postMessage({ 
+                        type: 'spotifyAuth', 
+                        token: token 
                     }, window.location.origin);
                     window.close();
                 }
+            } else {
+                console.log("No se encontró token de acceso en la URL");
             }
         }
 
@@ -720,11 +679,13 @@
                 
                 let allTracks = [];
                 let nextUrl = `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks?fields=items(track(id,name,duration_ms,artists(name)))&limit=50`;
-                
+
                 // Paginación para obtener todas las canciones
                 while (nextUrl) {
                     const response = await fetch(nextUrl, {
-                        headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+                        headers: {
+                            'Authorization': `Bearer ${spotifyAccessToken}`
+                        }
                     });
                     
                     if (!response.ok) {
@@ -738,7 +699,9 @@
                 
                 currentPlaylistTracks = allTracks;
                 lastPlaylistUpdate = new Date();
-                showAuthStatus("Playlist cargada correctamente", "success");
+                
+                console.log(`Playlist cargada con ${allTracks.length} canciones`);
+                showAuthStatus(`Playlist cargada correctamente (${allTracks.length} canciones)`, "success");
                 
             } catch (error) {
                 console.error("Error al cargar la playlist:", error);
@@ -750,18 +713,21 @@
         // Buscar canciones en Spotify
         async function searchSong() {
             const query = songSearch.value.trim();
+            
             if (!query) {
                 showAuthStatus("Por favor ingresa un término de búsqueda", "error");
                 return;
             }
-
+            
             showAuthStatus("Buscando canciones...", "success");
             searchBtn.disabled = true;
             searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
             
             try {
                 const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
-                    headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+                    headers: {
+                        'Authorization': `Bearer ${spotifyAccessToken}`
+                    }
                 });
                 
                 if (!response.ok) {
@@ -771,6 +737,7 @@
                 
                 const data = await response.json();
                 displayResults(data.tracks.items);
+                
             } catch (error) {
                 console.error("Error en la búsqueda:", error);
                 showAuthStatus(`Error: ${error.message}`, "error");
@@ -797,9 +764,9 @@
                 trackDiv.className = 'track-item';
                 
                 // Imagen del álbum o placeholder
-                const albumImage = track.album.images.length > 0 
-                    ? `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">`
-                    : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
+                const albumImage = track.album.images.length > 0 ? 
+                    `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">` : 
+                    '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
                 
                 trackDiv.innerHTML = `
                     <div class="track-info">
@@ -811,11 +778,7 @@
                             </div>
                         </div>
                     </div>
-                    <button class="add-btn" 
-                            data-uri="${track.uri}" 
-                            data-name="${track.name}" 
-                            data-artist="${track.artists[0].name}"
-                            data-duration="${track.duration_ms}">
+                    <button class="add-btn" data-uri="${track.uri}" data-name="${track.name}" data-artist="${track.artists[0].name}" data-duration="${track.duration_ms}">
                         <i class="fas fa-plus"></i> Añadir
                     </button>
                 `;
@@ -920,6 +883,7 @@
                         artists: [{ name: artistName }]
                     }
                 });
+                
                 lastPlaylistUpdate = new Date();
                 
                 // Mostrar mensaje de éxito
@@ -951,6 +915,7 @@
         function showSuccessMessage(message = "¡Canción añadida exitosamente!") {
             successMessage.textContent = message;
             successMessage.style.display = 'block';
+            
             setTimeout(() => {
                 successMessage.style.display = 'none';
             }, 3000);
@@ -973,10 +938,13 @@
         function showAuthStatus(message, type = "success") {
             authStatus.textContent = message;
             authStatus.className = 'auth-status'; // Reset classes
+            
             authStatus.classList.add(
-                type === "error" ? 'status-error' : 
-                type === "warning" ? 'status-warning' : 'status-connected'
+                type === "error" ? 'status-error' :
+                type === "warning" ? 'status-warning' :
+                'status-connected'
             );
+            
             authStatus.classList.remove('hidden');
             
             // Ocultar mensaje después de 5 segundos
@@ -1000,10 +968,9 @@
             document.getElementById('btnPlay').classList.remove('hidden');
         }
     </script>
+
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
-
-
