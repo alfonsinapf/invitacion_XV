@@ -516,14 +516,15 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
-    <script>
-        // Configuración de Spotify
-        const SPOTIFY_CONFIG = {
-            CLIENT_ID: "ba9385bd54cc4ba3b297ce5fca852fd9",
-            REDIRECT_URI: window.location.href.split('?')[0].split('#')[0],
-            PLAYLIST_ID: "7g6QWTc7RFxlDf1reXAryJ",
-            SCOPES: "playlist-modify-public"
-        };
+ <script>
+    // Configuración de Spotify
+    const SPOTIFY_CONFIG = {
+        CLIENT_ID: "ba9385bd54cc4ba3b297ce5fca852fd9",
+        REDIRECT_URI: window.location.href.split('?')[0].split('#')[0],
+        PLAYLIST_ID: "7g6QWTc7RFxlDf1reXAryJ",
+        SCOPES: "playlist-modify-public"
+    };
+
 
         // Estado de la aplicación
         let spotifyAccessToken = null;
@@ -571,30 +572,31 @@
         }
 
         // Conectar con Spotify usando ventana emergente
-        function connectWithSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
-            
-            console.log("URL de autenticación completa:", authUrl);
-            
-            // Configurar dimensiones y posición de la ventana emergente
-            const width = 500, height = 650;
-            const left = (window.screen.width - width) / 2;
-            const top = (window.screen.height - height) / 2;
-            
-            spotifyAuthWindow = window.open(
-                authUrl,
-                'SpotifyAuth',
-                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
-            );
+    function connectWithSpotify() {
+        // CAMBIO: Usar response_type=code en lugar de token
+        const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
+        
+        console.log("URL de autenticación completa:", authUrl);
+        
+        // Configurar dimensiones y posición de la ventana emergente
+        const width = 500, height = 650;
+        const left = (window.screen.width - width) / 2;
+        const top = (window.screen.height - height) / 2;
+        
+        spotifyAuthWindow = window.open(
+            authUrl,
+            'SpotifyAuth',
+            `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
+        );
 
-            // Verificar periódicamente si la ventana emergente se cerró
-            const checkPopup = setInterval(() => {
-                if (spotifyAuthWindow && spotifyAuthWindow.closed) {
-                    clearInterval(checkPopup);
-                    checkSpotifyAuth();
-                }
-            }, 500);
-        }
+        // Verificar periódicamente si la ventana emergente se cerró
+        const checkPopup = setInterval(() => {
+            if (spotifyAuthWindow && spotifyAuthWindow.closed) {
+                clearInterval(checkPopup);
+                checkSpotifyAuth();
+            }
+        }, 500);
+    }
 
         // Manejar mensajes de autenticación
         function handleAuthMessage(event) {
@@ -622,26 +624,67 @@
         }
 
         // Verificar autenticación con Spotify
-        function checkSpotifyAuth() {
-            const hash = window.location.hash.substring(1);
-            const params = new URLSearchParams(hash);
-            const token = params.get("access_token");
-            const error = params.get("error");
+    function checkSpotifyAuth() {
+        // CAMBIO: Buscar el código de autorización en lugar del token
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get("code");
+        const error = urlParams.get("error");
+        
+        console.log("Parámetros URL:", window.location.search);
+        console.log("Código de autorización:", code);
+        console.log("Error:", error);
+
+        if (error) {
+            console.error("Error de autenticación:", error);
+            showAuthStatus(`Error: ${error}`, "error");
+            return;
+        }
+
+        if (code) {
+            console.log("Código de autorización obtenido:", code);
+            // Cambio: Ahora necesitamos intercambiar el código por un token
+            exchangeCodeForToken(code);
             
-            console.log("Hash actual:", hash);
-            console.log("Token encontrado:", token);
-            console.log("Error encontrado:", error);
+            // Limpiar los parámetros de la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+            console.log("No se encontró código de autorización en la URL");
+        }
+    }
 
-            if (error) {
-                console.error("Error de autenticación:", error);
-                showAuthStatus(`Error: ${error}`, "error");
-                return;
+    // NUEVA FUNCIÓN: Intercambiar código por token de acceso
+    async function exchangeCodeForToken(code) {
+        try {
+            showAuthStatus("Obteniendo token de acceso...", "success");
+            
+            // NOTA: Esto requiere un backend por razones de seguridad
+            // Debes implementar un endpoint en tu servidor que haga esta solicitud
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Basic ' + btoa(SPOTIFY_CONFIG.CLIENT_ID + ':' + 'TU_CLIENT_SECRET_AQUI')
+                },
+                body: new URLSearchParams({
+                    grant_type: 'authorization_code',
+                    code: code,
+                    redirect_uri: SPOTIFY_CONFIG.REDIRECT_URI
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Error al obtener token");
             }
-
-            if (token) {
-                console.log("Token de acceso obtenido:", token);
-                handleSuccessfulAuth(token);
-                
+            
+            const data = await response.json();
+            handleSuccessfulAuth(data.access_token);
+            
+        } catch (error) {
+            console.error("Error al intercambiar código por token:", error);
+            showAuthStatus(`Error: ${error.message}`, "error");
+        }
+    }
                 // Limpiar el hash de la URL
                 window.history.replaceState({}, document.title, window.location.pathname);
 
@@ -974,3 +1017,4 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
