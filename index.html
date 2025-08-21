@@ -625,7 +625,7 @@
 
         // Conectar con Spotify usando ventana emergente
         function connectWithSpotify() {
-            const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=TU_CLIENT_ID&response_type=token&redirect_uri=https%3A%2F%2Falfonsinapf.github.io%2Finvitacion_XV%2F&scope=playlist-modify-public%20playlist-modify-private%20user-read-private&show_dialog=true`;
             
             // Configurar dimensiones y posición de la ventana emergente
             const width = 500, height = 650;
@@ -1006,4 +1006,5 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
