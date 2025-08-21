@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solución Error Spotify API - Fiesta de 15 | Alfonsina Panza Fontana</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -39,7 +41,7 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            color: #1DB954; /* Verde Spotify */
+            color: #1DB954;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
         
@@ -227,6 +229,20 @@
             color: #aaa;
         }
         
+        .config-status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -244,6 +260,22 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .music-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 10px;
+            border-left: 4px solid #1DB954;
+        }
+
+        .spotify-player {
+            width: 100%;
+            height: 380px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -252,6 +284,34 @@
             <h1>Solución al Error "Forbidden" en Spotify API</h1>
             <p>Estás experimentando un error 403 (Forbidden) al intentar agregar canciones a una playlist de Spotify desde tu aplicación web.</p>
         </header>
+
+        <div class="config-status">
+            <h3>Estado de tu configuración actual:</h3>
+            <div class="config-item">
+                <span>Client ID configurado:</span>
+                <span class="success">Sí</span>
+            </div>
+            <div class="config-item">
+                <span>Redirect URI:</span>
+                <span class="success">https://alfonsinapf.github.io/invitacion_XV/</span>
+            </div>
+            <div class="config-item">
+                <span>Playlist ID:</span>
+                <span class="warning">7g6QWTc7RFxlDf1reXAryJ</span>
+            </div>
+            <div class="config-item">
+                <span>Tipo de cuenta:</span>
+                <span class="warning">Cuenta familiar</span>
+            </div>
+            <div class="config-item">
+                <span>Permisos:</span>
+                <span class="error">Insuficientes</span>
+            </div>
+            <div class="config-item">
+                <span>Estado API:</span>
+                <span class="error">Error 403 - Forbidden</span>
+            </div>
+        </div>
 
         <div class="problem-section">
             <h2>¿Por qué ocurre este error?</h2>
@@ -361,6 +421,23 @@ async function addToPlaylist(trackUri, trackName, artistName, durationMs, button
             </div>
         </div>
 
+        <div class="music-section">
+            <h2>Playlist de la Fiesta</h2>
+            <p>Disfruta de la playlist oficial de la fiesta. Mientras resolvemos el problema de permisos, puedes sugerir canciones mediante el formulario.</p>
+            
+            <iframe class="spotify-player" src="https://open.spotify.com/embed/playlist/7g6QWTc7RFxlDf1reXAryJ?utm_source=generator&theme=0" 
+                frameborder="0" allowfullscreen="" 
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                loading="lazy">
+            </iframe>
+            
+            <div class="actions">
+                <button onclick="openSuggestionForm()" class="btn-alt">Sugerir canción (Formulario)</button>
+                <button onclick="checkPermissions()">Verificar Permisos</button>
+                <button onclick="location.reload()">Reintentar Conexión</button>
+            </div>
+        </div>
+
         <div class="actions">
             <h2>Próximos Pasos</h2>
             <p>Para resolver completamente el problema, sigue estas instrucciones:</p>
@@ -385,10 +462,6 @@ async function addToPlaylist(trackUri, trackName, artistName, durationMs, button
                     <p>Estado actual: <span class="warning">Error de permisos detectado</span></p>
                     <p>Usa el formulario de sugerencias para enviar tus canciones.</p>
                 </div>
-                
-                <button onclick="openSuggestionForm()" class="btn-alt">Sugerir canción (Formulario)</button>
-                <button onclick="checkPermissions()">Verificar Permisos</button>
-                <button onclick="location.reload()">Reintentar Conexión</button>
             </div>
         </div>
         
