@@ -714,48 +714,44 @@
 
         // Buscar canciones a través del backend
         async function searchSong() {
-            const query = songSearch.value.trim();
-            if (!query) {
-                showAuthStatus("Por favor ingresa un término de búsqueda", "error");
-                return;
-            }
+  const query = songSearch.value.trim();
+  if (!query) {
+    showAuthStatus("Por favor ingresa un término de búsqueda", "error");
+    return;
+  }
 
-            hideBackendError();
-            showAuthStatus("Buscando canciones...", "success");
-            searchBtn.disabled = true;
-            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
-            
-            try {
-                // Llamar a tu backend en Vercel
-                const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query: query })
-                }, 10000); // 10 segundos de timeout
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    // Manejar el error [object Object] aquí
-                    const errorMessage = typeof errorData.error === 'object' 
-                        ? (errorData.error.message || 'Error desconocido del servidor')
-                        : errorData.error;
-                    
-                    throw new Error(errorMessage || `Error ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                displayResults(data.tracks || data.items || []);
-            } catch (error) {
-                console.error("Error en la búsqueda:", error);
-                showBackendError();
-                showAuthStatus(`Error: ${error.message}`, "error");
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.innerHTML = 'Buscar';
-            }
-        }
+  hideBackendError();
+  showAuthStatus("Buscando canciones...", "success");
+  searchBtn.disabled = true;
+  searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+  
+  try {
+    const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ query: query })
+    }, 10000);
+    
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || `Error ${response.status}`);
+    }
+    
+    displayResults(data.tracks || []);
+    showAuthStatus("Búsqueda completada", "success");
+    
+  } catch (error) {
+    console.error("Error en la búsqueda:", error);
+    showBackendError();
+    showAuthStatus(`Error: ${error.message}`, "error");
+  } finally {
+    searchBtn.disabled = false;
+    searchBtn.innerHTML = 'Buscar';
+  }
+}
 
         // Mostrar resultados de búsqueda
         function displayResults(tracks) {
@@ -1012,5 +1008,6 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
