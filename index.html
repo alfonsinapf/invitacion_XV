@@ -573,17 +573,18 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
- <script>
-    const API_URL = "https://invitacion-xv-seven.vercel.app/api";
+  <script>
+    const searchBtn = document.getElementById("searchBtn");
+    const searchInput = document.getElementById("search");
+    const resultsDiv = document.getElementById("results");
 
-    async function getAccessToken() {
-      const res = await fetch(`${API_URL}/refresh`);
-      const data = await res.json();
-      return data.access_token;
-    }
+    // Endpoint de tu backend Vercel que maneja agregar canciones
+    const BACKEND_URL = "https://TU_DEPLOY_VERCEL/addTrack"; // Cambiar por tu endpoint real
 
+    // Función para buscar canciones (ahora se puede delegar al backend si quieres eliminar token temporal)
     async function searchTracks(query) {
-      const token = await getAccessToken();
+      // Para pruebas: token temporal, caduca rápido
+      const token = "TU_ACCESS_TOKEN_TEMPORAL";
       const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -592,32 +593,36 @@
     }
 
     async function addTrack(trackUri) {
-      await fetch(`${API_URL}/addTrack`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ trackUri })
-      });
-      alert("Canción agregada a la playlist!");
+      try {
+        const res = await fetch(BACKEND_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ trackUri })
+        });
+        const data = await res.json();
+        if (data.success) alert("¡Canción agregada!");
+        else alert("Error al agregar la canción: " + JSON.stringify(data));
+      } catch (err) {
+        alert("Error en el servidor: " + err.message);
+      }
     }
 
-    document.getElementById("searchBtn").addEventListener("click", async () => {
-      const query = document.getElementById("search").value;
+    searchBtn.addEventListener("click", async () => {
+      const query = searchInput.value.trim();
       if (!query) return;
 
+      resultsDiv.innerHTML = "<p>Cargando...</p>";
       const tracks = await searchTracks(query);
-      const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = "";
 
       tracks.forEach(track => {
         const div = document.createElement("div");
         div.className = "track";
-        div.textContent = `${track.name} - ${track.artists.map(a => a.name).join(", ")}`;
-        
-        const btn = document.createElement("button");
-        btn.textContent = "Agregar";
-        btn.onclick = () => addTrack(track.uri);
-        
-        div.appendChild(btn);
+        div.innerHTML = `
+          <span>${track.name} - ${track.artists.map(a => a.name).join(", ")}</span>
+          <button>Añadir</button>
+        `;
+        div.querySelector("button").addEventListener("click", () => addTrack(track.uri));
         resultsDiv.appendChild(div);
       });
     });
@@ -628,6 +633,7 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
