@@ -11,19 +11,36 @@ export default async function handler(req, res) {
 
   try {
     const playlistId = process.env.SPOTIFY_PLAYLIST_ID;
-    const token = process.env.SPOTIFY_ACCESS_TOKEN;
+    const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 
+    // Obtener access token usando refresh token
+    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: "Basic " + Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+      },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      }),
+    });
+
+    const tokenData = await tokenRes.json();
+    const accessToken = tokenData.access_token;
+
+    // Agregar canción a la playlist
     const response = await fetch(
       `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          uris: [trackUri],
-        }),
+        body: JSON.stringify({ uris: [trackUri] }),
       }
     );
 
