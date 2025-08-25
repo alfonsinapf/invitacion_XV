@@ -1,1014 +1,190 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="invitaciones digitales para eventos">
-    <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
-
-    <link rel='stylesheet' href='assets/css/bootstrap.minc91c.css?v=1720025687'/>
-    <link rel='stylesheet' href='assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/>
-    <link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <title>Invitación de 15 | Alfonsina Panza Fontana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación Alfonsina 15</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
     <style>
-        /* Estilos para la sección de música */
-        .music-player {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .collab-panel {
-            margin-top: 20px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
-        
-        .auth-status {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 14px;
-        }
-        
-        .status-connected {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-        }
-        
-        .status-error {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
-        }
-        
-        .status-warning {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .search-box {
-            display: flex;
-            margin: 15px 0;
-        }
-        
-        #songSearch {
-            flex: 1;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px 0 0 5px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-        }
-        
-        .search-btn {
-            padding: 10px 20px;
-            background: #1DB954;
-            color: white;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background 0.3s;
-        }
-        
-        .search-btn:hover {
-            background: #1ed760;
-        }
-        
-        .search-btn:disabled {
-            background: #b3b3b3;
-            cursor: not-allowed;
-        }
-        
-        .track-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin: 15px 0;
-            padding-right: 5px;
-        }
-        
-        .track-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px;
-            margin: 12px 0;
-            background: rgba(30, 30, 30, 0.5);
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .track-item:hover {
-            background: rgba(50, 50, 50, 0.7);
-        }
-        
-        .track-info {
-            display: flex;
-            align-items: center;
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .track-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
-            margin-right: 15px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-        
-        .track-image-placeholder {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
-            margin-right: 15px;
-            background: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #aaa;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-        
-        .track-details {
-            flex-grow: 1;
-            min-width: 0;
-        }
-        
-        .track-name {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 3px;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .track-artist {
-            font-size: 13px;
-            color: #aaa;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .add-btn {
-            padding: 8px 15px;
-            background: #1DB954;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-        
-        .add-btn:hover:not(:disabled) {
-            background: #1ed760;
-            transform: scale(1.05);
-        }
-        
-        .add-btn:disabled {
-            background: #535353;
-            cursor: not-allowed;
-            opacity: 0.8;
-        }
-        
-        .add-btn.added {
-            background: #28a745;
-        }
-        
-        .add-btn.exists {
-            background: #ffc107;
-            color: #000;
-        }
-        
-        .add-btn.error {
-            background: #dc3545;
-        }
-        
-        .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .success-message {
-            display: none;
-            padding: 12px;
-            margin: 15px 0;
-            background: rgba(40, 167, 69, 0.3);
-            color: white;
-            text-align: center;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        .no-results {
-            text-align: center;
-            color: #aaa;
-            font-style: italic;
-            padding: 15px;
-        }
-        
-        .btn-alt {
-            background: transparent;
-            border: 1px solid white;
-            margin-right: 10px;
-        }
-        
-        /* Scrollbar personalizada */
-        .track-list::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        .track-list::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-        
-        .track-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-        
-        .track-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        /* Nuevos estilos para manejo de errores */
-        .backend-error {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid #dc3545;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: center;
-        }
-        
-        .backend-error i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .retry-options {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        
-        .retry-btn {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .retry-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
+        /* Estilos mínimos para que cargue rápido */
+        body { margin:0; font-family: Arial, sans-serif; background:#fff; color:#333; }
+        .hidden { display:none; }
+        .button { cursor:pointer; padding:8px 16px; background:#d35400; color:#fff; border:none; border-radius:4px; }
+        .button:hover { background:#e67e22; }
     </style>
 </head>
 <body>
 
-
-    <!-- Audio -->
-    <section class="audio">
-        <div class="container">
-            <div class="row">
-                <div class="botonAudio-container">
-                    <audio id="audioPrueba" loop>
-                        <source src="assets/musica.mp3" type="audio/mp3">
-                        ¡Ups! Tu navegador no soporta este archivo de audio.
-                    </audio>
-                    <div class='animation'>
-                        <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake">
-                        <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Portada -->
-    <section class="portada parallax-portada d-flex justify-content-center align-items-center">
-        <div class="logo-portada fade-in-portada">
-            <img class="" src="assets/img/logo-portada.png" alt="">
-            <div class="scroll-down"></div>
-        </div>
-    </section>
-
-    <!-- Cuenta Regresiva -->
-    <section class="cuenta-regresiva" id="cuenta-regresiva">
-        <div class="container">
-            <p class="m-3">¡Te espero para festejar este gran momento de mi vida!</p>
-            <p id="reloj" class="descartar">¡Te espero para festejar!</p>
-            <div class="row justify-content-center margenSup" id="reloj_number">
-                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cueta" id="dias"></p>
-                    <p class="text_cuenta">días</p>
-                </div>
-                <p class="num_cuenta">:</p>
-                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="horas"></p>
-                    <p class="text_cuenta">hs</p>
-                </div>
-                <p class="num_cuenta">:</p>
-                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="min"></p>
-                    <p class="text_cuenta">min</p>
-                </div>
-                <p class="num_cuenta">:</p>
-                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0>
-                    <p class="num_cuenta" id="seg"></p>
-                    <p class="text_cuenta">seg</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Ceremonia y Fiesta -->
-    <section class="ceremonia-fiesta mb-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12 columna">
-                    <img src="assets/img/icono-fiesta.svg" alt="" class="circle bounce-in">
-                </div>
-                
-                <div class="col-md-12 columna no-margin-top divFiesta animated">
-                    <h4>FIESTA</h4>
-                    <p>
-                        Sábado 1 de noviembre </br>
-                        21:00 a 05:00 hs.</br>
-                        Salón Centro Empleado de comercio</br>
-                        Bv. Damico S/N, Pergamino</br>
-                        Clickeá en el botón de abajo y encontrá las indicaciones para llegar,</br>
-                        ¡nos vemos!😉
-                    </p>
-                    <a target="_blank" href="https://maps.app.goo.gl/iJPKgjX8XSGz7gkS8" class="btn">CÓMO LLEGAR</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Galería -->
-    <section class="galeria">
-        <div class="container">
-            <div class="row">
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/1.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/1.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/2.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/2.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/3.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/3.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/4.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/4.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/5.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/5.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/6.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/6.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/7.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/7.jpg" alt="">
-                    </a>
-                </div>
-                <div class="col-6 col-md-3 item-galeria animated opacidad">
-                    <a href="assets/img/galeria/8.jpg" data-fancybox="images" data-caption="">
-                        <img class="img-fluid" src="assets/img/galeria/8.jpg" alt="">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Confirmar Asistencia -->
-    <section class="confirmar-asistencia">
-        <div class="container">
-            <h4>CONFIRMACIÓN DE ASISTENCIA</h4>
-            <p>Cuento con tu presencia. </br>¡Confirmá tu asistencia!</p>
-            <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSe3c7cS_A66K90gCLWpNwvR9sh8UUcwrn4ueuM7HO-2EGJ20Q/viewform?usp=header" class="btn">Confirmar asistencia</a>
-        </div>  
-    </section>
-
-    <!-- Dress Code -->
-    <section class="dresscode">
-        <div class="container animated divDressCode">
-            <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
-            <h4>DRESS CODE</h4>
-            <p>Elegante</p>
-        </div>
-    </section>
-
-    <!-- Sección de Música -->
-    <section class="canciones">
-        <div class="container">
-            <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" class="bounce-in">
-            <div class="animated">
-                <h4>¡PLAYLIST!</h4>
-                <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
-
-                <div class="music-player">
-                    <div class="spotify-embed-guest">
-                        <iframe 
-                            src="https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u?utm_source=generator&theme=0" 
-                            width="100%" 
-                            height="380" 
-                            frameborder="0" 
-                            allowfullscreen="" 
-                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                            loading="lazy"
-                            style="border-radius: 12px;">
-                        </iframe>
-                    </div>
-                    
-                    <div class="collab-panel">
-                        <div id="authStatus" class="auth-status hidden"></div>
-                        
-                        <div id="guestOptions">
-                            <p>¿Quieres sugerir canciones para la playlist?</p>
-                            <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
-                            <button id="searchSongBtn" class="btn">Buscar canción en Spotify</button>
-                        </div>
-
-                        <div id="spotifySearchSection" class="hidden">
-                            <div class="search-box">
-                                <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
-                                <button class="search-btn" id="searchBtn">Buscar</button>
-                            </div>
-                            
-                            <div id="backendError" class="backend-error hidden">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <h3>Error de conexión con el servidor</h3>
-                                <p>No podemos conectar con el servicio de búsqueda en este momento.</p>
-                                <div class="retry-options">
-                                    <button class="retry-btn" id="retryButton">
-                                        <i class="fas fa-redo"></i> Reintentar
-                                    </button>
-                                    <button class="retry-btn" id="useAlternativeButton">
-                                        <i class="fas fa-music"></i> Usar búsqueda alternativa
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div id="searchResults"></div>
-                        </div>
-                    </div>
-                    
-                    <div id="successMessage" class="success-message">
-                        ¡Canción añadida exitosamente a la playlist!
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Instagram -->
-    <section class="parallax-instagram instagram d-flex justify-content-center align-items-center">
-        <div class="contenido">
-            <img src="assets/img/icono-instagram.svg" alt="" class="bounce-in">
-            <br>
-            <div class="animated divIntagram">
-                <span class="hashtag">@alfonp.font</span>
-                <p>¡Preparate para esta gran fiesta!<br>
-                Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
-                <a target="_blank" href="https://www.instagram.com/alfonp.font/" class="btn">Ver instagram</a>
-            </div>
-        </div>
-    </section>
-
-<!-- CBU -->
-<section class="cbu">
-    <div class="container">
-        <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
-        <div class="animated divCbu">
-            <p>El mejor regalo es que vengas,</br>
-            pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br>
-            ¡Muchas gracias!</p>
-            <a data-fancybox data-src="#hidden-cbu" href="javascript:;" class="btn">Hacer un regalo</a>
-
-            <!-- Datos CBU (hidden by default) -->
-            <div style="display: none;" id="hidden-cbu">
-                <span class="title">Datos Bancarios</span>
-                <ul>
-                    <li>Nombre del Titular: Alfonsina Panza Fontana</li>
-                    <li>CBU: 0140300603658455259699</li>
-                    <li>Alias: Alfonsiiina</li>
-                    <li>DNI: 50.646.413</li>
-                    <li>Cuenta DNI</li>
-                </ul>
-
-                <span class="title">Buzón de regalos</span>
-                <ul>
-                    <li>Si deseás hacer tu regalo personalmente, </br>
-                    El día del evento habrá un buzón para dejar obsequios.</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<!-- Portada -->
+<section id="portada">
+    <h1>Alfonsina 15</h1>
+    <p>¡Estás invitado a celebrar este día especial!</p>
+    <audio id="audio-bg" loop>
+        <source src="assets/audio/fondo.mp3" type="audio/mpeg">
+    </audio>
+    <button class="button" id="btn-play-audio">Play / Pause</button>
 </section>
 
-   <!-- Carga de Fotos y Videos -->
-<section class="carga-fotos-videos">
-    <div class="container text-center">
-        <br> <!-- Espacio adicional antes del título -->
-        <h3>¡Comparte tus fotos y videos!</h3>
-        <p>
-            Sube las fotos y videos que captures durante la fiesta<br> <!-- Salto de línea añadido -->
-            para que podamos compartir recuerdos inolvidables.
-        </p>
-
-        <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a> 
-
-        <div class="qr-container mt-4">
-            <br> <!-- Espacio adicional antes del QR -->
-            <p>O escanea el código QR para subir tus recuerdos:</p>
-            <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
-            </a>
-            <br><br> <!-- Espacios adicionales después del QR -->
-        </div>
-    </div>
+<!-- Contador regresivo -->
+<section id="contador">
+    <h2>Faltan:</h2>
+    <div id="countdown">00:00:00:00</div>
 </section>
 
-    <!-- Agradecimiento -->
-    <section class="gracias">
-        <div class="container animated divGracias">
-            <p>¡Gracias por acompañarme en este momento tan importante!</p>
-        </div>
-    </section>
+<!-- Ceremonia -->
+<section id="ceremonia">
+    <h2>Ceremonia</h2>
+    <p>Lugar y fecha del evento...</p>
+</section>
 
-    <!-- Contacto -->
-    <section class="contacto">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>¿Tenés alguna pregunta?</h4>
-                    <p>¡Contáctame! Te responderé lo antes posible.</p>
-                    <ul>
-                        <li><i class="fab fa-whatsapp"></i> <a target="_blank" href="https://api.whatsapp.com/send?phone=542477684660&amp;text=%C2%A1Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20del%20evento!%20Gracias.">¡Envianos un Whatsapp!</a></li>
-                        <li><i class="fas fa-phone-alt"></i> +549 2477 68-4660</li>
-                        <li><i class="fas fa-envelope"></i> <a href="mailto:alfonsinapf@icloud.com">alfonsinapf@icloud.com</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Galería -->
+<section id="galeria">
+    <h2>Galería</h2>
+    <a data-fancybox="gallery" href="assets/images/galeria1.jpg"><img src="assets/images/thumb1.jpg" alt="Foto 1"></a>
+    <a data-fancybox="gallery" href="assets/images/galeria2.jpg"><img src="assets/images/thumb2.jpg" alt="Foto 2"></a>
+</section>
 
-    <!-- Footer -->
-    <section class="footer">
-        <div class="containter">
-            <p>Invitación digital © 2025. Todos los derechos reservados <br>
-        </div>
-    </section>
+<!-- Confirmación -->
+<section id="confirmacion">
+    <h2>Confirma tu asistencia</h2>
+    <iframe src="https://docs.google.com/forms/d/e/FORM_ID/viewform?embedded=true" width="100%" height="500" frameborder="0">Cargando…</iframe>
+</section>
 
-    <!-- Scripts -->
-    <script>
-        // Variables para JS desde config
-        var fechaCuentaRegresiva = "11/01/2025 21:00:00";
-        var fechaInicioEvento = "11/01/2024 21:00:00";
-        var fechaFinEvento = "11/02/2024 05:00:00";
-        var tituloEvento = "Fiesta de 15";
-    </script>
+<!-- Dress code -->
+<section id="dresscode">
+    <h2>Dress Code</h2>
+    <p>Colores y estilo sugerido...</p>
+</section>
 
-    <!-- Scripts Generales -->
-    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
-    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
-    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
-    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
-    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
-    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
+<!-- Música -->
+<section id="musica">
+    <h2>Playlist Colaborativa</h2>
+    <input type="text" id="busqueda-cancion" placeholder="Buscar canción">
+    <button class="button" id="btn-buscar">Buscar</button>
+    <div id="resultados"></div>
+    <h3>Playlist actual</h3>
+    <ul id="playlist"></ul>
+    <p id="mensaje"></p>
+</section>
 
-    <!-- Script para la sección de música -->
-    <script>
-        // URLs de los endpoints de backend
-        const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
-        const SEARCH_ENDPOINT = '/api/search';
-        const ADD_ENDPOINT = '/api/add-to-playlist';
-        
-        // Elementos del DOM
-        const guestOptions = document.getElementById('guestOptions');
-        const spotifySearchSection = document.getElementById('spotifySearchSection');
-        const searchSongBtn = document.getElementById('searchSongBtn');
-        const suggestBtn = document.getElementById('suggestBtn');
-        const searchBtn = document.getElementById('searchBtn');
-        const songSearch = document.getElementById('songSearch');
-        const searchResults = document.getElementById('searchResults');
-        const authStatus = document.getElementById('authStatus');
-        const successMessage = document.getElementById('successMessage');
-        const backendError = document.getElementById('backendError');
-        const retryButton = document.getElementById('retryButton');
-        const useAlternativeButton = document.getElementById('useAlternativeButton');
+<!-- Instagram -->
+<section id="instagram">
+    <h2>Síguenos en Instagram</h2>
+    <a href="https://www.instagram.com/alfonsina15" target="_blank">@alfonsina15</a>
+</section>
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar event listeners
-            suggestBtn.addEventListener('click', openSuggestionForm);
-            searchSongBtn.addEventListener('click', showSearchSection);
-            searchBtn.addEventListener('click', searchSong);
-            songSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchSong();
+<!-- CBU / Regalos -->
+<section id="regalos">
+    <h2>Regalos</h2>
+    <p>CBU: 1234567890123456789012</p>
+</section>
+
+<!-- Subida de fotos/videos -->
+<section id="uploads">
+    <h2>Subí tus fotos y videos</h2>
+    <p>Escaneá el QR para enviar tus recuerdos</p>
+    <img src="assets/images/qr.png" alt="QR Subida">
+</section>
+
+<!-- Agradecimiento -->
+<section id="agradecimiento">
+    <h2>Gracias por acompañarnos</h2>
+    <p>¡Esperamos verte en la celebración!</p>
+</section>
+
+<!-- Contacto -->
+<section id="contacto">
+    <h2>Contacto</h2>
+    <p>Email: contacto@alfonsina15.com</p>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2025 Alfonsina 15</p>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+<script>
+    // Audio
+    const audio = document.getElementById('audio-bg');
+    document.getElementById('btn-play-audio').addEventListener('click', () => {
+        if(audio.paused) audio.play();
+        else audio.pause();
+    });
+
+    // Contador regresivo
+    const countdownEl = document.getElementById('countdown');
+    const fechaEvento = new Date('2025-11-01T21:00:00'); // ajustar fecha
+    function actualizarContador() {
+        const now = new Date();
+        const diff = fechaEvento - now;
+        if(diff < 0) { countdownEl.textContent = '¡Evento iniciado!'; return; }
+        const dias = Math.floor(diff / (1000*60*60*24));
+        const horas = Math.floor((diff/(1000*60*60)) % 24);
+        const mins = Math.floor((diff/(1000*60)) % 60);
+        const segs = Math.floor((diff/1000) % 60);
+        countdownEl.textContent = `${dias}:${horas}:${mins}:${segs}`;
+    }
+    setInterval(actualizarContador,1000);
+    actualizarContador();
+
+    // Playlist colaborativa
+    const btnBuscar = document.getElementById('btn-buscar');
+    const inputBusqueda = document.getElementById('busqueda-cancion');
+    const resultados = document.getElementById('resultados');
+    const playlist = document.getElementById('playlist');
+    const mensaje = document.getElementById('mensaje');
+
+    async function cargarPlaylist() {
+        try {
+            const res = await fetch('https://invitacion-xv-seven.vercel.app/');
+            const data = await res.json();
+            playlist.innerHTML = '';
+            data.tracks.forEach(track => {
+                const li = document.createElement('li');
+                li.textContent = track.name + ' - ' + track.artists.join(', ');
+                playlist.appendChild(li);
             });
-            
-            retryButton.addEventListener('click', () => {
-                searchSong();
-            });
-            
-            useAlternativeButton.addEventListener('click', () => {
-                alternativeSearch(songSearch.value);
-            });
-        });
+        } catch(e) { console.error(e); }
+    }
 
-        // Abrir formulario de sugerencias
-        function openSuggestionForm() {
-            window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
-        }
-
-        // Mostrar sección de búsqueda
-        function showSearchSection() {
-            guestOptions.classList.add('hidden');
-            spotifySearchSection.classList.remove('hidden');
-            searchSongBtn.textContent = "🔍 Buscando canciones";
-            searchSongBtn.style.background = "#28a745";
-            searchSongBtn.style.borderColor = "#28a745";
-            
-            // Mostrar mensaje de estado
-            authStatus.textContent = "Busca canciones para sugerir a la playlist";
-            authStatus.classList.add('status-connected');
-            authStatus.classList.remove('hidden');
-            
-            // Ocultar mensajes de error al mostrar la sección
-            backendError.classList.add('hidden');
-        }
-
-        // Función fetch con timeout
-        async function fetchWithTimeout(resource, options = {}, timeout = 8000) {
-            const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), timeout);
-            
-            const response = await fetch(resource, {
-                ...options,
-                signal: controller.signal  
-            });
-            
-            clearTimeout(id);
-            return response;
-        }
-
-        // Función para mostrar error de backend
-        function showBackendError() {
-            backendError.classList.remove('hidden');
-            searchResults.innerHTML = '';
-        }
-
-        // Función para ocultar error de backend
-        function hideBackendError() {
-            backendError.classList.add('hidden');
-        }
-
-        // Buscar canciones a través del backend
-        async function searchSong() {
-            const query = songSearch.value.trim();
-            if (!query) {
-                showAuthStatus("Por favor ingresa un término de búsqueda", "error");
-                return;
-            }
-
-            hideBackendError();
-            showAuthStatus("Buscando canciones...", "success");
-            searchBtn.disabled = true;
-            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
-            
-            try {
-                // Llamar a tu backend en Vercel
-                const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query: query })
-                }, 10000); // 10 segundos de timeout
-                
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    // Manejar el error [object Object] aquí
-                    const errorMessage = typeof errorData.error === 'object' 
-                        ? (errorData.error.message || 'Error desconocido del servidor')
-                        : errorData.error;
-                    
-                    throw new Error(errorMessage || `Error ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                displayResults(data.tracks || data.items || []);
-            } catch (error) {
-                console.error("Error en la búsqueda:", error);
-                showBackendError();
-                showAuthStatus(`Error: ${error.message}`, "error");
-            } finally {
-                searchBtn.disabled = false;
-                searchBtn.innerHTML = 'Buscar';
-            }
-        }
-
-        // Mostrar resultados de búsqueda
-        function displayResults(tracks) {
-            searchResults.innerHTML = '';
-            
-            if (!tracks || tracks.length === 0) {
-                searchResults.innerHTML = '<p class="no-results">No se encontraron canciones. Intenta con otro término.</p>';
-                return;
-            }
-            
-            const resultsContainer = document.createElement('div');
-            resultsContainer.className = 'track-list';
-            
-            tracks.forEach(track => {
-                const trackDiv = document.createElement('div');
-                trackDiv.className = 'track-item';
-                
-                // Imagen del álbum o placeholder
-                const albumImage = track.album?.images?.length > 0 
-                    ? `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">`
-                    : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
-                
-                trackDiv.innerHTML = `
-                    <div class="track-info">
-                        ${albumImage}
-                        <div class="track-details">
-                            <div class="track-name" title="${track.name}">${track.name}</div>
-                            <div class="track-artist" title="${track.artists.map(a => a.name).join(", ")}">
-                                ${track.artists.map(a => a.name).join(", ")}
-                            </div>
-                        </div>
-                    </div>
-                    <button class="add-btn" 
-                            data-uri="${track.uri}" 
-                            data-name="${track.name}" 
-                            data-artist="${track.artists[0].name}">
-                        <i class="fas fa-plus"></i> Añadir
-                    </button>
-                `;
-                
-                resultsContainer.appendChild(trackDiv);
-            });
-            
-            searchResults.appendChild(resultsContainer);
-            
-            // Agregar event listeners a los botones de añadir
-            document.querySelectorAll('.add-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
-                    const trackUri = this.getAttribute('data-uri');
-                    const trackName = this.getAttribute('data-name');
-                    const artistName = this.getAttribute('data-artist');
-                    
-                    addToPlaylist(trackUri, trackName, artistName, this);
+    btnBuscar.addEventListener('click', async () => {
+        const query = inputBusqueda.value.trim();
+        if(!query) return;
+        resultados.innerHTML = 'Buscando...';
+        try {
+            const res = await fetch(`https://TU_DOMINIO_VERCEL/api/search?q=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            resultados.innerHTML = '';
+            data.tracks.forEach(track => {
+                const div = document.createElement('div');
+                div.textContent = track.name + ' - ' + track.artists.join(', ');
+                const btn = document.createElement('button');
+                btn.textContent = 'Agregar';
+                btn.className = 'button';
+                btn.addEventListener('click', async () => {
+                    try {
+                        const r = await fetch('https://TU_DOMINIO_VERCEL/api/add-to-playlist', {
+                            method:'POST',
+                            headers:{'Content-Type':'application/json'},
+                            body: JSON.stringify({ uri: track.uri })
+                        });
+                        const resAdd = await r.json();
+                        if(resAdd.success) { mensaje.textContent = 'Canción agregada'; cargarPlaylist(); }
+                        else mensaje.textContent = 'Error al agregar';
+                    } catch(e){ mensaje.textContent = 'Error al agregar'; }
                 });
+                div.appendChild(btn);
+                resultados.appendChild(div);
             });
-        }
+        } catch(e){ resultados.textContent = 'Error en la búsqueda'; console.error(e); }
+    });
 
-        // Función para añadir canción a la playlist
-        async function addToPlaylist(trackUri, trackName, artistName, button) {
-            const originalText = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
-            
-            try {
-                // Llamar a tu backend en Vercel para añadir la canción
-                const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ trackUri: trackUri })
-                }, 10000);
-                
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    // Manejar el error [object Object] aquí
-                    const errorMessage = typeof data.error === 'object' 
-                        ? (data.error.message || 'Error desconocido del servidor')
-                        : data.error;
-                    
-                    throw new Error(errorMessage || "Error al añadir la canción");
-                }
-                
-                // Éxito
-                showSuccessMessage("¡Canción añadida exitosamente!");
-                button.innerHTML = '<i class="fas fa-check"></i> Añadida';
-                button.classList.remove('exists');
-                button.classList.add('added');
-                
-                // Actualizar el reproductor después de 1 segundo
-                setTimeout(refreshPlayer, 1000);
-                
-            } catch (error) {
-                console.error("Error al añadir la canción:", error);
-                button.innerHTML = '<i class="fas fa-times"></i> Error';
-                button.classList.remove('exists', 'added');
-                button.classList.add('error');
-                showAuthStatus(`Error: ${error.message}`, "error");
-                
-                // Restaurar estado original después de 2 segundos
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                    button.classList.remove('error', 'added', 'exists');
-                }, 2000);
-            }
-        }
+    cargarPlaylist();
+</script>
 
-        // Función de búsqueda alternativa usando Last.fm API (como respaldo)
-        async function alternativeSearch(query) {
-            searchResults.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-spinner"></i> Buscando con método alternativo...
-                </div>
-            `;
-            
-            try {
-                // Esta es una API pública que no requiere clave API para búsquedas básicas
-                const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=5a8e1586e85b499c62d9f3a4bfa5b6a9&format=json&limit=10`);
-                
-                if (!response.ok) {
-                    throw new Error('Error en búsqueda alternativa');
-                }
-                
-                const data = await response.json();
-                const tracks = data.results?.trackmatches?.track || [];
-                
-                if (tracks.length === 0) {
-                    searchResults.innerHTML = `
-                        <div class="loading">
-                            <i class="fas fa-music"></i> No se encontraron resultados con el método alternativo.
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Mostrar resultados de Last.fm
-                searchResults.innerHTML = '';
-                const resultsContainer = document.createElement('div');
-                resultsContainer.className = 'track-list';
-                
-                tracks.forEach(track => {
-                    const trackDiv = document.createElement('div');
-                    trackDiv.className = 'track-item';
-                    trackDiv.innerHTML = `
-                        <div class="track-info">
-                            <div class="track-image-placeholder"><i class="fas fa-music"></i></div>
-                            <div class="track-details">
-                                <div class="track-name" title="${track.name}">${track.name}</div>
-                                <div class="track-artist" title="${track.artist}">${track.artist}</div>
-                            </div>
-                        </div>
-                        <button class="add-btn" data-name="${track.name}" data-artist="${track.artist}">
-                            <i class="fas fa-plus"></i> Sugerir canción
-                        </button>
-                    `;
-                    
-                    resultsContainer.appendChild(trackDiv);
-                });
-                
-                searchResults.appendChild(resultsContainer);
-                
-                // Agregar event listeners a los botones de sugerir
-                document.querySelectorAll('.add-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const trackName = this.getAttribute('data-name');
-                        const artistName = this.getAttribute('data-artist');
-                        suggestSong(trackName, artistName, this);
-                    });
-                });
-                
-            } catch (error) {
-                console.error('Error en búsqueda alternativa:', error);
-                searchResults.innerHTML = `
-                    <div class="loading">
-                        <i class="fas fa-exclamation-triangle"></i> Error en el método alternativo. Intenta nuevamente.
-                    </div>
-                `;
-            }
-        }
-
-        // Función para sugerir canción (cuando no se puede agregar directamente)
-        async function suggestSong(trackName, artistName, button) {
-            const originalText = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-            
-            // Aquí podrías implementar el envío a un formulario de Google o email
-            showSuccessMessage(`¡Sugerencia enviada!: ${trackName} - ${artistName}`);
-            
-            // Simular envío exitoso
-            setTimeout(() => {
-                button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
-                button.classList.add('added');
-            }, 1000);
-        }
-
-        // Mostrar mensaje de éxito
-        function showSuccessMessage(message = "¡Canción añadida exitosamente!") {
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 3000);
-        }
-
-        // Actualizar el reproductor de Spotify
-        function refreshPlayer() {
-            const iframe = document.querySelector('.spotify-embed-guest iframe');
-            if (iframe) {
-                // Forzar recarga del iframe
-                const src = iframe.src;
-                iframe.src = '';
-                setTimeout(() => {
-                    iframe.src = src;
-                }, 100);
-            }
-        }
-
-        // Mostrar mensajes de estado
-        function showAuthStatus(message, type = "success") {
-            authStatus.textContent = message;
-            authStatus.className = 'auth-status'; // Reset classes
-            authStatus.classList.add(
-                type === "error" ? 'status-error' : 
-                type === "warning" ? 'status-warning' : 'status-connected'
-            );
-            authStatus.classList.remove('hidden');
-            
-            // Ocultar mensaje después de 5 segundos
-            setTimeout(() => {
-                authStatus.classList.add('hidden');
-            }, 5000);
-        }
-
-        // Funciones para el reproductor de audio
-        function playAudio() {
-            const audio = document.getElementById('audioPrueba');
-            audio.play();
-            document.getElementById('btnPlay').classList.add('hidden');
-            document.getElementById('btnPausa').classList.remove('hidden');
-        }
-
-        function pauseAudio() {
-            const audio = document.getElementById('audioPrueba');
-            audio.pause();
-            document.getElementById('btnPausa').classList.add('hidden');
-            document.getElementById('btnPlay').classList.remove('hidden');
-        }
-    </script>
-    <!-- Scripts de seguimiento -->
-    <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
-    <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
