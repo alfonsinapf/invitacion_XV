@@ -64,7 +64,7 @@
             border: none;
         }
         
-        .auth-error {
+        .config-error {
             background: rgba(255, 193, 7, 0.2);
             border: 1px solid #ffc107;
             border-radius: 10px;
@@ -73,7 +73,7 @@
             text-align: center;
         }
         
-        .auth-error i {
+        .config-error i {
             font-size: 3rem;
             margin-bottom: 15px;
             display: block;
@@ -220,6 +220,27 @@
             font-size: 0.9rem;
         }
         
+        .admin-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .admin-info h3 {
+            margin-bottom: 15px;
+            color: #ffc107;
+        }
+        
+        .admin-steps {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .admin-steps li {
+            margin-bottom: 10px;
+        }
+        
         @media (max-width: 768px) {
             .alternative-options {
                 flex-direction: column;
@@ -231,6 +252,19 @@
             
             .results-container {
                 grid-template-columns: 1fr;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            .search-input {
+                border-radius: 50px;
+                margin-bottom: 10px;
+            }
+            
+            .search-button {
+                border-radius: 50px;
             }
         }
     </style>
@@ -250,10 +284,10 @@
                 </iframe>
             </div>
             
-            <div class="auth-error">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h2>Error de autenticación con Spotify</h2>
-                <p>El sistema de sugerencia de canciones no está disponible temporalmente debido a un problema técnico.</p>
+            <div class="config-error">
+                <i class="fas fa-cogs"></i>
+                <h2>Configuración de Spotify incompleta</h2>
+                <p>El sistema de sugerencia de canciones no está disponible temporalmente debido a un problema de configuración.</p>
                 <p>Estamos trabajando para resolver el problema. Mientras tanto, puedes disfrutar de la playlist y utilizar las alternativas que te ofrecemos a continuación.</p>
             </div>
             
@@ -297,6 +331,25 @@
                 <div class="results-container" id="altSearchResults">
                     <!-- Los resultados se mostrarán aquí -->
                 </div>
+            </div>
+
+            <!-- Información para el administrador -->
+            <div class="admin-info">
+                <h3>Información para el administrador:</h3>
+                <p>Para resolver el error "Configuración de Spotify incompleta", necesitas configurar correctamente las variables de entorno en Vercel:</p>
+                <ol class="admin-steps">
+                    <li>Ve al dashboard de tu proyecto en <a href="https://vercel.com" style="color: #1DB954;">Vercel</a></li>
+                    <li>Accede a la sección de Settings → Environment Variables</li>
+                    <li>Asegúrate de tener configuradas estas variables:
+                        <ul>
+                            <li>SPOTIFY_CLIENT_ID</li>
+                            <li>SPOTIFY_CLIENT_SECRET</li>
+                            <li>SPOTIFY_REFRESH_TOKEN</li>
+                            <li>SPOTIFY_PLAYLIST_ID</li>
+                        </ul>
+                    </li>
+                    <li>Si necesitas generar un nuevo refresh token, puedes usar herramientas como <a href="https://github.com/spotify/spotify-web-api-node" style="color: #1DB954;">Spotify Web API Node</a></li>
+                </ol>
             </div>
         </div>
     </div>
