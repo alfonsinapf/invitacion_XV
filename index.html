@@ -573,215 +573,32 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
-  <script>
-  // Configuración de Spotify
-  const SPOTIFY_CONFIG = {
-    CLIENT_ID: "ba9385bd54cc4ba3b297ce5fca852fd9",
-    REDIRECT_URI: window.location.origin + window.location.pathname,
-    PLAYLIST_ID: "0a4iq5x0WHzzn0ox7ea77u",
-    SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
-  };
+ <script>
+const API_URL = 'https://TU_BACKEND.vercel.app/api/spotify';
 
-  // Estado
-  let spotifyAccessToken = null;
-  let isAuthenticated = false;
-  let currentPlaylistTracks = null;
+async function addTrack() {
+  const trackUri = document.getElementById('trackUri').value;
+  const playlistId = document.getElementById('playlistId').value;
 
-  // Elementos del DOM
-  const guestOptions = document.getElementById('guestOptions');
-  const spotifyAuthSection = document.getElementById('spotifyAuthSection');
-  const connectSpotifyBtn = document.getElementById('connectSpotifyBtn');
-  const suggestBtn = document.getElementById('suggestBtn');
-  const searchBtn = document.getElementById('searchBtn');
-  const songSearch = document.getElementById('songSearch');
-  const searchResults = document.getElementById('searchResults');
-  const authStatus = document.getElementById('authStatus');
-  const successMessage = document.getElementById('successMessage');
-
-  // --- PKCE helpers ---
-  function generateCodeVerifier(length) {
-    let text = '';
-    let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    for (let i = 0; i < length; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  }
-
-  async function generateCodeChallenge(codeVerifier) {
-    const data = new TextEncoder().encode(codeVerifier);
-    const digest = await crypto.subtle.digest('SHA-256', data);
-    return btoa(String.fromCharCode(...new Uint8Array(digest)))
-      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
-
-  // Iniciar login con Spotify (PKCE)
-  async function connectWithSpotify() {
-    const codeVerifier = generateCodeVerifier(128);
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
-    localStorage.setItem("code_verifier", codeVerifier);
-
-    const args = new URLSearchParams({
-      client_id: SPOTIFY_CONFIG.CLIENT_ID,
-      response_type: "code",
-      redirect_uri: SPOTIFY_CONFIG.REDIRECT_URI,
-      scope: SPOTIFY_CONFIG.SCOPES,
-      code_challenge_method: "S256",
-      code_challenge: codeChallenge
-    });
-
-    window.location = "https://accounts.spotify.com/authorize?" + args;
-  }
-
-  // Verificar si volvimos con un code
-  async function checkSpotifyAuth() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    if (!code) return;
-
-    const codeVerifier = localStorage.getItem("code_verifier");
-    const body = new URLSearchParams({
-      client_id: SPOTIFY_CONFIG.CLIENT_ID,
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: SPOTIFY_CONFIG.REDIRECT_URI,
-      code_verifier: codeVerifier
-    });
-
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body
-    });
-
-    const data = await response.json();
-    if (data.access_token) {
-      handleSuccessfulAuth(data.access_token);
-      // limpiar la URL
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else {
-      showAuthStatus("Error al obtener token", "error");
-    }
-  }
-
-  // Manejar login exitoso
-  function handleSuccessfulAuth(token) {
-    spotifyAccessToken = token;
-    isAuthenticated = true;
-    guestOptions.classList.add('hidden');
-    spotifyAuthSection.classList.remove('hidden');
-    connectSpotifyBtn.textContent = "✅ Conectado con Spotify";
-    connectSpotifyBtn.style.background = "#28a745";
-    authStatus.textContent = "✅ Conectado a Spotify. Busca canciones para añadir a la playlist.";
-    authStatus.classList.add('status-connected');
-    authStatus.classList.remove('hidden');
-    loadPlaylistTracks();
-  }
-
-  // Mostrar estado
-  function showAuthStatus(msg, type) {
-    authStatus.textContent = msg;
-    authStatus.classList.remove('hidden', 'status-connected', 'status-error');
-    if (type === "success") authStatus.classList.add('status-connected');
-    if (type === "error") authStatus.classList.add('status-error');
-  }
-
-  // Cargar canciones de la playlist
-  async function loadPlaylistTracks() {
-    try {
-      let url = `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks?limit=50`;
-      let allTracks = [];
-      while (url) {
-        const res = await fetch(url, { headers: { Authorization: `Bearer ${spotifyAccessToken}` } });
-        const data = await res.json();
-        allTracks = allTracks.concat(data.items);
-        url = data.next;
-      }
-      currentPlaylistTracks = allTracks;
-      showAuthStatus("Playlist cargada correctamente", "success");
-    } catch (err) {
-      showAuthStatus("Error al cargar playlist", "error");
-    }
-  }
-
-  // Buscar canciones
-  async function searchSong() {
-    const query = songSearch.value.trim();
-    if (!query) return;
-    searchBtn.disabled = true;
-    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-    try {
-      const res = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
-        headers: { Authorization: `Bearer ${spotifyAccessToken}` }
-      });
-      const data = await res.json();
-      displayResults(data.tracks.items);
-    } finally {
-      searchBtn.disabled = false;
-      searchBtn.innerHTML = 'Buscar';
-    }
-  }
-
-  // Render resultados
-  function displayResults(tracks) {
-    searchResults.innerHTML = '';
-    if (!tracks.length) {
-      searchResults.innerHTML = '<p class="no-results">No se encontraron canciones</p>';
-      return;
-    }
-    const container = document.createElement('div');
-    container.className = 'track-list';
-    tracks.forEach(track => {
-      const div = document.createElement('div');
-      div.className = 'track-item';
-      div.innerHTML = `
-        <div class="track-info">
-          <img src="${track.album.images[1]?.url || ''}" class="track-image">
-          <div class="track-details">
-            <div class="track-name">${track.name}</div>
-            <div class="track-artist">${track.artists.map(a => a.name).join(', ')}</div>
-          </div>
-        </div>
-        <button class="add-btn">Añadir</button>`;
-      div.querySelector(".add-btn").onclick = () => addToPlaylist(track.uri, div.querySelector(".add-btn"));
-      container.appendChild(div);
-    });
-    searchResults.appendChild(container);
-  }
-
-  // Añadir canción a la playlist
-  async function addToPlaylist(uri, btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    try {
-      await fetch(`https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${spotifyAccessToken}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ uris: [uri] })
-      });
-      btn.textContent = "Añadida ✅";
-      btn.classList.add("added");
-    } catch {
-      btn.textContent = "Error ❌";
-      btn.classList.add("error");
-    }
-  }
-
-  // Inicialización
-  document.addEventListener("DOMContentLoaded", () => {
-    connectSpotifyBtn.addEventListener("click", connectWithSpotify);
-    suggestBtn.addEventListener("click", () => window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform"));
-    searchBtn.addEventListener("click", searchSong);
-    songSearch.addEventListener("keypress", e => { if (e.key === "Enter") searchSong(); });
-    checkSpotifyAuth();
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ playlistId, trackUri })
   });
+
+  const data = await res.json();
+  console.log('Resultado:', data);
+  alert('Canción agregada!');
+}
+
+document.getElementById('addBtn').addEventListener('click', addTrack);
 </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
