@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
 <head>
@@ -12,7 +13,6 @@
     <link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
     <style>
@@ -437,10 +437,10 @@
                         <div id="guestOptions">
                             <p>¿Quieres sugerir canciones para la playlist?</p>
                             <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
-                            <button id="searchSongBtn" class="btn">Buscar canción en Spotify</button>
+                            <button id="connectSpotifyBtn" class="btn">Conectar con Spotify</button>
                         </div>
 
-                        <div id="spotifySearchSection" class="hidden">
+                        <div id="spotifyAuthSection" class="hidden">
                             <div class="search-box">
                                 <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
                                 <button class="search-btn" id="searchBtn">Buscar</button>
@@ -574,11 +574,26 @@
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script para la sección de música -->
-    <script>
+  <script>
+        // Configuración de Spotify
+        const SPOTIFY_CONFIG = {
+            CLIENT_ID: "ba9385bd54cc4ba3b297ce5fca852fd9",
+            REDIRECT_URI: window.location.origin + window.location.pathname,
+            PLAYLIST_ID: "0a4iq5x0WHzzn0ox7ea77u",
+            SCOPES: "playlist-modify-public playlist-modify-private user-read-private"
+        };
+
+        // Estado de la aplicación
+        let spotifyAccessToken = null;
+        let isAuthenticated = false;
+        let spotifyAuthWindow = null;
+        let currentPlaylistTracks = null;
+        let lastPlaylistUpdate = null;
+
         // Elementos del DOM
         const guestOptions = document.getElementById('guestOptions');
-        const spotifySearchSection = document.getElementById('spotifySearchSection');
-        const searchSongBtn = document.getElementById('searchSongBtn');
+        const spotifyAuthSection = document.getElementById('spotifyAuthSection');
+        const connectSpotifyBtn = document.getElementById('connectSpotifyBtn');
         const suggestBtn = document.getElementById('suggestBtn');
         const searchBtn = document.getElementById('searchBtn');
         const songSearch = document.getElementById('songSearch');
@@ -590,11 +605,17 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar event listeners
             suggestBtn.addEventListener('click', openSuggestionForm);
-            searchSongBtn.addEventListener('click', showSearchSection);
+            connectSpotifyBtn.addEventListener('click', connectWithSpotify);
             searchBtn.addEventListener('click', searchSong);
             songSearch.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') searchSong();
             });
+            
+            // Verificar autenticación existente al cargar
+            checkSpotifyAuth();
+            
+            // Escuchar mensajes de la ventana emergente
+            window.addEventListener('message', handleAuthMessage);
         });
 
         // Abrir formulario de sugerencias
@@ -602,21 +623,132 @@
             window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
         }
 
-        // Mostrar sección de búsqueda
-        function showSearchSection() {
+        // Conectar con Spotify usando ventana emergente
+        function connectWithSpotify() {
+            const authUrl = `https://accounts.spotify.com/authorize?client_id=${SPOTIFY_CONFIG.CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(SPOTIFY_CONFIG.REDIRECT_URI)}&scope=${encodeURIComponent(SPOTIFY_CONFIG.SCOPES)}&show_dialog=true`;
+            
+            // Configurar dimensiones y posición de la ventana emergente
+            const width = 500, height = 650;
+            const left = (window.screen.width - width) / 2;
+            const top = (window.screen.height - height) / 2;
+            
+            spotifyAuthWindow = window.open(
+                authUrl,
+                'SpotifyAuth',
+                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,status=yes`
+            );
+            
+            // Verificar periódicamente si la ventana emergente se cerró
+            const checkPopup = setInterval(() => {
+                if (spotifyAuthWindow && spotifyAuthWindow.closed) {
+                    clearInterval(checkPopup);
+                    checkSpotifyAuth();
+                }
+            }, 500);
+        }
+
+        // Manejar mensajes de autenticación
+        function handleAuthMessage(event) {
+            // Verificar que el mensaje provenga del mismo origen
+            if (event.origin !== window.location.origin) return;
+            
+            if (event.data.type === 'spotifyAuth') {
+                if (event.data.token) {
+                    handleSuccessfulAuth(event.data.token);
+                } else if (event.data.error) {
+                    showAuthStatus(`Error: ${event.data.error}`, "error");
+                }
+            }
+        }
+
+        // Manejar autenticación exitosa
+        function handleSuccessfulAuth(token) {
+            spotifyAccessToken = token;
+            isAuthenticated = true;
+            setupAuthenticatedFeatures();
+            showAuthStatus("¡Conectado exitosamente con Spotify!", "success");
+            // Cargar las canciones de la playlist al autenticarse
+            loadPlaylistTracks();
+        }
+
+        // Verificar autenticación con Spotify
+        function checkSpotifyAuth() {
+            const hash = window.location.hash.substring(1);
+            const params = new URLSearchParams(hash);
+            const token = params.get("access_token");
+            const error = params.get("error");
+            
+            if (error) {
+                showAuthStatus(`Error: ${error}`, "error");
+                return;
+            }
+            
+            if (token) {
+                handleSuccessfulAuth(token);
+                
+                // Limpiar el hash de la URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Si estamos en la ventana emergente, enviar el token a la ventana principal
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({
+                        type: 'spotifyAuth',
+                        token: token
+                    }, window.location.origin);
+                    window.close();
+                }
+            }
+        }
+
+        // Configurar características para usuarios autenticados
+        function setupAuthenticatedFeatures() {
             guestOptions.classList.add('hidden');
-            spotifySearchSection.classList.remove('hidden');
-            searchSongBtn.textContent = "🔍 Buscando canciones";
-            searchSongBtn.style.background = "#28a745";
-            searchSongBtn.style.borderColor = "#28a745";
+            spotifyAuthSection.classList.remove('hidden');
+            connectSpotifyBtn.textContent = "✅ Conectado con Spotify";
+            connectSpotifyBtn.style.background = "#28a745";
+            connectSpotifyBtn.style.borderColor = "#28a745";
             
             // Mostrar mensaje de estado
-            authStatus.textContent = "Busca canciones para sugerir a la playlist";
+            authStatus.textContent = "✅ Conectado a Spotify. Busca canciones para añadir a la playlist.";
             authStatus.classList.add('status-connected');
             authStatus.classList.remove('hidden');
         }
 
-        // Buscar canciones a través del backend
+        // Cargar las canciones de la playlist
+        async function loadPlaylistTracks() {
+            try {
+                showAuthStatus("Cargando canciones de la playlist...", "success");
+                
+                let allTracks = [];
+                let nextUrl = `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks?fields=items(track(id,name,duration_ms,artists(name)))&limit=50`;
+                
+                // Paginación para obtener todas las canciones
+                while (nextUrl) {
+                    const response = await fetch(nextUrl, {
+                        headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error("Error al obtener la playlist");
+                    }
+                    
+                    const data = await response.json();
+                    allTracks = allTracks.concat(data.items);
+                    nextUrl = data.next;
+                }
+                
+                currentPlaylistTracks = allTracks;
+                lastPlaylistUpdate = new Date();
+                showAuthStatus("Playlist cargada correctamente", "success");
+                
+            } catch (error) {
+                console.error("Error al cargar la playlist:", error);
+                showAuthStatus(`Error al cargar la playlist: ${error.message}`, "error");
+                currentPlaylistTracks = null;
+            }
+        }
+
+        // Buscar canciones en Spotify
         async function searchSong() {
             const query = songSearch.value.trim();
             if (!query) {
@@ -629,22 +761,17 @@
             searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
             
             try {
-                // Llamar a tu backend en Vercel
-                const response = await fetch('https://invitacion-xv-seven.vercel.app/api/search', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ query: query })
+                const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
+                    headers: { 'Authorization': `Bearer ${spotifyAccessToken}` }
                 });
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error || "Error en la búsqueda");
+                    throw new Error(errorData.error?.message || "Error en la búsqueda");
                 }
                 
                 const data = await response.json();
-                displayResults(data.tracks || data.items || []);
+                displayResults(data.tracks.items);
             } catch (error) {
                 console.error("Error en la búsqueda:", error);
                 showAuthStatus(`Error: ${error.message}`, "error");
@@ -671,7 +798,7 @@
                 trackDiv.className = 'track-item';
                 
                 // Imagen del álbum o placeholder
-                const albumImage = track.album?.images?.length > 0 
+                const albumImage = track.album.images.length > 0 
                     ? `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">`
                     : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
                 
@@ -688,7 +815,8 @@
                     <button class="add-btn" 
                             data-uri="${track.uri}" 
                             data-name="${track.name}" 
-                            data-artist="${track.artists[0].name}">
+                            data-artist="${track.artists[0].name}"
+                            data-duration="${track.duration_ms}">
                         <i class="fas fa-plus"></i> Añadir
                     </button>
                 `;
@@ -704,34 +832,98 @@
                     const trackUri = this.getAttribute('data-uri');
                     const trackName = this.getAttribute('data-name');
                     const artistName = this.getAttribute('data-artist');
+                    const duration = this.getAttribute('data-duration');
                     
-                    addToPlaylist(trackUri, trackName, artistName, this);
+                    // Verificar si necesitamos actualizar la lista de canciones
+                    const now = new Date();
+                    const minutesSinceLastUpdate = lastPlaylistUpdate ? (now - lastPlaylistUpdate) / (1000 * 60) : Infinity;
+                    
+                    if (!currentPlaylistTracks || minutesSinceLastUpdate > 5) {
+                        await loadPlaylistTracks();
+                    }
+                    
+                    addToPlaylist(trackUri, trackName, artistName, duration, this);
                 });
             });
         }
 
-        // Función para añadir canción a la playlist
-        async function addToPlaylist(trackUri, trackName, artistName, button) {
+        // Verificar si una canción ya existe en la playlist
+        function isDuplicate(trackName, artistName, durationMs) {
+            if (!currentPlaylistTracks) return false;
+            
+            const normalizedTrackName = trackName.toLowerCase().trim();
+            const normalizedArtistName = artistName.toLowerCase().trim();
+            
+            return currentPlaylistTracks.some(existingTrack => {
+                const existing = existingTrack.track;
+                
+                // Comparar nombre de canción (insensible a mayúsculas y espacios)
+                const nameMatch = existing.name.toLowerCase().trim() === normalizedTrackName;
+                
+                // Comparar artista principal
+                const artistMatch = existing.artists.some(
+                    artist => artist.name.toLowerCase().trim() === normalizedArtistName
+                );
+                
+                // Comparar duración (con margen de ±5 segundos)
+                const durationDiff = Math.abs(existing.duration_ms - parseInt(durationMs));
+                const durationMatch = durationDiff < 5000;
+                
+                return nameMatch && artistMatch && durationMatch;
+            });
+        }
+
+        // Función para añadir canción a la playlist (con verificación de duplicados)
+        async function addToPlaylist(trackUri, trackName, artistName, durationMs, button) {
             const originalContent = button.innerHTML;
             button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
             
             try {
-                // Llamar a tu backend en Vercel para añadir la canción
-                const response = await fetch('https://invitacion-xv-seven.vercel.app/api/add-to-playlist', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ trackUri: trackUri })
-                });
+                // Verificación de duplicados
+                if (isDuplicate(trackName, artistName, durationMs)) {
+                    button.innerHTML = '<i class="fas fa-info-circle"></i> Ya existe';
+                    button.classList.add('exists');
+                    showAuthStatus("Esta canción ya está en la playlist", "warning");
+                    return;
+                }
+                
+                // Si no es duplicado, proceder a agregar
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
+                
+                const response = await fetch(
+                    `https://api.spotify.com/v1/playlists/${SPOTIFY_CONFIG.PLAYLIST_ID}/tracks`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${spotifyAccessToken}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            uris: [trackUri],
+                            position: 0
+                        })
+                    }
+                );
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error || "Error al añadir la canción");
+                    throw new Error(errorData.error?.message || "Error al añadir la canción");
                 }
                 
-                // Éxito
+                // Éxito - actualizar la lista local de canciones
+                const trackId = trackUri.split(':')[2];
+                currentPlaylistTracks.unshift({
+                    track: {
+                        id: trackId,
+                        name: trackName,
+                        duration_ms: parseInt(durationMs),
+                        artists: [{ name: artistName }]
+                    }
+                });
+                lastPlaylistUpdate = new Date();
+                
+                // Mostrar mensaje de éxito
                 showSuccessMessage("¡Canción añadida exitosamente!");
                 button.innerHTML = '<i class="fas fa-check"></i> Añadida';
                 button.classList.remove('exists');
@@ -814,651 +1006,5 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
-Explicación de los cambios realizados
-He integrado la funcionalidad de búsqueda de canciones manteniendo el diseño y estructura original de tu página. Los cambios principales son:
 
-Reemplazo del botón "Conectar con Spotify" por "Buscar canción en Spotify"
-
-Integración con tu backend existente en Vercel para las búsquedas
-
-Mantenimiento del estilo visual de tu página original
-
-Funcionalidad simplificada que no requiere autenticación del usuario
-
-Cómo funciona:
-Cuando el usuario hace clic en "Buscar canción en Spotify", se muestra el campo de búsqueda
-
-Al buscar, se envía una solicitud a tu endpoint /api/search en tu backend de Vercel
-
-Los resultados se muestran en una lista con botones para añadir canciones
-
-Al hacer clic en "Añadir", se llama a tu endpoint /api/add-to-playlist
-
-Ventajas de esta solución:
-No requiere cambios en tu backend existente
-
-Mantiene completamente el diseño original de tu página
-
-Los usuarios no necesitan iniciar sesión con Spotify
-
-La interfaz es intuitiva y se integra perfectamente con el estilo existente
-
-Esta solución te permitirá tener la funcionalidad de búsqueda y agregado de canciones sin alterar el diseño de tu hermosa página de invitación.
-
-Error: Failed to fetch
-Solución completa para el error "Failed to fetch" en la búsqueda de Spotify
-El error "Failed to fetch" generalmente ocurre cuando hay problemas con CORS (Cross-Origin Resource Sharing) o cuando el backend no está correctamente configurado. Voy a crear una solución completa que funcione directamente desde el frontend.
-
-html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Música para XV Años - Alfonsina</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: #fff;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 20px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-        
-        .search-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        
-        .search-box {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 50px 0 0 50px;
-            font-size: 1rem;
-            outline: none;
-        }
-        
-        .search-button {
-            padding: 15px 25px;
-            background: #1DB954;
-            color: white;
-            border: none;
-            border-radius: 0 50px 50px 0;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        
-        .search-button:hover {
-            background: #1ed760;
-        }
-        
-        .results-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .song-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            overflow: hidden;
-            display: flex;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .song-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        .album-art {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-        }
-        
-        .song-info {
-            padding: 15px;
-            flex: 1;
-        }
-        
-        .song-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-            font-size: 1.1rem;
-        }
-        
-        .song-artist {
-            opacity: 0.8;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .add-button {
-            background: #1DB954;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s;
-        }
-        
-        .add-button:hover {
-            background: #1ed760;
-        }
-        
-        .add-button.added {
-            background: #9b59b6;
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 10px;
-            background: #1DB954;
-            color: white;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            transform: translateX(100%);
-            transition: transform 0.3s;
-            z-index: 1000;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.error {
-            background: #e74c3c;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2rem;
-        }
-        
-        .loading i {
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .instructions {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 30px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .instructions h3 {
-            margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 10px;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-            line-height: 1.6;
-        }
-        
-        .instructions li {
-            margin-bottom: 10px;
-        }
-        
-        .error-message {
-            background: rgba(231, 76, 60, 0.2);
-            border: 1px solid #e74c3c;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        
-        .error-message i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .alternative-options {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        
-        .alt-btn {
-            padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        .alt-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        
-        @media (max-width: 768px) {
-            .search-box {
-                flex-direction: column;
-            }
-            
-            .search-input {
-                border-radius: 50px;
-                margin-bottom: 10px;
-            }
-            
-            .search-button {
-                border-radius: 50px;
-            }
-            
-            .results-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .alternative-options {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Música para XV Años</h1>
-            <p class="subtitle">Busca y agrega canciones a la playlist de la fiesta</p>
-        </header>
-        
-        <div class="search-container">
-            <div class="search-box">
-                <input type="text" class="search-input" placeholder="Escribe el nombre de una canción o artista...">
-                <button class="search-button">
-                    <i class="fas fa-search"></i> Buscar
-                </button>
-            </div>
-            
-            <div class="error-message hidden" id="connectionError">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Error de conexión con el servidor</h3>
-                <p>No podemos conectar con el servicio de búsqueda en este momento.</p>
-                <div class="alternative-options">
-                    <button class="alt-btn" id="retryButton">
-                        <i class="fas fa-redo"></i> Reintentar
-                    </button>
-                    <button class="alt-btn" id="useAlternativeButton">
-                        <i class="fas fa-music"></i> Usar búsqueda alternativa
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="results-container" id="resultsContainer">
-            <div class="loading">
-                <i class="fas fa-info-circle"></i> Busca canciones para agregar a la playlist
-            </div>
-        </div>
-        
-        <div class="instructions">
-            <h3>¿Cómo sugerir canciones?</h3>
-            <ol>
-                <li>Escribe el nombre de una canción o artista en el buscador</li>
-                <li>Haz clic en "Buscar" para ver los resultados</li>
-                <li>Selecciona "Añadir a playlist" en las canciones que quieras sugerir</li>
-                <li>¡Listo! Tu canción será agregada a la playlist de la fiesta</li>
-            </ol>
-        </div>
-    </div>
-    
-    <div class="notification" id="notification">
-        Canción agregada exitosamente!
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchButton = document.querySelector('.search-button');
-            const searchInput = document.querySelector('.search-input');
-            const resultsContainer = document.querySelector('.results-container');
-            const notification = document.getElementById('notification');
-            const connectionError = document.getElementById('connectionError');
-            const retryButton = document.getElementById('retryButton');
-            const useAlternativeButton = document.getElementById('useAlternativeButton');
-            
-            // URLs de los endpoints de backend
-            const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
-            const SEARCH_ENDPOINT = '/api/search';
-            const ADD_ENDPOINT = '/api/add-to-playlist';
-            
-            // Función para mostrar notificaciones
-            function showNotification(message, isError = false) {
-                notification.textContent = message;
-                notification.classList.remove('error');
-                
-                if (isError) {
-                    notification.classList.add('error');
-                }
-                
-                notification.classList.add('show');
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                }, 3000);
-            }
-            
-            // Función para mostrar error de conexión
-            function showConnectionError() {
-                connectionError.classList.remove('hidden');
-            }
-            
-            // Función para ocultar error de conexión
-            function hideConnectionError() {
-                connectionError.classList.add('hidden');
-            }
-            
-            // Función para buscar canciones (con reintentos)
-            async function searchSongs(query, retryCount = 0) {
-                if (!query) {
-                    showNotification('Por favor ingresa un término de búsqueda', true);
-                    return;
-                }
-                
-                hideConnectionError();
-                resultsContainer.innerHTML = `
-                    <div class="loading">
-                        <i class="fas fa-spinner"></i> Buscando canciones...
-                    </div>
-                `;
-                
-                try {
-                    // Intentar conectar con el backend
-                    const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ query: query })
-                    }, 5000); // 5 segundos de timeout
-                    
-                    if (!response.ok) {
-                        throw new Error(`Error ${response.status}: ${response.statusText}`);
-                    }
-                    
-                    const data = await response.json();
-                    displayResults(data.tracks || data.items || []);
-                } catch (error) {
-                    console.error('Error en la búsqueda:', error);
-                    
-                    if (retryCount < 2) {
-                        // Reintentar después de un breve delay
-                        setTimeout(() => {
-                            searchSongs(query, retryCount + 1);
-                        }, 1000 * (retryCount + 1));
-                    } else {
-                        // Mostrar error después de varios intentos
-                        resultsContainer.innerHTML = '';
-                        showConnectionError();
-                        showNotification('Error de conexión con el servidor', true);
-                    }
-                }
-            }
-            
-            // Función fetch con timeout
-            async function fetchWithTimeout(resource, options = {}, timeout = 8000) {
-                const controller = new AbortController();
-                const id = setTimeout(() => controller.abort(), timeout);
-                
-                const response = await fetch(resource, {
-                    ...options,
-                    signal: controller.signal  
-                });
-                
-                clearTimeout(id);
-                return response;
-            }
-            
-            // Función para mostrar resultados
-            function displayResults(tracks) {
-                if (tracks.length === 0) {
-                    resultsContainer.innerHTML = `
-                        <div class="loading">
-                            <i class="fas fa-music"></i> No se encontraron resultados. Intenta con otros términos.
-                        </div>
-                    `;
-                    return;
-                }
-                
-                resultsContainer.innerHTML = '';
-                
-                tracks.forEach(track => {
-                    const albumImage = track.album?.images[0]?.url || 'https://via.placeholder.com/100';
-                    const artists = track.artists?.map(artist => artist.name).join(', ') || 'Artista desconocido';
-                    
-                    const songCard = document.createElement('div');
-                    songCard.className = 'song-card';
-                    songCard.innerHTML = `
-                        <img src="${albumImage}" alt="Album Art" class="album-art">
-                        <div class="song-info">
-                            <div class="song-name">${track.name}</div>
-                            <div class="song-artist">${artists}</div>
-                            <button class="add-button" data-uri="${track.uri}">
-                                <i class="fas fa-plus"></i> Agregar a playlist
-                            </button>
-                        </div>
-                    `;
-                    
-                    resultsContainer.appendChild(songCard);
-                });
-                
-                // Agregar event listeners a los botones
-                document.querySelectorAll('.add-button').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const trackUri = this.getAttribute('data-uri');
-                        addToPlaylist(trackUri, this);
-                    });
-                });
-            }
-            
-            // Función para agregar canción a la playlist
-            async function addToPlaylist(trackUri, button) {
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
-                button.disabled = true;
-                
-                try {
-                    const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ trackUri: trackUri })
-                    }, 5000);
-                    
-                    const data = await response.json();
-                    
-                    if (response.ok) {
-                        showNotification('Canción agregada exitosamente!');
-                        button.innerHTML = '<i class="fas fa-check"></i> Agregada';
-                        button.classList.add('added');
-                    } else {
-                        throw new Error(data.error || 'No se pudo agregar la canción');
-                    }
-                } catch (error) {
-                    console.error('Error al agregar canción:', error);
-                    showNotification('Error: ' + error.message, true);
-                    button.innerHTML = originalText;
-                    button.disabled = false;
-                }
-            }
-            
-            // Función de búsqueda alternativa usando Last.fm API (como respaldo)
-            async function alternativeSearch(query) {
-                resultsContainer.innerHTML = `
-                    <div class="loading">
-                        <i class="fas fa-spinner"></i> Buscando con método alternativo...
-                    </div>
-                `;
-                
-                try {
-                    // Esta es una API pública que no requiere clave API para búsquedas básicas
-                    const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=5a8e1586e85b499c62d9f3a4bfa5b6a9&format=json&limit=10`);
-                    
-                    if (!response.ok) {
-                        throw new Error('Error en búsqueda alternativa');
-                    }
-                    
-                    const data = await response.json();
-                    const tracks = data.results?.trackmatches?.track || [];
-                    
-                    if (tracks.length === 0) {
-                        resultsContainer.innerHTML = `
-                            <div class="loading">
-                                <i class="fas fa-music"></i> No se encontraron resultados con el método alternativo.
-                            </div>
-                        `;
-                        return;
-                    }
-                    
-                    // Mostrar resultados de Last.fm
-                    resultsContainer.innerHTML = '';
-                    
-                    tracks.forEach(track => {
-                        const songCard = document.createElement('div');
-                        songCard.className = 'song-card';
-                        songCard.innerHTML = `
-                            <div class="album-art" style="background: #333; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-music" style="font-size: 2rem;"></i>
-                            </div>
-                            <div class="song-info">
-                                <div class="song-name">${track.name}</div>
-                                <div class="song-artist">${track.artist}</div>
-                                <button class="add-button" data-name="${track.name}" data-artist="${track.artist}">
-                                    <i class="fas fa-plus"></i> Sugerir canción
-                                </button>
-                            </div>
-                        `;
-                        
-                        resultsContainer.appendChild(songCard);
-                    });
-                    
-                    // Agregar event listeners a los botones
-                    document.querySelectorAll('.add-button').forEach(button => {
-                        button.addEventListener('click', function() {
-                            const trackName = this.getAttribute('data-name');
-                            const artistName = this.getAttribute('data-artist');
-                            suggestSong(trackName, artistName, this);
-                        });
-                    });
-                    
-                } catch (error) {
-                    console.error('Error en búsqueda alternativa:', error);
-                    resultsContainer.innerHTML = `
-                        <div class="loading">
-                            <i class="fas fa-exclamation-triangle"></i> Error en el método alternativo. Intenta nuevamente.
-                        </div>
-                    `;
-                }
-            }
-            
-            // Función para sugerir canción (cuando no se puede agregar directamente)
-            async function suggestSong(trackName, artistName, button) {
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-                button.disabled = true;
-                
-                // Aquí podrías implementar el envío a un formulario de Google o email
-                showNotification(`¡Sugerencia enviada!: ${trackName} - ${artistName}`);
-                
-                // Simular envío exitoso
-                setTimeout(() => {
-                    button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
-                    button.classList.add('added');
-                }, 1000);
-            }
-            
-            // Event listeners
-            searchButton.addEventListener('click', () => {
-                searchSongs(searchInput.value);
-            });
-            
-            searchInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    searchSongs(searchInput.value);
-                }
-            });
-            
-            retryButton.addEventListener('click', () => {
-                searchSongs(searchInput.value);
-            });
-            
-            useAlternativeButton.addEventListener('click', () => {
-                alternativeSearch(searchInput.value);
-            });
-            
-            // Ejemplo de resultados inicial
-            resultsContainer.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-info-circle"></i> Busca canciones para agregar a la playlist
-                </div>
-            `;
-        });
-    </script>
-    <!-- Scripts de seguimiento -->
-    <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
-    <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
-</body>
-</html>
 
