@@ -23,7 +23,16 @@ res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     }
 
     // Obtener token de acceso
-    const auth = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64");
+    // Reemplaza esta línea:
+const auth = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64");
+
+// Con esta verificación:
+console.log("Client ID:", process.env.CLIENT_ID);
+console.log("Client Secret:", process.env.CLIENT_SECRET ? "EXISTS" : "MISSING");
+
+const authString = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
+const auth = Buffer.from(authString).toString("base64");
+console.log("Auth header:", auth);
     
     const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
