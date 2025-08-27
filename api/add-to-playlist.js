@@ -1,8 +1,55 @@
-// api/add-to-playlist.js - Agregar canciones usando token del desarrollador
+// SOLUCIÓN PASO A PASO PARA CONFIGURAR LOS TOKENS
+
+// 1. OBTENER EL TOKEN DEL DESARROLLADOR (solo una vez)
+// Ejecuta este código en la consola del navegador después de autenticarte:
+
+/*
+// Ve a esta URL y autoriza la aplicación:
+https://accounts.spotify.com/authorize?client_id=ba9385bd54cc4ba3b297ce5fca852fd9&response_type=code&redirect_uri=https://invitacion-xv-seven.vercel.app/api/callback&scope=playlist-modify-public playlist-modify-private user-read-email
+
+// Después de autorizar, obtendrás un código. Úsalo aquí:
+const code = 'AQDV-g6WrHec9NTO0zW0gbCkqJZYuSjAmNa3hDXKNIPrAuINecObZsgXfmQ_Jum7gdbQ7HGDw7X0oYcGjwpwLmIMuXywIXxV4gokpbSbFNlDslVcMqpOH_1_eXBteyVzK4PWWnh4Ktmuv8NafKsomDByNdo6HNNhmOqG_BH0-PeAnULp25aI-WzHaEuvo_0m06UhDCrvvRtZ9D_nki_iuViwQyJH-KWjUEatP51s24Pdm5iIxY9_6MeLOHL87TYJ1ihumtWLZ9n-zO3Ay-lkj-qXbdUcC21Meg'; // El código que obtuviste
+const clientId = 'ba9385bd54cc4ba3b297ce5fca852fd9';
+const clientSecret = 'a636c32c9c654e92ae32bda3cfd1295e';
+const redirectUri = 'https://invitacion-xv-seven.vercel.app/api/callback';
+
+// Intercambiar código por tokens
+fetch('https://accounts.spotify.com/api/token', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
+  },
+  body: new URLSearchParams({
+    grant_type: 'authorization_code',
+    code: code,
+    redirect_uri: redirectUri
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log('GUARDA ESTOS TOKENS:');
+  console.log('SPOTIFY_DEVELOPER_TOKEN =', data.access_token);
+  console.log('SPOTIFY_DEVELOPER_REFRESH_TOKEN =', data.refresh_token);
+});
+*/
+
+// 2. CREAR ARCHIVO DE VARIABLES DE ENTORNO (.env.local)
+/* Crea un archivo .env.local en la raíz de tu proyecto con:
+
+SPOTIFY_CLIENT_ID=ba9385bd54cc4ba3b297ce5fca852fd9
+SPOTIFY_CLIENT_SECRET=a636c32c9c654e92ae32bda3cfd1295e
+SPOTIFY_DEVELOPER_TOKEN=BQCDd37MY6egSMj6ZtsTjoCe_kHr2AcftpyeTF_0T2k4oujs_bC0_CwfJl0J-BrXTGPVdmbwwKYQWo7sG9Ivx_RDU16zFUEW97GENd-qh0DAnb4zTP5ROmmrJixhtJLal1VF6vk1SHJHQFWzsLChdAU3fQr0nZiqO5_y7zLH0VzCW1LRylLTVPkTq2jaaPvtJNti_FlqM1yPZE0eUulKP98UJwG4c9LNu-n-HZ9z2rnB3ARlHChM9EEXMkJi1jI8by_OrePjrTttEKdwzCC7jOEEDRAkRHlF-RkaY_K_dzNKxGAmDg
+SPOTIFY_DEVELOPER_REFRESH_TOKEN=AQAo5SK5xD3yHCFo77Z3ZtBIUVkdJibIiZfP1w7hLxAUI4fz3I6tDunqRX48fKurc6sSIonfWA1Dr_xQ0eJTVdC7AUx1_u_gHvWUef7eWuVoBPQzOBdGX8aeFvISnRWkJ6g
+
+*/
+
+// 3. VERSIÓN MEJORADA DE add-to-playlist.js
+// Reemplaza el contenido de api/add-to-playlist.js con esto:
+
 const PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
 
-// Token del usuario desarrollador (necesitas obtenerlo manualmente una vez)
-// Este token debe tener permisos de playlist-modify-public y playlist-modify-private
+// Tokens del desarrollador
 let developerToken = process.env.SPOTIFY_DEVELOPER_TOKEN;
 let developerRefreshToken = process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN;
 let tokenExpiration = null;
@@ -12,7 +59,7 @@ async function refreshDeveloperToken() {
   const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET || 'a636c32c9c654e92ae32bda3cfd1295e';
 
   if (!developerRefreshToken) {
-    throw new Error('No hay refresh token del desarrollador configurado');
+    throw new Error('Token de autorización requerido');
   }
 
   try {
@@ -34,35 +81,29 @@ async function refreshDeveloperToken() {
       throw new Error(`Error refrescando token: ${data.error_description || data.error}`);
     }
 
-    // Actualizar token
     developerToken = data.access_token;
-    tokenExpiration = Date.now() + ((data.expires_in - 60) * 1000); // 60 segundos de margen
+    tokenExpiration = Date.now() + ((data.expires_in - 60) * 1000);
 
-    // Si hay un nuevo refresh token, actualizarlo
     if (data.refresh_token) {
       developerRefreshToken = data.refresh_token;
     }
 
-    console.log('Token del desarrollador refrescado exitosamente');
     return developerToken;
   } catch (error) {
-    console.error('Error refrescando token del desarrollador:', error);
+    console.error('Error refrescando token:', error);
     throw error;
   }
 }
 
-function isDeveloperTokenValid() {
-  return developerToken && tokenExpiration && Date.now() < tokenExpiration;
-}
-
 async function ensureDeveloperToken() {
-  if (!isDeveloperTokenValid()) {
-    if (developerRefreshToken) {
-      return await refreshDeveloperToken();
-    } else {
-      throw new Error('No hay token ni refresh token del desarrollador disponible');
-    }
+  if (!developerToken) {
+    throw new Error('Token de autorización requerido');
   }
+
+  if (!tokenExpiration || Date.now() >= tokenExpiration) {
+    return await refreshDeveloperToken();
+  }
+
   return developerToken;
 }
 
@@ -87,17 +128,21 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Se requiere trackUri' });
     }
 
-    // Validar formato del URI
     if (!trackUri.startsWith('spotify:track:')) {
       return res.status(400).json({ error: 'Formato de trackUri inválido' });
     }
 
-    // Asegurar que tenemos un token válido del desarrollador
+    // Verificar que tenemos los tokens necesarios
+    if (!developerToken || !developerRefreshToken) {
+      return res.status(401).json({ 
+        error: 'Token de autorización requerido',
+        message: 'El administrador debe configurar los tokens de Spotify'
+      });
+    }
+
     const token = await ensureDeveloperToken();
 
-    console.log(`Agregando canción: ${trackName || 'Unknown'} - ${artistName || 'Unknown'}`);
-
-    // Primero verificar si la canción ya está en la playlist
+    // Verificar duplicados
     const checkResponse = await fetch(
       `https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?fields=items(track(uri))&limit=50`,
       {
@@ -120,7 +165,7 @@ export default async function handler(req, res) {
       }
     }
 
-    // Agregar canción a la playlist
+    // Agregar canción
     const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
       method: 'POST',
       headers: {
@@ -129,19 +174,16 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         uris: [trackUri],
-        position: 0 // Agregar al principio de la playlist
+        position: 0
       })
     });
 
     const addData = await addResponse.json();
 
     if (!addResponse.ok) {
-      // Si el token expiró, intentar refrescar y reintentar
-      if (addResponse.status === 401 && developerRefreshToken) {
-        console.log('Token expirado, refrescando...');
+      if (addResponse.status === 401) {
         const newToken = await refreshDeveloperToken();
         
-        // Reintentar agregar canción
         const retryResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
           method: 'POST',
           headers: {
@@ -156,9 +198,8 @@ export default async function handler(req, res) {
 
         if (!retryResponse.ok) {
           const retryData = await retryResponse.json();
-          console.error('Error en reintento de agregar canción:', retryData);
           return res.status(retryResponse.status).json({ 
-            error: 'Error agregando canción a Spotify',
+            error: 'Error agregando canción',
             details: retryData
           });
         }
@@ -172,14 +213,11 @@ export default async function handler(req, res) {
         });
       }
 
-      console.error('Spotify Add Track Error:', addData);
       return res.status(addResponse.status).json({ 
-        error: 'Error agregando canción a Spotify',
+        error: 'Error agregando canción',
         details: addData
       });
     }
-
-    console.log('Canción agregada exitosamente a la playlist');
 
     return res.status(200).json({ 
       message: 'Canción agregada exitosamente',
@@ -189,11 +227,34 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error('Error en /api/add-to-playlist:', error);
+    console.error('Error en add-to-playlist:', error);
+    
+    if (error.message === 'Token de autorización requerido') {
+      return res.status(401).json({ 
+        error: 'Token de autorización requerido',
+        message: 'Contacta al administrador para configurar la integración con Spotify'
+      });
+    }
+
     return res.status(500).json({ 
       error: 'Error interno del servidor',
-      message: error.message,
-      details: error.stack
+      message: error.message
     });
   }
 }
+
+// 4. CONFIGURACIÓN EN VERCEL (Variables de Entorno)
+/*
+Si estás usando Vercel:
+1. Ve a tu dashboard de Vercel
+2. Selecciona tu proyecto
+3. Ve a Settings > Environment Variables
+4. Agrega estas variables:
+
+SPOTIFY_CLIENT_ID = ba9385bd54cc4ba3b297ce5fca852fd9
+SPOTIFY_CLIENT_SECRET = a636c32c9c654e92ae32bda3cfd1295e  
+SPOTIFY_DEVELOPER_TOKEN = (el token que obtuviste)
+SPOTIFY_DEVELOPER_REFRESH_TOKEN = (el refresh token que obtuviste)
+
+5. Redeploy tu aplicación
+*/
