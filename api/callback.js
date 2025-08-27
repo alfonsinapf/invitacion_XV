@@ -1,32 +1,23 @@
 export default async function handler(req, res) {
-  const { code } = req.body;
+  const code = req.query.code;
 
-  const auth = Buffer.from(
-    `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-  ).toString("base64");
+  const params = new URLSearchParams();
+  params.append("grant_type", "authorization_code");
+  params.append("code", code);
+  params.append("redirect_uri", "https://invitacion-xv-seven.vercel.app/api/callback");
+  params.append("client_id", process.env.SPOTIFY_CLIENT_ID);
+  params.append("client_secret", process.env.SPOTIFY_CLIENT_SECRET);
 
-  try {
-    const response = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${auth}`,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: new URLSearchParams({
-        grant_type: "authorization_code",
-        code,
-        redirect_uri: "https://invitacion-xv-seven.vercel.app/",
-      }),
-    });
+  const response = await fetch("https://accounts.spotify.com/api/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    if (data.error) {
-      return res.status(400).json({ error: data });
-    }
+  // ⚠️ El refresh_token aparece acá, guardalo en tu .env o BD
+  console.log("REFRESH TOKEN =>", data.refresh_token);
 
-    return res.status(200).json(data); // contiene access_token y refresh_token
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
+  res.send("Autorización completada ✅. Revisá logs de Vercel para ver tu refresh_token.");
 }
