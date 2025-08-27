@@ -628,41 +628,44 @@
 
     <!-- Script para la sección de música -->
     <script>
-    // URLs de los endpoints de backend
-    const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
-    const SEARCH_ENDPOINT = '/api/search';
-    const ADD_ENDPOINT = '/api/add-to-playlist';
-    const EXCHANGE_TOKEN_ENDPOINT = '/api/exchange-token';
+   // URLs de los endpoints de backend
+const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
+const SEARCH_ENDPOINT = '/api/search';
+const ADD_ENDPOINT = '/api/add-to-playlist';
+const EXCHANGE_TOKEN_ENDPOINT = '/api/exchange-token';
 
-    // Spotify OAuth
-    const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
-    const SCOPES = 'playlist-modify-public playlist-modify-private';
+// Spotify OAuth
+const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+const SCOPES = 'playlist-modify-public playlist-modify-private';
 
-    // Elementos del DOM
-    const guestOptions = document.getElementById('guestOptions');
-    const spotifySearchSection = document.getElementById('spotifySearchSection');
-    const searchSongBtn = document.getElementById('searchSongBtn');
-    const suggestBtn = document.getElementById('suggestBtn');
-    const searchBtn = document.getElementById('searchBtn');
-    const songSearch = document.getElementById('songSearch');
-    const searchResults = document.getElementById('searchResults');
-    const authStatus = document.getElementById('authStatus');
-    const successMessage = document.getElementById('successMessage');
-    const backendError = document.getElementById('backendError');
-    const retryButton = document.getElementById('retryButton');
-    const useAlternativeButton = document.getElementById('useAlternativeButton');
 
-    // Variables de estado
-    let accessToken = localStorage.getItem('spotifyAccessToken');
-    let refreshToken = localStorage.getItem('spotifyRefreshToken');
-    let tokenExpiration = localStorage.getItem('spotifyTokenExpiration');
+   // Elementos del DOM
+const guestOptions = document.getElementById('guestOptions');
+const spotifySearchSection = document.getElementById('spotifySearchSection');
+const searchSongBtn = document.getElementById('searchSongBtn');
+const suggestBtn = document.getElementById('suggestBtn');
+const searchBtn = document.getElementById('searchBtn');
+const songSearch = document.getElementById('songSearch');
+const searchResults = document.getElementById('searchResults');
+const authStatus = document.getElementById('authStatus');
+const successMessage = document.getElementById('successMessage');
+const backendError = document.getElementById('backendError');
+const retryButton = document.getElementById('retryButton');
+const useAlternativeButton = document.getElementById('useAlternativeButton');
 
-    // Obtener parámetros de la URL
-    function getQueryParam(param) {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get(param);
-    }
+        
+   / Variables de estado - USANDO VARIABLES EN MEMORIA EN LUGAR DE LOCALSTORAGE
+let accessToken = null;
+let refreshToken = null;
+let tokenExpiration = null;
+
+        
+   // Obtener parámetros de la URL
+function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+}
 
     // Función para redirigir a Spotify para autorización
     function redirectToSpotifyAuth() {
@@ -670,371 +673,493 @@
         window.location.href = authURL;
     }
 
-    // Función para intercambiar código por token
-    async function exchangeCodeForToken(code) {
-        try {
-            showAuthStatus("Conectando con Spotify...", "success");
-            
-            const response = await fetch(`${BACKEND_URL}${EXCHANGE_TOKEN_ENDPOINT}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ code, redirect_uri: REDIRECT_URI })
+// Función para redirigir a Spotify para autorización
+function redirectToSpotifyAuth() {
+    const state = 'spotify_auth_' + Date.now();
+    const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&state=${state}&show_dialog=true`;
+    console.log('Redirigiendo a:', authURL);
+    window.location.href = authURL;
+}
+
+// Función para intercambiar código por token
+async function exchangeCodeForToken(code) {
+    try {
+        showAuthStatus("Conectando con Spotify...", "success");
+        console.log('Intercambiando código por token...');
+        
+        const response = await fetchWithTimeout(`${BACKEND_URL}${EXCHANGE_TOKEN_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                code: code, 
+                redirect_uri: REDIRECT_URI 
+            })
+        }, 15000);
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
+        }
+        
+        if (data.access_token) {
+            // Agregar event listeners a los botones de sugerir
+        document.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const trackName = this.getAttribute('data-name');
+                const artistName = this.getAttribute('data-artist');
+                suggestSong(trackName, artistName, this);
             });
-            
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.access_token) {
-                // Guardar tokens en localStorage
-                accessToken = data.access_token;
-                localStorage.setItem('spotifyAccessToken', accessToken);
-                
-                if (data.refresh_token) {
-                    refreshToken = data.refresh_token;
-                    localStorage.setItem('spotifyRefreshToken', refreshToken);
-                }
-                
-                // Calcular tiempo de expiración
-                const expiresIn = data.expires_in || 3600;
-                tokenExpiration = Date.now() + (expiresIn * 1000);
-                localStorage.setItem('spotifyTokenExpiration', tokenExpiration);
-                
-                // Limpiar parámetros de la URL
-                window.history.replaceState({}, document.title, window.location.pathname);
-                
-                showAuthStatus("¡Conectado correctamente con Spotify!", "success");
-                showSearchSection();
-                return true;
-            } else {
-                throw new Error("No se recibió token de acceso");
-            }
-        } catch (error) {
-            console.error("Error exchanging code for token:", error);
-            showAuthStatus("Error al conectar con Spotify. Intenta nuevamente.", "error");
-            return false;
-        }
+        });
+        
+    } catch (error) {
+        console.error('Error en búsqueda alternativa:', error);
+        searchResults.innerHTML = `
+            <div class="loading" style="text-align: center; padding: 20px;">
+                <i class="fas fa-exclamation-triangle"></i> Error en el método alternativo. Intenta nuevamente.
+            </div>
+        `;
     }
+}
 
-    // Función para verificar si el token es válido
-    function isTokenValid() {
-        if (!accessToken || !tokenExpiration) return false;
-        return Date.now() < tokenExpiration;
+// Función para sugerir canción (cuando no se puede agregar directamente)
+async function suggestSong(trackName, artistName, button) {
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    
+    // Aquí podrías implementar el envío a un formulario de Google o email
+    showSuccessMessage(`¡Sugerencia enviada!: ${trackName} - ${artistName}`);
+    
+    // Simular envío exitoso
+    setTimeout(() => {
+        button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
+        button.classList.add('added');
+    }, 1000);
+}
+
+// Mostrar mensaje de éxito
+function showSuccessMessage(message = "¡Canción añadida exitosamente!") {
+    successMessage.textContent = message;
+    successMessage.style.display = 'block';
+    setTimeout(() => {
+        successMessage.style.display = 'none';
+    }, 4000);
+}
+
+// Actualizar el reproductor de Spotify
+function refreshPlayer() {
+    const iframe = document.querySelector('.spotify-embed-guest iframe');
+    if (iframe) {
+        console.log('Actualizando reproductor de Spotify...');
+        // Forzar recarga del iframe
+        const src = iframe.src;
+        iframe.src = '';
+        setTimeout(() => {
+            iframe.src = src;
+        }, 500);
     }
+}
 
-    // Función para refrescar el token si es necesario
-    async function refreshAccessToken() {
-        if (!refreshToken) {
-            console.error("No hay refresh token disponible");
-            return false;
-        }
-        
-        try {
-            const response = await fetch(`${BACKEND_URL}${EXCHANGE_TOKEN_ENDPOINT}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ refresh_token: refreshToken, grant_type: 'refresh_token' })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.access_token) {
-                accessToken = data.access_token;
-                localStorage.setItem('spotifyAccessToken', accessToken);
-                
-                const expiresIn = data.expires_in || 3600;
-                tokenExpiration = Date.now() + (expiresIn * 1000);
-                localStorage.setItem('spotifyTokenExpiration', tokenExpiration);
-                
-                return true;
-            }
-        } catch (error) {
-            console.error("Error refreshing token:", error);
-            // Limpiar tokens inválidos
-            localStorage.removeItem('spotifyAccessToken');
-            localStorage.removeItem('spotifyRefreshToken');
-            localStorage.removeItem('spotifyTokenExpiration');
-            accessToken = null;
-            refreshToken = null;
-            tokenExpiration = null;
-        }
-        
-        return false;
+// Mostrar mensajes de estado
+function showAuthStatus(message, type = "success") {
+    authStatus.textContent = message;
+    authStatus.className = 'auth-status'; // Reset classes
+    authStatus.classList.add(
+        type === "error" ? 'status-error' : 
+        type === "warning" ? 'status-warning' : 'status-connected'
+    );
+    authStatus.classList.remove('hidden');
+    
+    // Ocultar mensaje después de 5 segundos para mensajes de error
+    if (type === "error") {
+        setTimeout(() => {
+            authStatus.classList.add('hidden');
+        }, 5000);
     }
-
-    // Función para verificar y manejar la autenticación al cargar la página
-    async function checkAuthOnLoad() {
-        const code = getQueryParam('code');
-        const error = getQueryParam('error');
-        
-        if (error) {
-            showAuthStatus("Error de autorización: " + error, "error");
-            return;
-        }
-        
-        if (code) {
-            // Tenemos un código de autorización, intercambiarlo por token
-            const success = await exchangeCodeForToken(code);
-            if (success) {
-                showSearchSection();
-            }
-            return;
-        }
-        
-        // Verificar si ya tenemos un token válido
-        if (isTokenValid()) {
-            showSearchSection();
-        } else if (refreshToken) {
-            // Intentar refrescar el token
-            const refreshed = await refreshAccessToken();
-            if (refreshed) {
-                showSearchSection();
-            }
-        }
-    }
-
-    // Mostrar sección de búsqueda
-    function showSearchSection() {
-        guestOptions.classList.add('hidden');
-        spotifySearchSection.classList.remove('hidden');
-        searchSongBtn.textContent = "Conectado a Spotify";
-        searchSongBtn.style.background = "#28a745";
-        
-        authStatus.textContent = "Conectado a Spotify. Busca canciones para sugerir.";
-        authStatus.classList.add('status-connected');
-        authStatus.classList.remove('hidden');
-        backendError.classList.add('hidden');
-    }
-
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configurar event listeners
-        suggestBtn.addEventListener('click', openSuggestionForm);
-        searchSongBtn.addEventListener('click', handleSearchSongClick);
-        searchBtn.addEventListener('click', searchSong);
+}// Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Inicializando aplicación...');
+    
+    // Configurar event listeners
+    if (suggestBtn) suggestBtn.addEventListener('click', openSuggestionForm);
+    if (searchSongBtn) searchSongBtn.addEventListener('click', handleSearchSongClick);
+    if (searchBtn) searchBtn.addEventListener('click', searchSong);
+    if (songSearch) {
         songSearch.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') searchSong();
         });
-        retryButton.addEventListener('click', () => searchSong());
-        useAlternativeButton.addEventListener('click', () => alternativeSearch(songSearch.value));
-        
-        // Verificar autenticación al cargar
-        checkAuthOnLoad();
-    });
-
-    // Manejar clic en el botón de búsqueda de canciones
-    function handleSearchSongClick() {
-        if (isTokenValid()) {
-            showSearchSection();
-        } else {
-            redirectToSpotifyAuth();
-        }
     }
+    if (retryButton) retryButton.addEventListener('click', () => searchSong());
+    if (useAlternativeButton) useAlternativeButton.addEventListener('click', () => alternativeSearch(songSearch.value));
+    
+    // Verificar autenticación al cargar
+    checkAuthOnLoad();
+});
+// Funciones para el reproductor de audio (mantener las originales)
+function playAudio() {
+    const audio = document.getElementById('audioPrueba');
+    if (audio) {
+        audio.play();
+        document.getElementById('btnPlay')?.classList.add('hidden');
+        document.getElementById('btnPausa')?.classList.remove('hidden');
+    }
+}
 
+function pauseAudio() {
+    const audio = document.getElementById('audioPrueba');
+    if (audio) {
+        audio.pause();
+        document.getElementById('btnPausa')?.classList.add('hidden');
+        document.getElementById('btnPlay')?.classList.remove('hidden');
+    }
+} Guardar tokens en variables de memoria
+            accessToken = data.access_token;
+            refreshToken = data.refresh_token;
+           // Calcular tiempo de expiración
+            const expiresIn = data.expires_in || 3600;
+            tokenExpiration = Date.now() + (expiresIn * 1000);
+            
+            // Limpiar parámetros de la URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            console.log('Token obtenido exitosamente');
+            showAuthStatus("¡Conectado correctamente con Spotify!", "success");
+            showSearchSection();
+            return true;
+        } else {
+            throw new Error("No se recibió token de acceso");
+        }
+    } catch (error) {
+        console.error("Error exchanging code for token:", error);
+        showAuthStatus("Error al conectar con Spotify: " + error.message, "error");
+        return false;
+    }
+}
+
+// Función para verificar si el token es válido
+function isTokenValid() {
+    if (!accessToken || !tokenExpiration) return false;
+    return Date.now() < (tokenExpiration - 60000); // 1 minuto de margen
+}
+
+// Función para refrescar el token si es necesario
+async function refreshAccessToken() {
+    if (!refreshToken) {
+        console.error("No hay refresh token disponible");
+        return false;
+    }
+    
+    try {
+        console.log('Refrescando token...');
+        const response = await fetchWithTimeout(`${BACKEND_URL}${EXCHANGE_TOKEN_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                refresh_token: refreshToken, 
+                grant_type: 'refresh_token' 
+            })
+        }, 15000);
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}: ${response.statusText}`);
+        }
+        
+        if (data.access_token) {
+            accessToken = data.access_token;
+            
+            const expiresIn = data.expires_in || 3600;
+            tokenExpiration = Date.now() + (expiresIn * 1000);
+            
+            console.log('Token refrescado exitosamente');
+            return true;
+        }
+    } catch (error) {
+        console.error("Error refreshing token:", error);
+        // Limpiar tokens inválidos
+        accessToken = null;
+        refreshToken = null;
+        tokenExpiration = null;
+    }
+    
+    return false;
+}
+
+// Función para verificar y manejar la autenticación al cargar la página
+async function checkAuthOnLoad() {
+    const code = getQueryParam('code');
+    const error = getQueryParam('error');
+    const state = getQueryParam('state');
+    
+    if (error) {
+        showAuthStatus("Error de autorización: " + error, "error");
+        return;
+    }
+    
+    if (code) {
+        console.log('Código de autorización encontrado:', code.substring(0, 10) + '...');
+        // Tenemos un código de autorización, intercambiarlo por token
+        const success = await exchangeCodeForToken(code);
+        if (success) {
+            showSearchSection();
+        }
+        return;
+    }
+}
+// Mostrar sección de búsqueda
+function showSearchSection() {
+    guestOptions.classList.add('hidden');
+    spotifySearchSection.classList.remove('hidden');
+    searchSongBtn.textContent = "✓ Conectado a Spotify";
+    searchSongBtn.style.background = "#28a745";
+    
+    authStatus.textContent = "Conectado a Spotify. Busca canciones para sugerir.";
+    authStatus.classList.add('status-connected');
+    authStatus.classList.remove('hidden');
+    backendError.classList.add('hidden');
+}
+
+// Manejar clic en el botón de búsqueda de canciones
+function handleSearchSongClick() {
+    if (isTokenValid()) {
+        showSearchSection();
+    } else {
+        console.log('Redirigiendo a autorización de Spotify...');
+        redirectToSpotifyAuth();
+    }
+}
     // Abrir formulario de sugerencias
     function openSuggestionForm() {
         window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
     }
 
-    // Función fetch con timeout
-    async function fetchWithTimeout(resource, options = {}, timeout = 8000) {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), timeout);
-        
+  // Función fetch con timeout
+async function fetchWithTimeout(resource, options = {}, timeout = 10000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    
+    try {
         const response = await fetch(resource, {
             ...options,
             signal: controller.signal  
         });
-        
         clearTimeout(id);
         return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw error;
     }
 
-    // Función para mostrar error de backend
-    function showBackendError() {
-        backendError.classList.remove('hidden');
-        searchResults.innerHTML = '';
+   // Función para mostrar error de backend
+function showBackendError() {
+    backendError.classList.remove('hidden');
+    searchResults.innerHTML = '';
+}
+
+   // Función para ocultar error de backend
+function hideBackendError() {
+    backendError.classList.add('hidden');
+}
+
+
+// Buscar canciones a través del backend
+async function searchSong() {
+    const query = songSearch.value.trim();
+    if (!query) {
+        showAuthStatus("Por favor ingresa un término de búsqueda", "error");
+        return;
     }
 
-    // Función para ocultar error de backend
-    function hideBackendError() {
-        backendError.classList.add('hidden');
-    }
 
-    // Buscar canciones a través del backend
-    async function searchSong() {
-        const query = songSearch.value.trim();
-        if (!query) {
-            showAuthStatus("Por favor ingresa un término de búsqueda", "error");
+     // Verificar y refrescar token si es necesario
+    if (!isTokenValid()) {
+        if (!await refreshAccessToken()) {
+            showAuthStatus("La sesión ha expirado. Conecta con Spotify nuevamente.", "error");
+            // Mostrar opción para reconectar
+            guestOptions.classList.remove('hidden');
+            spotifySearchSection.classList.add('hidden');
             return;
         }
+    }
 
-        // Verificar y refrescar token si es necesario
-        if (!isTokenValid()) {
-            if (!await refreshAccessToken()) {
-                showAuthStatus("La sesión ha expirado. Conecta con Spotify nuevamente.", "error");
-                return;
-            }
-        }
-
-        hideBackendError();
-        showAuthStatus("Buscando canciones...", "success");
-        searchBtn.disabled = true;
-        searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    hideBackendError();
+    showAuthStatus("Buscando canciones...", "success");
+    searchBtn.disabled = true;
+    searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    
+    try {
+        console.log('Buscando:', query);
+        const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ query: query })
+        }, 15000);
         
-        try {
-            const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({ query: query })
-            }, 10000);
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error || `Error ${response.status}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.error || `Error ${response.status}`);
+        }
+        
+        console.log('Resultados encontrados:', data.tracks?.length || 0);
+        displayResults(data.tracks || []);
+        showAuthStatus(`Encontradas ${data.tracks?.length || 0} canciones`, "success");
+        
+    } catch (error) {
+        console.error("Error en la búsqueda:", error);
+        
+        if (error.name === 'AbortError') {
+            showAuthStatus("Búsqueda cancelada por timeout", "error");
+            showBackendError();
+        } else if (error.message.includes('401') || error.message.includes('token')) {
+            showAuthStatus("Token expirado. Reconectando...", "warning");
+            // Intentar refrescar token
+            if (await refreshAccessToken()) {
+                // Retry search
+                setTimeout(() => searchSong(), 1000);
+                return;
+            } else {
+                guestOptions.classList.remove('hidden');
+                spotifySearchSection.classList.add('hidden');
             }
-            
-            displayResults(data.tracks || []);
-            showAuthStatus("Búsqueda completada", "success");
-            
-        } catch (error) {
-            console.error("Error en la búsqueda:", error);
+        } else {
             showBackendError();
             showAuthStatus(`Error: ${error.message}`, "error");
-        } finally {
-            searchBtn.disabled = false;
-            searchBtn.innerHTML = 'Buscar';
+        }
+    } finally {
+        searchBtn.disabled = false;
+        searchBtn.innerHTML = 'Buscar';
+    }
+}
+// Mostrar resultados de búsqueda
+function displayResults(tracks) {
+    searchResults.innerHTML = '';
+    
+    if (!tracks || tracks.length === 0) {
+        searchResults.innerHTML = '<p class="no-results">No se encontraron canciones. Intenta con otro término.</p>';
+        return;
+    }
+    
+    const resultsContainer = document.createElement('div');
+    resultsContainer.className = 'track-list';
+    
+    tracks.forEach(track => {
+        const trackDiv = document.createElement('div');
+        trackDiv.className = 'track-item';
+        
+        // Imagen del álbum o placeholder
+        const albumImage = track.album?.images?.length > 0 
+            ? `<img src="${track.album.images[track.album.images.length > 1 ? 1 : 0].url}" alt="${track.album.name}" class="track-image">`
+            : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
+        
+        trackDiv.innerHTML = `
+            <div class="track-info">
+                ${albumImage}
+                <div class="track-details">
+                    <div class="track-name" title="${track.name}">${track.name}</div>
+                    <div class="track-artist" title="${track.artists.map(a => a.name).join(", ")}">
+                        ${track.artists.map(a => a.name).join(", ")}
+                    </div>
+                </div>
+            </div>
+            <button class="add-btn" 
+                    data-uri="${track.uri}" 
+                    data-name="${track.name}" 
+                    data-artist="${track.artists[0].name}">
+                <i class="fas fa-plus"></i> Añadir
+            </button>
+        `;
+        
+        resultsContainer.appendChild(trackDiv);
+    });
+    
+    searchResults.appendChild(resultsContainer);
+    
+        // Agregar event listeners a los botones de añadir
+    document.querySelectorAll('.add-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const trackUri = this.getAttribute('data-uri');
+            const trackName = this.getAttribute('data-name');
+            const artistName = this.getAttribute('data-artist');
+            
+            addToPlaylist(trackUri, trackName, artistName, this);
+        });
+    });
+}
+
+
+   // Función para añadir canción a la playlist
+async function addToPlaylist(trackUri, trackName, artistName, button) {
+    // Verificar y refrescar token si es necesario
+    if (!isTokenValid()) {
+        if (!await refreshAccessToken()) {
+            showAuthStatus("La sesión ha expirado. Conecta con Spotify nuevamente.", "error");
+            return;
         }
     }
 
-    // Mostrar resultados de búsqueda
-    function displayResults(tracks) {
-        searchResults.innerHTML = '';
+    const originalText = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
+    
+    try {
+        console.log('Añadiendo canción:', trackName, '-', artistName);
+        const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({ trackUri: trackUri })
+        }, 15000);
         
-        if (!tracks || tracks.length === 0) {
-            searchResults.innerHTML = '<p class="no-results">No se encontraron canciones. Intenta con otro término.</p>';
+        const data = await response.json();
+        
+        if (response.status === 409) {
+            // Canción ya existe
+            button.innerHTML = '<i class="fas fa-check"></i> Ya existe';
+            button.classList.add('exists');
+            showAuthStatus("Esta canción ya está en la playlist", "warning");
             return;
         }
         
-        const resultsContainer = document.createElement('div');
-        resultsContainer.className = 'track-list';
-        
-        tracks.forEach(track => {
-            const trackDiv = document.createElement('div');
-            trackDiv.className = 'track-item';
-            
-            // Imagen del álbum o placeholder
-            const albumImage = track.album?.images?.length > 0 
-                ? `<img src="${track.album.images[1].url}" alt="${track.album.name}" class="track-image">`
-                : '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
-            
-            trackDiv.innerHTML = `
-                <div class="track-info">
-                    ${albumImage}
-                    <div class="track-details">
-                        <div class="track-name" title="${track.name}">${track.name}</div>
-                        <div class="track-artist" title="${track.artists.map(a => a.name).join(", ")}">
-                            ${track.artists.map(a => a.name).join(", ")}
-                        </div>
-                    </div>
-                </div>
-                <button class="add-btn" 
-                        data-uri="${track.uri}" 
-                        data-name="${track.name}" 
-                        data-artist="${track.artists[0].name}">
-                    <i class="fas fa-plus"></i> Añadir
-                </button>
-            `;
-            
-            resultsContainer.appendChild(trackDiv);
-        });
-        
-        searchResults.appendChild(resultsContainer);
-        
-        // Agregar event listeners a los botones de añadir
-        document.querySelectorAll('.add-btn').forEach(btn => {
-            btn.addEventListener('click', async function() {
-                const trackUri = this.getAttribute('data-uri');
-                const trackName = this.getAttribute('data-name');
-                const artistName = this.getAttribute('data-artist');
-                
-                addToPlaylist(trackUri, trackName, artistName, this);
-            });
-        });
-    }
-
-    // Función para añadir canción a la playlist
-    async function addToPlaylist(trackUri, trackName, artistName, button) {
-        // Verificar y refrescar token si es necesario
-        if (!isTokenValid()) {
-            if (!await refreshAccessToken()) {
-                showAuthStatus("La sesión ha expirado. Conecta con Spotify nuevamente.", "error");
-                return;
-            }
+        if (!response.ok) {
+            throw new Error(data.error || "Error al añadir la canción");
         }
-
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Añadiendo...';
         
-        try {
-            const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`
-                },
-                body: JSON.stringify({ trackUri: trackUri })
-            }, 10000);
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                const errorMessage = typeof data.error === 'object' 
-                    ? (data.error.message || 'Error desconocido del servidor')
-                    : data.error;
-                
-                throw new Error(errorMessage || "Error al añadir la canción");
-            }
-            
-            // Éxito
-            showSuccessMessage("¡Canción añadida exitosamente!");
-            button.innerHTML = '<i class="fas fa-check"></i> Añadida';
-            button.classList.remove('exists');
-            button.classList.add('added');
-            
-            // Actualizar el reproductor después de 1 segundo
-            setTimeout(refreshPlayer, 1000);
-            
-        } catch (error) {
-            console.error("Error al añadir la canción:", error);
-            button.innerHTML = '<i class="fas fa-times"></i> Error';
-            button.classList.remove('exists', 'added');
-            button.classList.add('error');
-            showAuthStatus(`Error: ${error.message}`, "error");
-            
-            // Restaurar estado original después de 2 segundos
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.classList.remove('error', 'added', 'exists');
-            }, 2000);
-        }
+        // Éxito
+        console.log('Canción añadida exitosamente');
+        showSuccessMessage(`¡"${trackName}" añadida exitosamente!`);
+        button.innerHTML = '<i class="fas fa-check"></i> Añadida';
+        button.classList.add('added');
+        
+        // Actualizar el reproductor después de 2 segundos
+        setTimeout(refreshPlayer, 2000);
+        
+    } catch (error) {
+        console.error("Error al añadir la canción:", error);
+        button.innerHTML = '<i class="fas fa-times"></i> Error';
+        button.classList.add('error');
+        showAuthStatus(`Error: ${error.message}`, "error");
+        
+        // Restaurar estado original después de 3 segundos
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.classList.remove('error', 'added', 'exists');
+        }, 3000);
     }
+}
+
 
     // Función de búsqueda alternativa usando Last.fm API (como respaldo)
     async function alternativeSearch(query) {
@@ -1182,3 +1307,4 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
