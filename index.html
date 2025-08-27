@@ -1,17 +1,8 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="invitaciones digitales para eventos">
-    <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
-    <link rel='stylesheet' href='assets/css/bootstrap.minc91c.css?v=1720025687'/>
-    <link rel='stylesheet' href='assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/>
-    <link rel='stylesheet' href='assets/css/stylesd9fd.css?v=1722011145'/>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
     <style>
         /* Estilos para la sección de música */
@@ -254,14 +245,58 @@
         .retry-btn:hover {
             background: rgba(255, 255, 255, 0.3);
         }
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        h4 {
+            font-size: 24px;
+            margin-top: 0;
+            text-align: center;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        p {
+            text-align: center;
+            line-height: 1.6;
+        }
+        .btn {
+            display: inline-block;
+            background: #1DB954;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #1ed760;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 <body>
-    <!-- Sección de Música (solo esta sección es relevante para el problema) -->
-    <section class="canciones">
-        <div class="container">
-            <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" class="bounce-in">
-            <div class="animated">
+    <div class="container">
+        <!-- Sección de Música -->
+        <section class="canciones">
+            <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" width="80" style="display: block; margin: 0 auto;">
+            <div>
                 <h4>¡PLAYLIST!</h4>
                 <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
                 <div class="music-player">
@@ -273,8 +308,8 @@
                         <div id="authStatus" class="auth-status hidden"></div>
                         <div id="guestOptions">
                             <p>¿Quieres sugerir canciones para la playlist?</p>
-                            <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
-                            <button id="searchSongBtn" class="btn">Buscar y sugerir canciones</button>
+                            <button id="searchSongBtn" class="btn">Buscar canciones</button>
+                            <button id="suggestBtn" class="btn btn-alt">Sugerir mediante formulario</button>
                         </div>
                         <div id="spotifySearchSection" class="hidden">
                             <div class="search-box">
@@ -302,8 +337,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <!-- Script para la sección de música -->
     <script>
@@ -359,9 +394,9 @@
         function showSearchSection() {
             guestOptions.classList.add('hidden');
             spotifySearchSection.classList.remove('hidden');
-            searchSongBtn.textContent = "✓ Conectado";
+            searchSongBtn.textContent = "✓ Búsqueda activa";
             searchSongBtn.style.background = "#28a745";
-            authStatus.textContent = "Conectado al servicio de música. Busca canciones para sugerir.";
+            authStatus.textContent = "Busca canciones para sugerir a la playlist";
             authStatus.classList.add('status-connected');
             authStatus.classList.remove('hidden');
             backendError.classList.add('hidden');
@@ -403,7 +438,13 @@
                     })
                 }, 15000);
 
-                const data = await response.json();
+                // Verificar si la respuesta es JSON válido
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    throw new Error('Respuesta inválida del servidor');
+                }
                 
                 if (!response.ok) {
                     throw new Error(data.error || `Error ${response.status}`);
@@ -499,7 +540,13 @@
                     })
                 }, 15000);
 
-                const data = await response.json();
+                // Verificar si la respuesta es JSON válido
+                let data;
+                try {
+                    data = await response.json();
+                } catch (e) {
+                    throw new Error('Respuesta inválida del servidor');
+                }
                 
                 if (response.status === 409) {
                     // Canción ya existe
@@ -686,5 +733,8 @@
             if (useAlternativeButton) useAlternativeButton.addEventListener('click', () => alternativeSearch(songSearch.value));
         });
     </script>
+
+    <!-- Font Awesome para los iconos -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 </body>
 </html>
