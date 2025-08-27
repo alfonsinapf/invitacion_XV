@@ -1006,8 +1006,50 @@
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
+    <!-- Script para capturar el auth code de Spotify -->
+<script>
+  window.addEventListener('DOMContentLoaded', async () => {
+    // Leer el parámetro 'code' de la URL
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+
+    if (code) {
+      console.log('Auth code recibido:', code);
+
+      // Mandar el code al backend para obtener tokens
+      try {
+        const res = await fetch('/api/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await res.json();
+        console.log('Tokens recibidos:', data);
+
+        if (data.access_token) {
+          // Guardar el access_token en memoria o localStorage según tu flujo
+          localStorage.setItem('spotify_access_token', data.access_token);
+          authStatus.textContent = 'Conectado a Spotify';
+          authStatus.classList.add('status-connected');
+          authStatus.classList.remove('hidden');
+        } else {
+          authStatus.textContent = 'Error al obtener token';
+          authStatus.classList.add('status-error');
+          authStatus.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error('Error al enviar el auth code al backend:', err);
+        authStatus.textContent = 'Error de conexión con el servidor';
+        authStatus.classList.add('status-error');
+        authStatus.classList.remove('hidden');
+      }
+    }
+  });
+</script>
 </body>
 </html>
+
 
 
 
