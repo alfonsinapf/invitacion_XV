@@ -1,46 +1,87 @@
-import fetch from 'node-fetch';
-
-const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
-const CLIENT_SECRET = 'a636c32c9c654e92ae32bda3cfd1295e';
-const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
-const PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
-
 export default async function handler(req, res) {
-    try {
-        const { code, track_id } = req.body;
-        if (!code || !track_id) return res.status(400).json({ error: 'Faltan parámetros' });
+  // Configurar CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-        // Obtener access token
-        const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
-            },
-            body: new URLSearchParams({
-                grant_type: 'authorization_code',
-                code,
-                redirect_uri: REDIRECT_URI
-            })
-        });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
 
-        const tokenData = await tokenResponse.json();
-        if (!tokenData.access_token) return res.status(401).json({ error: 'Error autenticación', details: tokenData });
+  const PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
 
-        // Agregar track a playlist
-        const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?uris=spotify:track:${track_id}`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
-        });
+  try {
+    const { trackUri } = req.body;
+    const authHeader = req.headers.authorization;
 
-        if (addResponse.status === 201 || addResponse.status === 200) {
-            res.status(200).json({ message: 'Canción agregada!' });
-        } else {
-            const errorData = await addResponse.json();
-            res.status(400).json({ error: 'Error agregando canción', details: errorData });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+    if (!trackUri) {
+      return res.status(400).json({ error: 'Falta el parámetro trackUri' });
     }
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Token de autorización requerido' });
+    }
+
+    const accessToken = authHeader.split(' ')[1];
+
+    // Verificar si la canción ya está en la playlist
+    const checkResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?fields=items(track(uri))&limit=50`, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (checkResponse.ok) {
+      const checkData = await checkResponse.json();
+      const existingTracks = checkData.items?.map(item => item.track?.uri) || [];
+      
+      if (existingTracks.includes(trackUri)) {
+        return res.status(409).json({ 
+          error: 'La canción ya está en la playlist',
+          message: 'Esta canción ya fue agregada anteriormente'
+        });
+      }
+    }
+
+    // Agregar track a playlist
+    const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        uris: [trackUri],
+        position: 0 // Agregar al principio de la playlist
+      })
+    });
+
+    const addData = await addResponse.json();
+
+    if (!addResponse.ok) {
+      console.error('Spotify Add Track Error:', addData);
+      return res.status(addResponse.status).json({ 
+        error: 'Error agregando canción a Spotify',
+        details: addData
+      });
+    }
+
+    return res.status(200).json({ 
+      message: 'Canción agregada exitosamente',
+      snapshot_id: addData.snapshot_id
+    });
+
+  } catch (error) {
+    console.error('Error en /api/add-to-playlist:', error);
+    return res.status(500).json({ 
+      error: 'Error interno del servidor',
+      message: error.message
+    });
+  }
 }
