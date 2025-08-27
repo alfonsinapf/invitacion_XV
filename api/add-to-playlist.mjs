@@ -1,136 +1,46 @@
+import fetch from 'node-fetch';
+
+const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
+const CLIENT_SECRET = 'a636c32c9c654e92ae32bda3cfd1295e';
+const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
+const PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
+
 export default async function handler(req, res) {
-  // Configurar CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    try {
+        const { code, track_id } = req.body;
+        if (!code || !track_id) return res.status(400).json({ error: 'Faltan parámetros' });
 
- if (req.method === 'OPTIONS') {
-  return res.status(200).end();
-}
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método no permitido" });
-  }
-
-  try {
-    const { trackUri } = req.body;
-    if (!trackUri) {
-      return res.status(400).json({ error: "Falta trackUri en el body" });
-    }
-
-    // Validar formato del URI
-    if (!trackUri.startsWith('spotify:track:')) {
-      return res.status(400).json({ error: "Formato de URI inválido" });
-    }
-
-    // Obtener token de acceso
-    // Reemplaza esta línea:
-const auth = Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString("base64");
-
-// Con esta verificación:
-console.log("Client ID:", process.env.CLIENT_ID);
-console.log("Client Secret:", process.env.CLIENT_SECRET ? "EXISTS" : "MISSING");
-
-const authString = `${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`;
-const authHeader = Buffer.from(authString).toString("base64");
-console.log("Auth header:", auth);
-    
-    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: { 
-        Authorization: `Basic ${auth}`, 
-        "Content-Type": "application/x-www-form-urlencoded" 
-      },
-      body: new URLSearchParams({ 
-        grant_type: "refresh_token", 
-        refresh_token: process.env.REFRESH_TOKEN 
-      })
-    });
-
-    const tokenData = await tokenRes.json();
-    if (!tokenRes.ok) {
-      console.error("Error obteniendo token:", tokenData);
-      return res.status(tokenRes.status).json({ 
-        error: `Error de autenticación: ${tokenData.error_description || tokenData.error}` 
-      });
-    }
-
-    const accessToken = tokenData.access_token;
-
-    // Verificar que el playlist existe y tenemos permisos
-    const playlistRes = await fetch(`https://api.spotify.com/v1/playlists/${process.env.PLAYLIST_ID}`, {
-      headers: { 
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!playlistRes.ok) {
-      const playlistError = await playlistRes.json();
-      console.error("Error verificando playlist:", playlistError);
-      return res.status(playlistRes.status).json({ 
-        error: `Error accediendo al playlist: ${playlistError.error?.message || playlistError.error}` 
-      });
-    }
-
-    // Verificar si la canción ya está en el playlist
-    const tracksRes = await fetch(`https://api.spotify.com/v1/playlists/${process.env.PLAYLIST_ID}/tracks?limit=50`, {
-      headers: { 
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (tracksRes.ok) {
-      const tracksData = await tracksRes.json();
-      const existingTrack = tracksData.items.find(item => item.track.uri === trackUri);
-      
-      if (existingTrack) {
-        return res.status(409).json({ 
-          error: "Esta canción ya está en la playlist",
-          code: "TRACK_EXISTS"
+        // Obtener access token
+        const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64')
+            },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code,
+                redirect_uri: REDIRECT_URI
+            })
         });
-      }
-    }
 
-    // Añadir canción al playlist
-    const addRes = await fetch(`https://api.spotify.com/v1/playlists/${process.env.PLAYLIST_ID}/tracks`, {
-      method: "POST",
-      headers: { 
-        Authorization: `Bearer ${accessToken}`, 
-        "Content-Type": "application/json" 
-      },
-      body: JSON.stringify({ 
-        uris: [trackUri],
-        position: 0 // Añadir al inicio del playlist
-      })
-    });
+        const tokenData = await tokenResponse.json();
+        if (!tokenData.access_token) return res.status(401).json({ error: 'Error autenticación', details: tokenData });
 
-    const result = await addRes.json();
-    if (!addRes.ok) {
-      console.error("Error añadiendo canción:", result);
-      
-      // Manejar errores específicos de Spotify
-      if (result.error?.status === 403) {
-        return res.status(403).json({ 
-          error: "Sin permisos para modificar este playlist" 
+        // Agregar track a playlist
+        const addResponse = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?uris=spotify:track:${track_id}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${tokenData.access_token}` }
         });
-      }
-      
-      return res.status(addRes.status).json({ 
-        error: `Error añadiendo canción: ${result.error?.message || result.error}` 
-      });
+
+        if (addResponse.status === 201 || addResponse.status === 200) {
+            res.status(200).json({ message: 'Canción agregada!' });
+        } else {
+            const errorData = await addResponse.json();
+            res.status(400).json({ error: 'Error agregando canción', details: errorData });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
     }
-
-    return res.status(200).json({ 
-      message: "Canción añadida exitosamente al playlist",
-      snapshot_id: result.snapshot_id,
-      trackUri 
-    });
-
-  } catch (error) {
-    console.error("Error interno:", error);
-    return res.status(500).json({ 
-      error: `Error interno del servidor: ${error.message}` 
-    });
-  }
 }
