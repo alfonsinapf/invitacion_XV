@@ -1,129 +1,136 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Invitación XV - Alfonsina</title>
-<style>
-  /* Agregá tus estilos existentes aquí */
-  body { font-family: Arial, sans-serif; margin: 0; padding: 0; background:#f7f7f7; }
-  .container { max-width: 800px; margin: auto; padding: 20px; }
-  #search-container { display: none; margin-top: 20px; }
-  #results { list-style: none; padding: 0; }
-  #results li { margin-bottom: 10px; }
-  button { cursor: pointer; }
-  #spotify-message { margin-top: 10px; font-weight: bold; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invitación XV - Spotify</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    button { padding: 0.5rem 1rem; margin: 0.5rem 0; }
+    #authStatus { margin-bottom: 1rem; }
+    .status-success { color: green; }
+    .status-error { color: red; }
+    #results li { cursor: pointer; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Invitación XV - Alfonsina</h1>
+<h1>Playlist de Invitación XV</h1>
 
-  <!-- Botón de conexión a Spotify -->
-  <button id="connect-spotify">Conectar con Spotify</button>
-  <div id="spotify-message"></div>
-
-  <!-- Contenedor de búsqueda -->
-  <div id="search-container">
-    <input type="text" id="song-query" placeholder="Buscar canción">
-    <button id="search-btn">Buscar</button>
-    <ul id="results"></ul>
-  </div>
-
-  <!-- Embed de playlist -->
-  <iframe id="playlist-embed" src="" width="100%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<div id="authSection">
+  <button id="connectBtn">Conectar a Spotify</button>
+  <div id="authStatus"></div>
 </div>
 
+<div id="searchSection" style="display:none;">
+  <input type="text" id="searchInput" placeholder="Buscar canción..." />
+  <ul id="results"></ul>
+</div>
+
+<h2>Playlist</h2>
+<iframe id="playlistIframe" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+
 <script>
-const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
-const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
-let accessToken = null;
-let playlistId = 'TU_PLAYLIST_ID'; // Reemplazar con tu playlist
+  const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
+  const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
+  let accessToken = null;
+  let refreshToken = null;
+  let addedTracks = new Set();
 
-const spotifyMessage = document.getElementById('spotify-message');
-const searchContainer = document.getElementById('search-container');
-const searchBtn = document.getElementById('search-btn');
-const resultsEl = document.getElementById('results');
-const playlistEmbed = document.getElementById('playlist-embed');
+  const authStatus = document.getElementById('authStatus');
+  const searchSection = document.getElementById('searchSection');
+  const results = document.getElementById('results');
+  const playlistIframe = document.getElementById('playlistIframe');
 
-// Detectar si hay code en URL
-const params = new URLSearchParams(window.location.search);
-const code = params.get('code');
+  document.getElementById('connectBtn').addEventListener('click', () => {
+    const scopes = encodeURIComponent('playlist-modify-public playlist-modify-private');
+    const authURL = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${scopes}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+    window.location.href = authURL;
+  });
 
-if (code) {
-  fetch('/api/exchange-token.js', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ code })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.access_token) {
-      accessToken = data.access_token;
-      spotifyMessage.textContent = 'Conectado a Spotify ✅';
-      searchContainer.style.display = 'block';
-      updatePlaylistEmbed(playlistId);
-    } else {
-      spotifyMessage.textContent = 'Error al conectar con Spotify';
-      console.error(data);
+  async function exchangeToken(code, isRefresh=false) {
+    try {
+      const res = await fetch('/api/exchange-token.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(isRefresh ? { refresh: code } : { code })
+      });
+      const data = await res.json();
+      if (data.access_token) {
+        accessToken = data.access_token;
+        if (!isRefresh && data.refresh_token) refreshToken = data.refresh_token;
+        authStatus.textContent = 'Conectado a Spotify';
+        authStatus.className = 'status-success';
+        showSearchSection();
+        scheduleTokenRefresh(data.expires_in);
+      } else {
+        authStatus.textContent = 'Error al conectar con Spotify';
+        authStatus.className = 'status-error';
+        console.error(data);
+      }
+    } catch (err) {
+      authStatus.textContent = 'Error en la comunicación con el servidor';
+      authStatus.className = 'status-error';
+      console.error(err);
     }
+  }
+
+  function scheduleTokenRefresh(expiresIn) {
+    setTimeout(() => {
+      if (refreshToken) exchangeToken(refreshToken, true);
+    }, (expiresIn - 60) * 1000);
+  }
+
+  function showSearchSection() {
+    searchSection.style.display = 'block';
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) exchangeToken(code);
+
+  document.getElementById('searchInput').addEventListener('input', async (e) => {
+    const query = e.target.value.trim();
+    if (!query || !accessToken) return results.innerHTML = '';
+    try {
+      const res = await fetch('/api/search.mjs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, accessToken })
+      });
+      const data = await res.json();
+      results.innerHTML = '';
+      data.tracks.items.forEach(track => {
+        const li = document.createElement('li');
+        li.textContent = `${track.name} - ${track.artists.map(a=>a.name).join(', ')}`;
+        li.dataset.uri = track.uri;
+        li.addEventListener('click', () => addToPlaylist(track.uri));
+        results.appendChild(li);
+      });
+    } catch(err) { console.error(err); }
   });
-}
 
-// Botón de conectar con Spotify
-document.getElementById('connect-spotify').addEventListener('click', () => {
-  const scopes = 'playlist-modify-public playlist-modify-private';
-  const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(scopes)}`;
-  window.location.href = authURL;
-});
+  async function addToPlaylist(uri) {
+    if (addedTracks.has(uri)) return alert('Canción ya agregada!');
+    try {
+      const res = await fetch('/api/add-to-playlist.mjs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken, trackUri: uri })
+      });
+      const data = await res.json();
+      if (data.success) {
+        addedTracks.add(uri);
+        updatePlaylistIframe(data.playlistId);
+      } else {
+        alert('Error al agregar canción');
+      }
+    } catch(err) { console.error(err); }
+  }
 
-// Buscar canciones
-searchBtn.addEventListener('click', () => {
-  const query = document.getElementById('song-query').value.trim();
-  if (!query || !accessToken) return;
-  resultsEl.innerHTML = 'Buscando...';
-  fetch(`/api/search.mjs?q=${encodeURIComponent(query)}`, {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  })
-  .then(res => res.json())
-  .then(data => {
-    resultsEl.innerHTML = '';
-    data.tracks.items.forEach(track => {
-      const li = document.createElement('li');
-      li.textContent = `${track.name} - ${track.artists.map(a=>a.name).join(', ')}`;
-      const addBtn = document.createElement('button');
-      addBtn.textContent = 'Agregar';
-      addBtn.onclick = () => addToPlaylist(track.uri);
-      li.appendChild(addBtn);
-      resultsEl.appendChild(li);
-    });
-  });
-});
-
-// Agregar canción a playlist
-function addToPlaylist(trackUri) {
-  fetch(`/api/add-to-playlist.mjs`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
-    body: JSON.stringify({ playlist_id: playlistId, track_uri: trackUri })
-  })
-  .then(res => res.json())
-  .then(data => {
-    if (data.snapshot_id) {
-      alert('Canción agregada ✅');
-      updatePlaylistEmbed(playlistId);
-    } else {
-      alert('Error al agregar canción');
-      console.error(data);
-    }
-  });
-}
-
-// Actualizar embed de playlist
-function updatePlaylistEmbed(id) {
-  playlistEmbed.src = `https://open.spotify.com/embed/playlist/${id}`;
-}
+  function updatePlaylistIframe(playlistId) {
+    playlistIframe.src = `https://open.spotify.com/embed/playlist/${playlistId}`;
+  }
 </script>
 </body>
 </html>
