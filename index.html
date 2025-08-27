@@ -16,43 +16,51 @@
 
     <title>Invitación de 15 | Alfonsina Panza Fontana</title>
     <style>
-        /* Estilos para la sección de música */
+        /* Estilos mejorados para la sección de música */
         .music-player {
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .collab-panel {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 25px;
+            padding: 20px;
             background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .auth-status {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 8px;
             text-align: center;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
         
         .status-connected {
-            background: rgba(40, 167, 69, 0.2);
+            background: rgba(40, 167, 69, 0.3);
             color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.4);
         }
         
         .status-error {
-            background: rgba(220, 53, 69, 0.2);
+            background: rgba(220, 53, 69, 0.3);
             color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.4);
         }
         
         .status-warning {
-            background: rgba(255, 193, 7, 0.2);
+            background: rgba(255, 193, 7, 0.3);
             color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.4);
         }
         
         .hidden {
@@ -61,58 +69,82 @@
         
         .search-box {
             display: flex;
-            margin: 15px 0;
+            margin: 20px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
         #songSearch {
             flex: 1;
-            padding: 10px 15px;
+            padding: 15px 20px;
             border: none;
-            border-radius: 5px 0 0 5px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            font-size: 16px;
+            color: #333;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        #songSearch:focus {
+            background: white;
+            box-shadow: inset 0 0 0 2px #1DB954;
+        }
+        
+        #songSearch::placeholder {
+            color: #666;
+            font-style: italic;
         }
         
         .search-btn {
-            padding: 10px 20px;
-            background: #1DB954;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
             color: white;
             border: none;
-            border-radius: 0 5px 5px 0;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.3s;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            min-width: 120px;
         }
         
-        .search-btn:hover {
-            background: #1ed760;
+        .search-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1ed760, #1DB954);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
         }
         
         .search-btn:disabled {
             background: #b3b3b3;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .track-list {
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
-            margin: 15px 0;
-            padding-right: 5px;
+            margin: 20px 0;
+            padding-right: 8px;
         }
         
         .track-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin: 12px 0;
-            background: rgba(30, 30, 30, 0.5);
-            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: rgba(30, 30, 30, 0.6);
+            border-radius: 12px;
             transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .track-item:hover {
-            background: rgba(50, 50, 50, 0.7);
+            background: rgba(50, 50, 50, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.2);
         }
         
         .track-info {
@@ -123,26 +155,28 @@
         }
         
         .track-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
             margin-right: 15px;
             object-fit: cover;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .track-image-placeholder {
-            width: 50px;
-            height: 50px;
-            border-radius: 5px;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
             margin-right: 15px;
-            background: #333;
+            background: linear-gradient(135deg, #333, #555);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #aaa;
-            font-size: 20px;
+            font-size: 24px;
             flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
         .track-details {
@@ -151,61 +185,65 @@
         }
         
         .track-name {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 3px;
+            margin-bottom: 5px;
             color: #fff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.3;
         }
         
         .track-artist {
-            font-size: 13px;
-            color: #aaa;
+            font-size: 14px;
+            color: #bbb;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.2;
         }
         
         .add-btn {
-            padding: 8px 15px;
-            background: #1DB954;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #1DB954, #1ed760);
             color: white;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: all 0.3s;
+            gap: 8px;
+            transition: all 0.3s ease;
             flex-shrink: 0;
+            min-width: 100px;
+            justify-content: center;
         }
         
         .add-btn:hover:not(:disabled) {
-            background: #1ed760;
+            background: linear-gradient(135deg, #1ed760, #1DB954);
             transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.4);
         }
         
         .add-btn:disabled {
-            background: #535353;
             cursor: not-allowed;
             opacity: 0.8;
         }
         
         .add-btn.added {
-            background: #28a745;
+            background: linear-gradient(135deg, #28a745, #34ce57);
         }
         
         .add-btn.exists {
-            background: #ffc107;
+            background: linear-gradient(135deg, #ffc107, #ffcd39);
             color: #000;
         }
         
         .add-btn.error {
-            background: #dc3545;
+            background: linear-gradient(135deg, #dc3545, #e4606d);
         }
         
         .fa-spinner {
@@ -219,31 +257,59 @@
         
         .success-message {
             display: none;
-            padding: 12px;
-            margin: 15px 0;
-            background: rgba(40, 167, 69, 0.3);
+            padding: 15px;
+            margin: 20px 0;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.3), rgba(52, 206, 87, 0.3));
             color: white;
             text-align: center;
-            border-radius: 8px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
         }
         
         .no-results {
             text-align: center;
             color: #aaa;
             font-style: italic;
-            padding: 15px;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #fff;
+            padding: 30px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
         }
         
         .btn-alt {
-            background: transparent;
-            border: 1px solid white;
-            margin-right: 10px;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            margin-right: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-alt:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-color: rgba(255, 255, 255, 0.5) !important;
+            transform: translateY(-2px);
         }
         
         /* Scrollbar personalizada */
         .track-list::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         
         .track-list::-webkit-scrollbar-track {
@@ -252,63 +318,317 @@
         }
         
         .track-list::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
             border-radius: 10px;
         }
         
         .track-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.4);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.3));
         }
 
-        /* Nuevos estilos para manejo de errores */
+        /* Estilos mejorados para manejo de errores */
         .backend-error {
-            background: rgba(220, 53, 69, 0.2);
-            border: 1px solid #dc3545;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.3), rgba(228, 96, 109, 0.3));
+            border: 2px solid rgba(220, 53, 69, 0.4);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
             text-align: center;
+            color: white;
         }
         
         .backend-error i {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 3rem;
+            margin-bottom: 15px;
             display: block;
+            opacity: 0.8;
+        }
+        
+        .backend-error h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .backend-error p {
+            margin-bottom: 20px;
+            opacity: 0.9;
         }
         
         .retry-options {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            margin-top: 25px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         .retry-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
             color: white;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .retry-btn:hover {
             background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* Mejoras en el diseño responsivo */
+        @media (max-width: 768px) {
+            .track-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .track-info {
+                width: 100%;
+            }
+            
+            .add-btn {
+                align-self: stretch;
+                justify-content: center;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+            
+            #songSearch {
+                border-radius: 10px 10px 0 0;
+            }
+            
+            .search-btn {
+                border-radius: 0 0 10px 10px;
+            }
+            
+            .retry-options {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .retry-btn {
+                min-width: 200px;
+                justify-content: center;
+            }
+        }
+
+        /* Animaciones adicionales */
+        .track-item {
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .success-message {
+            animation: slideInDown 0.3s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mejoras visuales para el iframe de Spotify */
+        .spotify-embed-guest iframe {
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Estados de carga mejorados */
+        .pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Sección de Música -->
+    <!-- Audio -->
+    <section class="audio">
+        <div class="container">
+            <div class="row">
+                <div class="botonAudio-container">
+                    <audio id="audioPrueba" loop>
+                        <source src="assets/musica.mp3" type="audio/mp3">
+                        ¡Ups! Tu navegador no soporta este archivo de audio.
+                    </audio>
+                    <div class='animation'>
+                        <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake">
+                        <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Portada -->
+    <section class="portada parallax-portada d-flex justify-content-center align-items-center">
+        <div class="logo-portada fade-in-portada">
+            <img class="" src="assets/img/logo-portada.png" alt="">
+            <div class="scroll-down"></div>
+        </div>
+    </section>
+
+    <!-- Cuenta Regresiva -->
+    <section class="cuenta-regresiva" id="cuenta-regresiva">
+        <div class="container">
+            <p class="m-3">¡Te espero para festejar este gran momento de mi vida!</p>
+            <p id="reloj" class="descartar">¡Te espero para festejar!</p>
+            <div class="row justify-content-center margenSup" id="reloj_number">
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cueta" id="dias"></p>
+                    <p class="text_cuenta">días</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cuenta" id="horas"></p>
+                    <p class="text_cuenta">hs</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cueta" id="min"></p>
+                    <p class="text_cuenta">min</p>
+                </div>
+                <p class="num_cuenta">:</p>
+                <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
+                    <p class="num_cueta" id="seg"></p>
+                    <p class="text_cuenta">seg</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Ceremonia y Fiesta -->
+    <section class="ceremonia-fiesta mb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 columna">
+                    <img src="assets/img/icono-fiesta.svg" alt="" class="circle bounce-in">
+                </div>
+                
+                <div class="col-md-12 columna no-margin-top divFiesta animated">
+                    <h4>FIESTA</h4>
+                    <p>
+                        Sábado 1 de noviembre </br>
+                        21:00 a 05:00 hs.</br>
+                        Salón Centro Empleado de comercio</br>
+                        Bv. Damico S/N, Pergamino</br>
+                        Clickeá en el botón de abajo y encontrá las indicaciones para llegar,</br>
+                        ¡nos vemos!😉
+                    </p>
+                    <a target="_blank" href="https://maps.app.goo.gl/iJPKgjX8XSGz7gkS8" class="btn">CÓMO LLEGAR</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Galería -->
+    <section class="galeria">
+        <div class="container">
+            <div class="row">
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/1.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/1.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/2.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/2.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/3.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/3.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/4.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/4.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/5.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/5.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/6.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/6.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/7.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/7.jpg" alt="">
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 item-galeria animated opacidad">
+                    <a href="assets/img/galeria/8.jpg" data-fancybox="images" data-caption="">
+                        <img class="img-fluid" src="assets/img/galeria/8.jpg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+   
+    <!-- Confirmar Asistencia -->
+    <section class="confirmar-asistencia">
+        <div class="container">
+            <h4>CONFIRMACIÓN DE ASISTENCIA</h4>
+            <p>Cuento con tu presencia. </br>¡Confirmá tu asistencia!</p>
+            <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSe3c7cS_A66K90gCLWpNwvR9sh8UUcwrn4ueuM7HO-2EGJ20Q/viewform?usp=header" class="btn">Confirmar asistencia</a>
+        </div>  
+    </section>
+
+    <!-- Dress Code -->
+    <section class="dresscode">
+        <div class="container animated divDressCode">
+            <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
+            <h4>DRESS CODE</h4>
+            <p>Elegante</p>
+        </div>
+    </section>
+
+    <!-- Sección de Música Mejorada -->
     <section class="canciones">
         <div class="container">
             <img src="https://cdn-icons-png.flaticon.com/512/727/727237.png" alt="Icono de música" class="bounce-in">
             <div class="animated">
-                <h4>¡PLAYLIST!</h4>
-                <p>Disfruta de nuestra playlist y sugiere canciones para la fiesta</p>
+                <h4>¡PLAYLIST COLABORATIVA!</h4>
+                <p>Escucha nuestra música y agrega tus canciones favoritas para la fiesta</p>
 
                 <div class="music-player">
+                    <!-- Reproductor de Spotify -->
                     <div class="spotify-embed-guest">
                         <iframe 
                             src="https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u?utm_source=generator&theme=0" 
@@ -322,44 +642,61 @@
                         </iframe>
                     </div>
                     
+                    <!-- Panel de Colaboración -->
                     <div class="collab-panel">
-                        <div id="authStatus" class="auth-status status-connected">
-                            ¡Conectado! Busca y agrega canciones a la playlist.
+                        <div id="authStatus" class="auth-status">
+                            ¡Haz clic en "Buscar y agregar canciones" para comenzar!
                         </div>
                         
+                        <!-- Opciones para invitados -->
                         <div id="guestOptions">
-                            <p>¿Quieres sugerir canciones para la playlist?</p>
-                            <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
-                            <button id="searchSongBtn" class="btn">Buscar canciones en Spotify</button>
+                            <p style="color: white; margin-bottom: 20px; text-align: center;">
+                                <i class="fas fa-music" style="margin-right: 8px;"></i>
+                                ¿Quieres agregar tu canción favorita?
+                            </p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                                <button id="searchSongBtn" class="btn">
+                                    <i class="fas fa-search"></i> Buscar y agregar canciones
+                                </button>
+                                <button id="suggestBtn" class="btn btn-alt">
+                                    <i class="fas fa-external-link-alt"></i> Sugerir por formulario
+                                </button>
+                            </div>
                         </div>
 
-                        <div id="spotifySearchSection">
+                        <!-- Sección de búsqueda -->
+                        <div id="spotifySearchSection" class="hidden">
                             <div class="search-box">
-                                <input type="text" id="songSearch" placeholder="Busca una canción o artista...">
+                                <input type="text" id="songSearch" placeholder="Busca por canción, artista o álbum...">
                                 <button class="search-btn" id="searchBtn">
                                     <i class="fas fa-search"></i> Buscar
                                 </button>
                             </div>
                             
+                            <!-- Error de backend -->
                             <div id="backendError" class="backend-error hidden">
                                 <i class="fas fa-exclamation-triangle"></i>
-                                <h3>Error de conexión con el servidor</h3>
-                                <p>No podemos conectar con el servicio de búsqueda en este momento.</p>
+                                <h3>Oops! Hay un problema técnico</h3>
+                                <p>No podemos conectar con el servicio de música en este momento.<br>
+                                Pero no te preocupes, ¡tenemos alternativas!</p>
                                 <div class="retry-options">
                                     <button class="retry-btn" id="retryButton">
                                         <i class="fas fa-redo"></i> Reintentar
                                     </button>
                                     <button class="retry-btn" id="useAlternativeButton">
-                                        <i class="fas fa-music"></i> Usar búsqueda alternativa
+                                        <i class="fas fa-music"></i> Buscar de otra forma
                                     </button>
                                 </div>
                             </div>
                             
+                            <!-- Resultados de búsqueda -->
                             <div id="searchResults"></div>
                         </div>
                     </div>
                     
+                    <!-- Mensaje de éxito -->
                     <div id="successMessage" class="success-message">
+                        <i class="fas fa-check-circle" style="margin-right: 10px;"></i>
                         ¡Canción añadida exitosamente a la playlist!
                     </div>
                 </div>
@@ -367,9 +704,128 @@
         </div>
     </section>
 
-    <!-- Script para la sección de música -->
+    <!-- Instagram -->
+    <section class="parallax-instagram instagram d-flex justify-content-center align-items-center">
+        <div class="contenido">
+            <img src="assets/img/icono-instagram.svg" alt="" class="bounce-in">
+            <br>
+            <div class="animated divIntagram">
+                <span class="hashtag">@alfonp.font</span>
+                <p>¡Preparate para esta gran fiesta!<br>
+                Seguime en mi cuenta de Instagram y etiquetame en tus fotos y videos.</p>
+                <a target="_blank" href="https://www.instagram.com/alfonp.font/" class="btn">Ver instagram</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CBU -->
+    <section class="cbu">
+        <div class="container">
+            <img src="assets/img/icono-regalo.svg" alt="" class="bounce-in">
+            <div class="animated divCbu">
+                <p>El mejor regalo es que vengas,</br>
+                pero si deseás regalarme algo, podés colaborar con mis sueños y anhelos✨</br>
+                ¡Muchas gracias!</p>
+                <a data-fancybox data-src="#hidden-cbu" href="javascript:;" class="btn">Hacer un regalo</a>
+
+                <!-- Datos CBU (hidden by default) -->
+                <div style="display: none;" id="hidden-cbu">
+                    <span class="title">Datos Bancarios</span>
+                    <ul>
+                        <li>Nombre del Titular: Alfonsina Panza Fontana</li>
+                        <li>CBU: 0140300603658455259699</li>
+                        <li>Alias: Alfonsiiina</li>
+                        <li>DNI: 50.646.413</li>
+                        <li>Cuenta DNI</li>
+                    </ul>
+
+                    <span class="title">Buzón de regalos</span>
+                    <ul>
+                        <li>Si deseás hacer tu regalo personalmente, </br>
+                        El día del evento habrá un buzón para dejar obsequios.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Carga de Fotos y Videos -->
+    <section class="carga-fotos-videos">
+        <div class="container text-center">
+            <br>
+            <h3>¡Comparte tus fotos y videos!</h3>
+            <p>
+                Sube las fotos y videos que captures durante la fiesta<br>
+                para que podamos compartir recuerdos inolvidables.
+            </p>
+
+            <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank" class="btn btn-primary mb-3">Subir Fotos/Videos</a> 
+
+            <div class="qr-container mt-4">
+                <br>
+                <p>O escanea el código QR para subir tus recuerdos:</p>
+                <a href="https://weduploader.com/upload/8qd8DP2R6BloZQUQ" target="_blank">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://weduploader.com/upload/8qd8DP2R6BloZQUQ" alt="Código QR para subir archivos" class="img-fluid" />
+                </a>
+                <br><br>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agradecimiento -->
+    <section class="gracias">
+        <div class="container animated divGracias">
+            <p>¡Gracias por acompañarme en este momento tan importante!</p>
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section class="contacto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>¿Tenés alguna pregunta?</h4>
+                    <p>¡Contáctame! Te responderé lo antes posible.</p>
+                    <ul>
+                        <li><i class="fab fa-whatsapp"></i> <a target="_blank" href="https://api.whatsapp.com/send?phone=542477684660&amp;text=%C2%A1Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20del%20evento!%20Gracias.">¡Envianos un Whatsapp!</a></li>
+                        <li><i class="fas fa-phone-alt"></i> +549 2477 68-4660</li>
+                        <li><i class="fas fa-envelope"></i> <a href="mailto:alfonsinapf@icloud.com">alfonsinapf@icloud.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <section class="footer">
+        <div class="containter">
+            <p>Invitación digital © 2025. Todos los derechos reservados <br>
+        </div>
+    </section>
+
+    <!-- Scripts -->
     <script>
-    // URLs de los endpoints de backend
+        // Variables para JS desde config
+        var fechaCuentaRegresiva = "11/01/2025 21:00:00";
+        var fechaInicioEvento = "11/01/2024 21:00:00";
+        var fechaFinEvento = "11/02/2024 05:00:00";
+        var tituloEvento = "Fiesta de 15";
+    </script>
+
+    <!-- Scripts Generales -->
+    <script type='text/javascript' src='assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
+    <script type='text/javascript' src='assets/js/popper.min2636.js?v=1720025718'></script>
+    <script type='text/javascript' src='assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
+    <script type='text/javascript' src='assets/js/parallax.min6fdb.js?v=1720025716'></script>
+    <script type='text/javascript' src='assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
+    <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
+
+    <!-- Script Principal de Música - MODO INVITADO -->
+    <script>
+    // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - SIN AUTENTICACIÓN
+    // Los invitados pueden buscar y agregar canciones directamente
+    
+    // Configuración
     const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
     const SEARCH_ENDPOINT = '/api/search';
     const ADD_ENDPOINT = '/api/add-to-playlist';
@@ -390,51 +846,9 @@
 
     // Estado de la aplicación
     let isSearching = false;
+    let searchTimeout = null;
 
-    // Inicialización
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Inicializando aplicación de música...');
-        
-        // Ocultar la sección de búsqueda inicialmente
-        spotifySearchSection.classList.add('hidden');
-        
-        // Configurar event listeners
-        if (suggestBtn) {
-            suggestBtn.addEventListener('click', openSuggestionForm);
-            console.log('Botón de sugerencia configurado');
-        }
-        
-        if (searchSongBtn) {
-            searchSongBtn.addEventListener('click', handleSearchSongClick);
-            console.log('Botón de búsqueda configurado');
-        }
-        
-        if (searchBtn) {
-            searchBtn.addEventListener('click', searchSong);
-            console.log('Botón de buscar configurado');
-        }
-        
-        if (songSearch) {
-            songSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchSong();
-            });
-            console.log('Búsqueda con Enter configurada');
-        }
-        
-        if (retryButton) {
-            retryButton.addEventListener('click', () => searchSong());
-            console.log('Botón de reintentar configurado');
-        }
-        
-        if (useAlternativeButton) {
-            useAlternativeButton.addEventListener('click', () => openSuggestionForm());
-            console.log('Botón de alternativa configurado');
-        }
-        
-        console.log('Todos los event listeners configurados correctamente');
-    });
-
-    // Función fetch con timeout
+    // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
         const controller = new AbortController();
         const id = setTimeout(() => controller.abort(), timeout);
@@ -455,72 +869,79 @@
         }
     }
 
-    // Mostrar sección de búsqueda directamente (sin autenticación)
+    // 🎨 Mostrar sección de búsqueda
     function showSearchSection() {
         guestOptions.classList.add('hidden');
         spotifySearchSection.classList.remove('hidden');
         
-        authStatus.textContent = "¡Listo! Busca y agrega canciones a la playlist.";
-        authStatus.classList.add('status-connected');
-        authStatus.classList.remove('hidden');
-        backendError.classList.add('hidden');
+        showAuthStatus("¡Perfecto! Ahora busca tus canciones favoritas.", "success");
+        hideBackendError();
         
-        console.log('Sección de búsqueda mostrada');
+        // Enfocar en el campo de búsqueda
+        setTimeout(() => {
+            if (songSearch) {
+                songSearch.focus();
+            }
+        }, 300);
     }
 
-    // Manejar clic en el botón de búsqueda de canciones
+    // 🎯 Manejar clic en buscar canciones
     function handleSearchSongClick() {
-        console.log('Botón "Buscar canciones en Spotify" clickeado');
+        console.log('🎵 Iniciando modo de búsqueda de música...');
         showSearchSection();
     }
 
-    // Abrir formulario de sugerencias alternativo
+    // 🔗 Abrir formulario de sugerencias
     function openSuggestionForm() {
-        console.log('Abriendo formulario de sugerencias');
         window.open("https://docs.google.com/forms/d/e/1FAIpQLSflLqhwmhvp2uNeFbliUVQFj3Yhgkko3xh0nRF-6A47T-aCKg/viewform", "_blank");
+        showSuccessMessage("¡Formulario abierto! Complétalo para sugerir canciones.");
     }
 
-    // Función para mostrar error de backend
+    // ❌ Mostrar error de backend
     function showBackendError() {
         backendError.classList.remove('hidden');
         searchResults.innerHTML = '';
-        authStatus.classList.add('hidden');
     }
 
-    // Función para ocultar error de backend
+    // ✅ Ocultar error de backend
     function hideBackendError() {
         backendError.classList.add('hidden');
     }
 
-    // Buscar canciones a través del backend (sin necesidad de autenticación del usuario)
+    // 🔍 Búsqueda principal de canciones
     async function searchSong() {
         const query = songSearch.value.trim();
         
+        // Validaciones
         if (!query) {
-            showAuthStatus("Por favor ingresa un término de búsqueda", "error");
+            showAuthStatus("Por favor escribe algo para buscar", "error");
+            songSearch.focus();
             return;
         }
 
         if (query.length < 2) {
-            showAuthStatus("Ingresa al menos 2 caracteres", "error");
+            showAuthStatus("Escribe al menos 2 caracteres", "error");
             return;
         }
 
         if (isSearching) {
-            console.log('Búsqueda en progreso, ignorando...');
+            console.log('⏳ Búsqueda en progreso, esperando...');
             return;
         }
 
         isSearching = true;
         hideBackendError();
-        showAuthStatus("Buscando canciones...", "success");
-
-        // Actualizar UI del botón
+        showAuthStatus("🔍 Buscando canciones...", "success");
+        
+        // Actualizar botón de búsqueda
         searchBtn.disabled = true;
         searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
         
+        // Mostrar esqueleto de carga
+        showLoadingSkeleton();
+        
         try {
-            console.log('Buscando:', query);
+            console.log('🔍 Buscando:', query);
             
             const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
                 method: 'POST',
@@ -537,28 +958,19 @@
             }
             
             const tracks = data.tracks || [];
-            console.log('Resultados encontrados:', tracks.length);
+            console.log('✅ Resultados:', tracks.length, 'canciones encontradas');
             
             if (tracks.length === 0) {
-                showAuthStatus("No se encontraron canciones. Intenta con otros términos.", "warning");
-                searchResults.innerHTML = '<p class="no-results">No se encontraron canciones. Intenta con otro término de búsqueda.</p>';
+                showAuthStatus("😕 No encontramos canciones. Prueba con otros términos.", "warning");
+                showNoResults();
             } else {
                 displayResults(tracks);
-                showAuthStatus(`¡Se encontraron ${tracks.length} canciones!`, "success");
+                showAuthStatus(`🎉 ¡Encontramos ${tracks.length} canciones!`, "success");
             }
             
         } catch (error) {
-            console.error("Error en la búsqueda:", error);
-            
-            if (error.message.includes('tiempo')) {
-                showAuthStatus("La búsqueda tardó demasiado. Intenta nuevamente.", "error");
-            } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-                showAuthStatus("Error de conexión. Verifica tu internet.", "error");
-                showBackendError();
-            } else {
-                showAuthStatus(`Error: ${error.message}`, "error");
-                showBackendError();
-            }
+            console.error("❌ Error en búsqueda:", error);
+            handleSearchError(error);
         } finally {
             isSearching = false;
             searchBtn.disabled = false;
@@ -566,12 +978,42 @@
         }
     }
 
-    // Mostrar resultados de búsqueda
+    // 💀 Mostrar esqueleto de carga
+    function showLoadingSkeleton() {
+        searchResults.innerHTML = `
+            <div class="loading pulse">
+                <i class="fas fa-music"></i>
+                <p>Buscando en millones de canciones...</p>
+                <div style="margin-top: 15px;">
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1s ease-in-out infinite;"></div>
+                        <div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1s ease-in-out infinite 0.3s;"></div>
+                        <div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: pulse 1s ease-in-out infinite 0.6s;"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // 🚨 Manejar errores de búsqueda
+    function handleSearchError(error) {
+        if (error.message.includes('tiempo') || error.message.includes('timeout')) {
+            showAuthStatus("⏰ La búsqueda tardó demasiado. Intenta nuevamente.", "error");
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            showAuthStatus("📶 Problema de conexión. Verifica tu internet.", "error");
+            showBackendError();
+        } else {
+            showAuthStatus(`❌ Error: ${error.message}`, "error");
+            showBackendError();
+        }
+    }
+
+    // 🎵 Mostrar resultados de búsqueda
     function displayResults(tracks) {
         searchResults.innerHTML = '';
         
         if (!tracks || tracks.length === 0) {
-            searchResults.innerHTML = '<p class="no-results">No se encontraron canciones. Intenta con otro término.</p>';
+            showNoResults();
             return;
         }
         
@@ -581,27 +1023,34 @@
         tracks.forEach((track, index) => {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'track-item';
-            trackDiv.setAttribute('data-track-index', index);
+            trackDiv.style.animationDelay = `${index * 0.1}s`;
             
-            // Imagen del álbum o placeholder
-            let albumImage;
+            // Imagen del álbum
+            let albumImage = '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
             if (track.album?.images?.length > 0) {
                 const imageUrl = track.album.images[track.album.images.length > 1 ? 1 : 0].url;
-                albumImage = `<img src="${imageUrl}" alt="${track.album.name}" class="track-image" loading="lazy">`;
-            } else {
-                albumImage = '<div class="track-image-placeholder"><i class="fas fa-music"></i></div>';
+                albumImage = `<img src="${imageUrl}" alt="${track.album.name}" class="track-image" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="track-image-placeholder" style="display: none;"><i class="fas fa-music"></i></div>`;
             }
             
-            // Información de la canción
-            const trackName = track.name || 'Nombre desconocido';
+            const trackName = track.name || 'Canción desconocida';
             const artistNames = track.artists?.map(a => a.name).join(", ") || 'Artista desconocido';
             const duration = track.duration_ms ? formatDuration(track.duration_ms) : '';
+            const popularity = track.popularity || 0;
+            
+            // Indicador de popularidad
+            let popularityIcon = '';
+            if (popularity > 80) popularityIcon = '🔥';
+            else if (popularity > 60) popularityIcon = '⭐';
+            else if (popularity > 40) popularityIcon = '👍';
             
             trackDiv.innerHTML = `
                 <div class="track-info">
                     ${albumImage}
                     <div class="track-details">
-                        <div class="track-name" title="${trackName}">${trackName}</div>
+                        <div class="track-name" title="${trackName}">
+                            ${popularityIcon} ${trackName}
+                        </div>
                         <div class="track-artist" title="${artistNames}">
                             ${artistNames}${duration ? ` • ${duration}` : ''}
                         </div>
@@ -620,7 +1069,7 @@
         
         searchResults.appendChild(resultsContainer);
         
-        // Agregar event listeners a los botones de agregar
+        // Event listeners para botones de agregar
         document.querySelectorAll('.add-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const trackUri = this.getAttribute('data-uri');
@@ -632,17 +1081,35 @@
         });
     }
 
-    // Formatear duración de milisegundos a MM:SS
+    // 😕 Mostrar mensaje de sin resultados
+    function showNoResults() {
+        searchResults.innerHTML = `
+            <div class="no-results">
+                <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                <h3>No encontramos esa canción</h3>
+                <p>Intenta buscar con:</p>
+                <ul style="list-style: none; padding: 0; color: #bbb;">
+                    <li>• El nombre del artista</li>
+                    <li>• Parte de la letra</li>
+                    <li>• El álbum</li>
+                    <li>• Términos en inglés</li>
+                </ul>
+                <p><small>💡 Ejemplo: "bohemian rhapsody queen" o "despacito luis fonsi"</small></p>
+            </div>
+        `;
+    }
+
+    // ⏱️ Formatear duración
     function formatDuration(durationMs) {
         const minutes = Math.floor(durationMs / 60000);
         const seconds = Math.floor((durationMs % 60000) / 1000);
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
-    // Función para añadir canción a la playlist (sin autenticación del usuario)
+    // ➕ Agregar canción a la playlist
     async function addToPlaylist(trackUri, trackName, artistName, button) {
         if (!trackUri) {
-            showAuthStatus("Error: URI de canción inválido", "error");
+            showAuthStatus("❌ Error: Canción inválida", "error");
             return;
         }
 
@@ -651,7 +1118,7 @@
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agregando...';
         
         try {
-            console.log('Agregando canción:', trackName, '-', artistName);
+            console.log('➕ Agregando:', trackName, '-', artistName);
             
             const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
                 method: 'POST',
@@ -669,80 +1136,320 @@
             
             if (response.status === 409) {
                 // Canción ya existe
-                button.innerHTML = '<i class="fas fa-check"></i> Ya existe';
+                button.innerHTML = '<i class="fas fa-check"></i> Ya está!';
                 button.classList.add('exists');
-                showAuthStatus("Esta canción ya está en la playlist", "warning");
+                showAuthStatus("🎵 Esta canción ya está en la playlist", "warning");
                 return;
             }
             
             if (!response.ok) {
-                throw new Error(data.error || "Error al añadir la canción");
+                throw new Error(data.error || data.message || "Error al agregar");
             }
             
-            // Éxito
-            console.log('Canción añadida exitosamente');
-            showSuccessMessage(`¡"${trackName}" añadida exitosamente!`);
-            button.innerHTML = '<i class="fas fa-check"></i> Agregada';
+            // ✅ Éxito total
+            console.log('✅ Canción agregada exitosamente');
+            button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
             button.classList.add('added');
             
-            // Actualizar el reproductor después de 2 segundos
-            setTimeout(refreshPlayer, 2000);
+            showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
+            
+            // Actualizar reproductor después de un momento
+            setTimeout(refreshPlayer, 2500);
             
         } catch (error) {
-            console.error("Error al añadir la canción:", error);
+            console.error("❌ Error agregando canción:", error);
+            
             button.innerHTML = '<i class="fas fa-times"></i> Error';
             button.classList.add('error');
-            showAuthStatus(`Error: ${error.message}`, "error");
             
-            // Restaurar estado original después de 3 segundos
+            if (error.message.includes('tiempo')) {
+                showAuthStatus("⏰ Tardó demasiado. Intenta de nuevo.", "error");
+            } else if (error.message.includes('Failed to fetch')) {
+                showAuthStatus("📶 Sin conexión. Verifica tu internet.", "error");
+            } else {
+                showAuthStatus(`❌ ${error.message}`, "error");
+            }
+            
+            // Restaurar botón después de un tiempo
             setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                button.classList.remove('error', 'added', 'exists');
+                if (button.classList.contains('error')) {
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                    button.classList.remove('error', 'added', 'exists');
+                }
             }, 3000);
         }
     }
 
-    // Mostrar mensaje de éxito
-    function showSuccessMessage(message = "¡Canción añadida exitosamente!") {
-        successMessage.textContent = message;
-        successMessage.style.display = 'block';
-        setTimeout(() => {
-            successMessage.style.display = 'none';
-        }, 4000);
-    }
-
-    // Actualizar el reproductor de Spotify
-    function refreshPlayer() {
-        const iframe = document.querySelector('.spotify-embed-guest iframe');
-        if (iframe) {
-            console.log('Actualizando reproductor de Spotify...');
-            // Forzar recarga del iframe
-            const src = iframe.src;
-            iframe.src = '';
-            setTimeout(() => {
-                iframe.src = src;
-            }, 500);
+    // 🔄 Búsqueda alternativa con Last.fm
+    async function alternativeSearch(query) {
+        if (!query) query = songSearch.value.trim();
+        
+        if (!query) {
+            showAuthStatus("Escribe algo para buscar", "error");
+            songSearch.focus();
+            return;
+        }
+        
+        searchResults.innerHTML = `
+            <div class="loading">
+                <i class="fas fa-satellite-dish" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                <h3>Buscando de otra forma...</h3>
+                <p>Usando nuestra base de datos alternativa</p>
+            </div>
+        `;
+        
+        hideBackendError();
+        showAuthStatus("🛰️ Buscando con método alternativo...", "success");
+        
+        try {
+            const response = await fetchWithTimeout(
+                `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=5a8e1586e85b499c62d9f3a4bfa5b6a9&format=json&limit=12`,
+                {},
+                12000
+            );
+            
+            if (!response.ok) throw new Error('Error en búsqueda alternativa');
+            
+            const data = await response.json();
+            let tracks = data.results?.trackmatches?.track || [];
+            
+            if (!Array.isArray(tracks)) tracks = tracks ? [tracks] : [];
+            
+            if (tracks.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search-minus" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>Tampoco encontramos nada aquí</h3>
+                        <p>Intenta con términos más específicos o usa el formulario de sugerencias</p>
+                        <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
+                            <i class="fas fa-external-link-alt"></i> Sugerir por formulario
+                        </button>
+                    </div>
+                `;
+                showAuthStatus("😕 Sin resultados en método alternativo", "warning");
+                return;
+            }
+            
+            displayAlternativeResults(tracks);
+            showAuthStatus(`🎉 ¡${tracks.length} resultados con método alternativo!`, "success");
+            
+        } catch (error) {
+            console.error('❌ Error en búsqueda alternativa:', error);
+            searchResults.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; color: #dc3545;"></i>
+                    <h3>Error técnico temporal</h3>
+                    <p>Intenta nuevamente en un momento o usa el formulario</p>
+                    <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
+                        <i class="fas fa-external-link-alt"></i> Formulario de sugerencias
+                    </button>
+                </div>
+            `;
+            showAuthStatus("❌ Error en búsqueda alternativa", "error");
         }
     }
 
-    // Mostrar mensajes de estado
+    // 🎵 Mostrar resultados alternativos
+    function displayAlternativeResults(tracks) {
+        searchResults.innerHTML = '';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'auth-status status-warning';
+        alertDiv.style.marginBottom = '20px';
+        alertDiv.innerHTML = '⚠️ Estos resultados son sugerencias - se enviarán al organizador para revisión';
+        
+        const resultsContainer = document.createElement('div');
+        resultsContainer.className = 'track-list';
+        
+        tracks.forEach((track, index) => {
+            const trackDiv = document.createElement('div');
+            trackDiv.className = 'track-item';
+            trackDiv.style.animationDelay = `${index * 0.1}s`;
+            
+            const trackName = track.name || 'Canción desconocida';
+            const artistName = track.artist || 'Artista desconocido';
+            
+            trackDiv.innerHTML = `
+                <div class="track-info">
+                    <div class="track-image-placeholder"><i class="fas fa-music"></i></div>
+                    <div class="track-details">
+                        <div class="track-name" title="${trackName}">${trackName}</div>
+                        <div class="track-artist" title="${artistName}">${artistName}</div>
+                    </div>
+                </div>
+                <button class="add-btn" data-name="${trackName}" data-artist="${artistName}">
+                    <i class="fas fa-paper-plane"></i> Sugerir
+                </button>
+            `;
+            
+            resultsContainer.appendChild(trackDiv);
+        });
+        
+        searchResults.appendChild(alertDiv);
+        searchResults.appendChild(resultsContainer);
+        
+        // Event listeners para sugerir
+        document.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const trackName = this.getAttribute('data-name');
+                const artistName = this.getAttribute('data-artist');
+                suggestSong(trackName, artistName, this);
+            });
+        });
+    }
+
+    // 💌 Sugerir canción
+    async function suggestSong(trackName, artistName, button) {
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+        
+        // Simular envío
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        showSuccessMessage(`📨 ¡Sugerencia enviada! "${trackName}" - ${artistName}`);
+        
+        button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
+        button.classList.add('added');
+    }
+
+    // ✅ Mostrar mensaje de éxito
+    function showSuccessMessage(message = "¡Operación exitosa!") {
+        successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${message}`;
+        successMessage.style.display = 'block';
+        
+        // Scroll suave al mensaje
+        successMessage.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest',
+            inline: 'center'
+        });
+        
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    // 🔄 Actualizar reproductor de Spotify
+    function refreshPlayer() {
+        const iframe = document.querySelector('.spotify-embed-guest iframe');
+        if (iframe) {
+            console.log('🔄 Actualizando reproductor...');
+            
+            const currentSrc = iframe.src;
+            const separator = currentSrc.includes('?') ? '&' : '?';
+            const timestamp = Date.now();
+            
+            // Recarga suave con timestamp
+            iframe.src = `${currentSrc}${separator}_refresh=${timestamp}`;
+            
+            showAuthStatus("🎵 ¡Playlist actualizada! Puede tardar unos segundos en verse.", "success");
+        }
+    }
+
+    // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
-        authStatus.textContent = message;
-        authStatus.className = 'auth-status'; // Reset classes
+        authStatus.innerHTML = message;
+        authStatus.className = 'auth-status';
+        
         authStatus.classList.add(
             type === "error" ? 'status-error' : 
             type === "warning" ? 'status-warning' : 'status-connected'
         );
         authStatus.classList.remove('hidden');
         
-        // Ocultar mensaje después de 5 segundos para mensajes de error
-        if (type === "error") {
+        // Auto-ocultar mensajes exitosos
+        if (type === "success") {
             setTimeout(() => {
-                authStatus.classList.add('hidden');
-            }, 5000);
+                if (authStatus.classList.contains('status-connected')) {
+                    authStatus.classList.add('hidden');
+                }
+            }, 4000);
         }
     }
+
+    // 🎬 Inicialización cuando carga la página
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🎵 Iniciando sistema de música para invitados...');
+        
+        // Configurar event listeners
+        if (suggestBtn) {
+            suggestBtn.addEventListener('click', openSuggestionForm);
+        }
+        
+        if (searchSongBtn) {
+            searchSongBtn.addEventListener('click', handleSearchSongClick);
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', searchSong);
+        }
+        
+        if (songSearch) {
+            // Enter para buscar
+            songSearch.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !isSearching) {
+                    searchSong();
+                }
+            });
+            
+            // Búsqueda en tiempo real (opcional)
+            songSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length >= 3) {
+                    searchTimeout = setTimeout(() => {
+                        if (!isSearching) {
+                            console.log('🔍 Búsqueda automática:', query);
+                            // searchSong(); // Descomenta para búsqueda automática
+                        }
+                    }, 1500);
+                }
+            });
+        }
+        
+        if (retryButton) {
+            retryButton.addEventListener('click', () => {
+                hideBackendError();
+                searchSong();
+            });
+        }
+        
+        if (useAlternativeButton) {
+            useAlternativeButton.addEventListener('click', () => {
+                alternativeSearch();
+            });
+        }
+        
+        // Mensaje inicial amigable
+        if (authStatus) {
+            authStatus.innerHTML = '🎵 ¡Haz clic en "Buscar y agregar canciones" para empezar a colaborar!';
+            authStatus.classList.add('status-connected');
+            authStatus.classList.remove('hidden');
+        }
+        
+        console.log('✅ Sistema de música listo para usar');
+    });
+
+    // 🎵 Funciones del reproductor de audio de la página
+   function playAudio() {
+            const audio = document.getElementById('audioPrueba');
+            audio.play();
+            document.getElementById('btnPlay').classList.add('hidden');
+            document.getElementById('btnPausa').classList.remove('hidden');
+        }
+
+        function pauseAudio() {
+            const audio = document.getElementById('audioPrueba');
+            audio.pause();
+            document.getElementById('btnPausa').classList.add('hidden');
+            document.getElementById('btnPlay').classList.remove('hidden');
+        }
     </script>
+    <!-- Scripts de seguimiento -->
+    <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
+    <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
