@@ -476,7 +476,7 @@
                         <div id="guestOptions">
                             <p>¿Quieres sugerir canciones para la playlist?</p>
                             <button id="suggestBtn" class="btn btn-alt">Sugerir canción (Formulario)</button>
-                            <button id="searchSongBtn" class="btn">Buscar canción en Spotify</button>
+                            <button id="searchSongBtn" class="btn">Conectar con Spotify</button>
                         </div>
 
                         <div id="spotifySearchSection" class="hidden">
@@ -639,6 +639,40 @@
     const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
     const SCOPES = 'playlist-modify-public playlist-modify-private';
 
+const connectSpotifyBtn = document.getElementById('searchSongBtn'); // el mismo botón ahora maneja conexión
+let authorizationCode = getQueryParam('code'); // obtener code de la URL
+
+// Función para mostrar la sección de búsqueda tras autorización
+function showSearchSectionWithAuth() {
+    guestOptions.classList.add('hidden');
+    spotifySearchSection.classList.remove('hidden');
+    authStatus.textContent = "Busca canciones para sugerir a la playlist";
+    authStatus.classList.add('status-connected');
+    authStatus.classList.remove('hidden');
+    backendError.classList.add('hidden');
+
+    // Cambiar texto del botón
+    connectSpotifyBtn.textContent = "Buscar canción en Spotify";
+}
+
+// Si ya hay code en la URL, mostrar búsqueda directamente
+if (authorizationCode) {
+    showSearchSectionWithAuth();
+}
+
+// Manejar click del botón
+connectSpotifyBtn.addEventListener('click', () => {
+    if (authorizationCode) {
+        // Ya autorizado: mostrar la búsqueda
+        showSearchSectionWithAuth();
+    } else {
+        // Redirigir a Spotify para autorización
+        const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&state=12345`;
+        window.location.href = authURL;
+    }
+});
+        
+
     // Elementos del DOM
     const guestOptions = document.getElementById('guestOptions');
     const spotifySearchSection = document.getElementById('spotifySearchSection');
@@ -773,7 +807,7 @@
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ query: query })
+      body: JSON.stringify({ code: authorizationCode, query: query })
     }, 10000);
     
     const data = await response.json();
@@ -1076,6 +1110,7 @@
 </script>
 </body>
 </html>
+
 
 
 
