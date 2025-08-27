@@ -1,18 +1,40 @@
+// SOLUCIÓN 1: Crear/Actualizar vercel.json
+// Crea este archivo en la raíz de tu proyecto
 
 {
-  "name": "invitacion-xv-backend",
-  "version": "1.0.0",
-  "description": "Backend para invitación XV con integración Spotify",
-  "main": "index.js",
-  "scripts": {
-    "dev": "vercel dev",
-    "build": "vercel build",
-    "deploy": "vercel --prod"
+  "version": 2,
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs18.x"
+    }
   },
-  "dependencies": {
-    "node-fetch": "^2.6.7"
-  },
-  "engines": {
-    "node": "18.x"
-  }
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
 }
+
+
+
+// SOLUCIÓN 3: Si sigues teniendo problemas, usa esta estructura:
