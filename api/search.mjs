@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
-const CLIENT_SECRET = 'TU_CLIENT_SECRET'; // ⚠️ mantener en secreto
+const CLIENT_SECRET = 'a636c32c9c654e92ae32bda3cfd1295e'; // ⚠️ mantener en secreto
 const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
 
 export default async function handler(req, res) {
