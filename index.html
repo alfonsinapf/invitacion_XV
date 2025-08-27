@@ -429,9 +429,7 @@
     </section>
 
     
-    <a href="https://accounts.spotify.com/authorize?client_id=ba9385bd54cc4ba3b297ce5fca852fd9&response_type=code&redirect_uri=https%3A%2F%2Finvitacion-xv-seven.vercel.app%2F&scope=playlist-modify-public%20playlist-modify-private&state=12345">
-Conectar con Spotify
-</a>
+   
     <!-- Confirmar Asistencia -->
     <section class="confirmar-asistencia">
         <div class="container">
@@ -1012,47 +1010,33 @@ Conectar con Spotify
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     <!-- Script para capturar el auth code de Spotify -->
 <script>
-  window.addEventListener('DOMContentLoaded', async () => {
-    // Leer el parámetro 'code' de la URL
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
+  // Función para obtener parámetros de la URL
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
 
-    if (code) {
-      console.log('Auth code recibido:', code);
+  const code = getQueryParam('code');
+  const state = getQueryParam('state');
 
-      // Mandar el code al backend para obtener tokens
-      try {
-        const res = await fetch('/api/callback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code })
-        });
-
-        const data = await res.json();
-        console.log('Tokens recibidos:', data);
-
-        if (data.access_token) {
-          // Guardar el access_token en memoria o localStorage según tu flujo
-          localStorage.setItem('spotify_access_token', data.access_token);
-          authStatus.textContent = 'Conectado a Spotify';
-          authStatus.classList.add('status-connected');
-          authStatus.classList.remove('hidden');
-        } else {
-          authStatus.textContent = 'Error al obtener token';
-          authStatus.classList.add('status-error');
-          authStatus.classList.remove('hidden');
-        }
-      } catch (err) {
-        console.error('Error al enviar el auth code al backend:', err);
-        authStatus.textContent = 'Error de conexión con el servidor';
-        authStatus.classList.add('status-error');
-        authStatus.classList.remove('hidden');
-      }
-    }
-  });
+  if (code) {
+    // Enviar el code al backend
+    fetch('/api/exchange-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Tokens recibidos:', data);
+      // Aquí podés guardar tokens en localStorage o en tu estado global
+    })
+    .catch(err => console.error(err));
+  }
 </script>
 </body>
 </html>
+
 
 
 
