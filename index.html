@@ -629,43 +629,83 @@
 
     <!-- Script para la sección de música -->
     <script>
-        // URLs de los endpoints de backend
-        const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
-        const SEARCH_ENDPOINT = '/api/search.js';
-        const ADD_ENDPOINT = '/api/add-to-playlist.js';
-        
-        // Elementos del DOM
-        const guestOptions = document.getElementById('guestOptions');
-        const spotifySearchSection = document.getElementById('spotifySearchSection');
-        const searchSongBtn = document.getElementById('searchSongBtn');
-        const suggestBtn = document.getElementById('suggestBtn');
-        const searchBtn = document.getElementById('searchBtn');
-        const songSearch = document.getElementById('songSearch');
-        const searchResults = document.getElementById('searchResults');
-        const authStatus = document.getElementById('authStatus');
-        const successMessage = document.getElementById('successMessage');
-        const backendError = document.getElementById('backendError');
-        const retryButton = document.getElementById('retryButton');
-        const useAlternativeButton = document.getElementById('useAlternativeButton');
+    // URLs de los endpoints de backend
+    const BACKEND_URL = 'https://invitacion-xv-seven.vercel.app';
+    const SEARCH_ENDPOINT = '/api/search.js';
+    const ADD_ENDPOINT = '/api/add-to-playlist.js';
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar event listeners
-            suggestBtn.addEventListener('click', openSuggestionForm);
-            searchSongBtn.addEventListener('click', showSearchSection);
-            searchBtn.addEventListener('click', searchSong);
-            songSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') searchSong();
-            });
-            
-            retryButton.addEventListener('click', () => {
-                searchSong();
-            });
-            
-            useAlternativeButton.addEventListener('click', () => {
-                alternativeSearch(songSearch.value);
-            });
+    // Spotify OAuth
+    const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
+    const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/';
+    const SCOPES = 'playlist-modify-public playlist-modify-private';
+
+    // Elementos del DOM
+    const guestOptions = document.getElementById('guestOptions');
+    const spotifySearchSection = document.getElementById('spotifySearchSection');
+    const searchSongBtn = document.getElementById('searchSongBtn');
+    const suggestBtn = document.getElementById('suggestBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const songSearch = document.getElementById('songSearch');
+    const searchResults = document.getElementById('searchResults');
+    const authStatus = document.getElementById('authStatus');
+    const successMessage = document.getElementById('successMessage');
+    const backendError = document.getElementById('backendError');
+    const retryButton = document.getElementById('retryButton');
+    const useAlternativeButton = document.getElementById('useAlternativeButton');
+
+    const connectSpotifyBtn = document.getElementById('connectSpotifyBtn');
+
+    // Obtener parámetros de la URL
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    const code = getQueryParam('code');
+
+    // Mostrar sección de búsqueda si ya hay code
+    function showSearchSectionWithAuth() {
+        guestOptions.classList.add('hidden');
+        spotifySearchSection.classList.remove('hidden');
+        searchSongBtn.textContent = "🔍 Buscando canciones";
+        searchSongBtn.style.background = "#28a745";
+        searchSongBtn.style.borderColor = "#28a745";
+        authStatus.textContent = "Busca canciones para sugerir a la playlist";
+        authStatus.classList.add('status-connected');
+        authStatus.classList.remove('hidden');
+        backendError.classList.add('hidden');
+    }
+
+    if (code) {
+        showSearchSectionWithAuth();
+        if (connectSpotifyBtn) connectSpotifyBtn.style.display = 'none';
+    }
+
+    // Redirigir a Spotify para autorizar
+    if (connectSpotifyBtn) {
+        connectSpotifyBtn.addEventListener('click', () => {
+            const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&scope=${encodeURIComponent(SCOPES)}&state=12345`;
+            window.location.href = authURL;
         });
+    }
+
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', function() {
+        suggestBtn.addEventListener('click', openSuggestionForm);
+        searchSongBtn.addEventListener('click', () => {
+            if (code) {
+                showSearchSectionWithAuth();
+            } else {
+                alert("Primero conecta tu cuenta de Spotify para buscar canciones.");
+            }
+        });
+        searchBtn.addEventListener('click', searchSong);
+        songSearch.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchSong();
+        });
+        retryButton.addEventListener('click', () => searchSong());
+        useAlternativeButton.addEventListener('click', () => alternativeSearch(songSearch.value));
+    });
 
         // Abrir formulario de sugerencias
         function openSuggestionForm() {
@@ -1036,6 +1076,7 @@
 </script>
 </body>
 </html>
+
 
 
 
