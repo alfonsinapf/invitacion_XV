@@ -5,13 +5,13 @@
 
 /*
 // Ve a esta URL y autoriza la aplicación:
-https://accounts.spotify.com/authorize?client_id=ba9385bd54cc4ba3b297ce5fca852fd9&response_type=code&redirect_uri=https://invitacion-xv-seven.vercel.app/api/callback&scope=playlist-modify-public playlist-modify-private user-read-email
+https://accounts.spotify.com/authorize?client_id=ba9385bd54cc4ba3b297ce5fca852fd9&response_type=code&redirect_uri=https://invitacion-xv-alfon.vercel.app/api/callback&scope=playlist-modify-public playlist-modify-private user-read-email
 
 // Después de autorizar, obtendrás un código. Úsalo aquí:
 const code = 'AQDV-g6WrHec9NTO0zW0gbCkqJZYuSjAmNa3hDXKNIPrAuINecObZsgXfmQ_Jum7gdbQ7HGDw7X0oYcGjwpwLmIMuXywIXxV4gokpbSbFNlDslVcMqpOH_1_eXBteyVzK4PWWnh4Ktmuv8NafKsomDByNdo6HNNhmOqG_BH0-PeAnULp25aI-WzHaEuvo_0m06UhDCrvvRtZ9D_nki_iuViwQyJH-KWjUEatP51s24Pdm5iIxY9_6MeLOHL87TYJ1ihumtWLZ9n-zO3Ay-lkj-qXbdUcC21Meg'; // El código que obtuviste
 const clientId = 'ba9385bd54cc4ba3b297ce5fca852fd9';
 const clientSecret = 'a636c32c9c654e92ae32bda3cfd1295e';
-const redirectUri = 'https://invitacion-xv-seven.vercel.app/api/callback';
+const redirectUri = 'https://invitacion-xv-alfon.vercel.app/api/callback';
 
 // Intercambiar código por tokens
 fetch('https://accounts.spotify.com/api/token', {
