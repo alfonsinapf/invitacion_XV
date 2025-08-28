@@ -1,17 +1,18 @@
-// api/add-to-playlist.js
-const PLAYLIST_ID = process.env.SPOTIFY_PLAYLIST_ID || "0a4iq5x0WHzzn0ox7ea77u";
-
-let accessToken = null;
-let expiresAt = 0;
-
-// Cambia la función getAccessToken para que sea completamente async
+// api/add-to-playlist.js - Agrega mejor logging
 async function getAccessToken() {
   const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
   const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
   const REFRESH_TOKEN = process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN || process.env.SPOTIFY_REFRESH_TOKEN;
 
-  if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN) {
-    throw new Error("Faltan variables de entorno de Spotify");
+  console.log('Variables disponibles:', {
+    CLIENT_ID: CLIENT_ID ? '✅' : '❌',
+    CLIENT_SECRET: CLIENT_SECRET ? '✅' : '❌', 
+    REFRESH_TOKEN: REFRESH_TOKEN ? '✅' : '❌'
+  });
+
+  if (!CLIENT_ID) throw new Error("SPOTIFY_CLIENT_ID no definido");
+  if (!CLIENT_SECRET) throw new Error("SPOTIFY_CLIENT_SECRET no definido");
+  if (!REFRESH_TOKEN) throw new Error("SPOTIFY_DEVELOPER_REFRESH_TOKEN o SPOTIFY_REFRESH_TOKEN no definido");
   }
 
   if (accessToken && Date.now() < expiresAt) return accessToken;
