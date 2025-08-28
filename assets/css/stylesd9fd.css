@@ -397,10 +397,14 @@ margin-top: 0px;
 } 
 
 /* Clase de los numero de la cuenta regresiva (00:00:00) */
-.num_cuenta{
-  font-size: 30px;
-  margin-bottom: 0;
-  font-weight: 600;
+.num_cuenta {
+    font-size: 30px;
+    margin-bottom: 0;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
 }
 /* Clase que divide el titulo de los numeros de la cuenta regrasiva */
 .margenSup{
@@ -408,9 +412,14 @@ margin-top: 0px;
 
 }
 /* Clase de los texto de la cuenta regresiva (dias, horas, minut, seg.) */
-.text_cuenta{
-  font-size: 15px;
-
+.text_cuenta {
+    font-size: 15px;
+    font-family: 'Montserrat', sans-serif;
+    color: white;
+    font-weight: 300;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* Texto que se muestra cuando la Cuenta Regresiva esta en 0 */
@@ -420,7 +429,62 @@ margin-top: 0px;
   margin-bottom: 0px;
  
 }
+/* Contenedor unificado para los números */
+#reloj_number {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
 
+#reloj_number > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+}
+/* Separadores (los dos puntos) */
+#reloj_number > p.num_cuenta {
+    font-size: 24px;
+    margin: 0 5px;
+    padding-bottom: 15px;
+    color: white;
+    font-weight: 400;
+}
+/* Asegurar que todos los números tengan el mismo estilo */
+#dias, #horas, #min, #seg {
+    font-family: 'Montserrat', sans-serif !important;
+    font-size: 30px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    margin-bottom: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .num_cuenta {
+        font-size: 24px;
+    }
+    
+    #reloj_number {
+        gap: 8px;
+    }
+    
+    #reloj_number > div {
+        min-width: 50px;
+    }
+    
+    #reloj_number > p.num_cuenta {
+        font-size: 20px;
+        padding-bottom: 12px;
+    }
+    
+    .text_cuenta {
+        font-size: 12px;
+    }
+}
 .descartar{
   display: none;
   margin-bottom: 0px;
@@ -1025,3 +1089,4 @@ section.cuenta-regresiva{
 .spotify-embed-guest {
     transition: all 0.3s ease;
 }
+
