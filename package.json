@@ -1,40 +1,9 @@
-// SOLUCIÓN 1: Crear/Actualizar vercel.json
-// Crea este archivo en la raíz de tu proyecto
-
 {
-  "version": 2,
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ]
+  "name": "invitacion-xv-alfonsina",
+  "version": "1.0.0",
+  "description": "Invitación digital con playlist colaborativa",
+  "type": "module",
+  "engines": {
+    "node": "18.x"
+  }
 }
-
-
-
-// SOLUCIÓN 3: Si sigues teniendo problemas, usa esta estructura:
