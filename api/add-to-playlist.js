@@ -9,11 +9,11 @@ let expiresAt = 0; // timestamp en ms
 async function getAccessToken() {
   const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
   const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-  const REFRESH_TOKEN =
-    process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN || process.env.SPOTIFY_REFRESH_TOKEN;
+  const REFRESH_TOKEN = process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN || process.env.SPOTIFY_REFRESH_TOKEN;
 
-  if (!CLIENT_ID || !CLIENT_SECRET || !REFRESH_TOKEN) {
-    throw new Error("Faltan variables de entorno de Spotify");
+  if (!CLIENT_ID) throw new Error("SPOTIFY_CLIENT_ID no definido");
+  if (!CLIENT_SECRET) throw new Error("SPOTIFY_CLIENT_SECRET no definido");
+  if (!REFRESH_TOKEN) throw new Error("Refresh token no definido");
   }
 
   // Si el token actual sirve, úsalo
