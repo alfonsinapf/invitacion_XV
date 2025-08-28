@@ -3,7 +3,7 @@
 
 const CLIENT_ID = 'ba9385bd54cc4ba3b297ce5fca852fd9';
 const CLIENT_SECRET = 'a636c32c9c654e92ae32bda3cfd1295e';
-const REDIRECT_URI = 'https://invitacion-xv-seven.vercel.app/'; // URL temporal para obtener el código
+const REDIRECT_URI = 'https://invitacion-xv-alfon.vercel.app/'; // URL temporal para obtener el código
 
 console.log(`
 🎵 CONFIGURACIÓN DEL TOKEN DE DESARROLLADOR
