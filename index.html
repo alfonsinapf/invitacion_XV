@@ -472,24 +472,7 @@
 </head>
 <body>
 
-    <!-- Audio -->
-    <section class="audio">
-        <div class="container">
-            <div class="row">
-                <div class="botonAudio-container">
-                    <audio id="audioPrueba" loop>
-                        <source src="assets/musica.mp3" type="audio/mp3">
-                        ¡Ups! Tu navegador no soporta este archivo de audio.
-                    </audio>
-                    <div class='animation'>
-                        <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake">
-                        <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
+<!---aca estaba la sección del audio -->
     <!-- Portada -->
     <section class="portada parallax-portada d-flex justify-content-center align-items-center">
         <div class="logo-portada fade-in-portada">
@@ -1435,23 +1418,50 @@
         console.log('✅ Sistema de música listo para usar');
     });
 
-// 🎵 Funciones del reproductor de audio de la página 
-function playAudio() { const audio = document.getElementById('audioPrueba'); 
-audio.play(); 
-document.getElementById('btnPlay').classList.add('hidden');
+<script>
+  const audio = document.getElementById('audioPrueba');
+  const btnPlay = document.getElementById('btnPlay');
+  const btnPausa = document.getElementById('btnPausa');
 
-document.getElementById('btnPausa').classList.remove('hidden'); } 
+  // Intentar autoplay al cargar la página
+  window.addEventListener('DOMContentLoaded', () => {
+    audio.play()
+      .then(() => {
+        console.log("🎵 Autoplay iniciado");
+        btnPlay.classList.add('hidden');
+        btnPausa.classList.remove('hidden');
+      })
+      .catch(err => {
+        console.warn("❌ Autoplay bloqueado, se requiere interacción del usuario", err);
+        btnPlay.classList.remove('hidden'); // Mostrar play si se bloquea
+      });
+  });
 
-function pauseAudio() { const audio = document.getElementById('audioPrueba'); 
-audio.pause(); 
-document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); 
-}
-    </script>
+  // Función de reproducir desde botón
+  function playAudio() {
+    audio.play()
+      .then(() => {
+        btnPlay.classList.add('hidden');
+        btnPausa.classList.remove('hidden');
+      })
+      .catch(err => console.warn("Error al reproducir:", err));
+  }
+
+  // Función de pausar
+  function pauseAudio() {
+    if (!audio.paused) { // Evita abortar si ya estaba pausado
+      audio.pause();
+      btnPlay.classList.remove('hidden');
+      btnPausa.classList.add('hidden');
+    }
+  }
+</script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
