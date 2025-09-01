@@ -1434,26 +1434,35 @@
         console.log('✅ Sistema de música listo para usar');
     });
 
-    // 🎵 Funciones del reproductor de audio de la página
-   function playAudio() {
-            const audio = document.getElementById('audioPrueba');
-            audio.play();
+// 🎵 Funciones del reproductor de audio de la página
+function playAudio() {
+    const audio = document.getElementById('audioPrueba');
+    audio.play()
+        .then(() => {
+            // Solo mostrar pausa si la reproducción arrancó de verdad
             document.getElementById('btnPlay').classList.add('hidden');
             document.getElementById('btnPausa').classList.remove('hidden');
-        }
+        })
+        .catch(err => {
+            console.warn("No se pudo reproducir el audio:", err);
+        });
+}
 
-        function pauseAudio() {
-            const audio = document.getElementById('audioPrueba');
-            audio.pause();
-            document.getElementById('btnPausa').classList.add('hidden');
-            document.getElementById('btnPlay').classList.remove('hidden');
-        }
+function pauseAudio() {
+    const audio = document.getElementById('audioPrueba');
+    if (!audio.paused) { // Evita AbortError si ya estaba pausado
+        audio.pause();
+        document.getElementById('btnPausa').classList.add('hidden');
+        document.getElementById('btnPlay').classList.remove('hidden');
+    }
+}
     </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
