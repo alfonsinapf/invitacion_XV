@@ -1434,27 +1434,16 @@
         console.log('✅ Sistema de música listo para usar');
     });
 
-// 🎵 Funciones del reproductor de audio de la página
-function playAudio() {
-    const audio = document.getElementById('audioPrueba');
-    audio.play()
-        .then(() => {
-            // Solo mostrar pausa si la reproducción arrancó de verdad
-            document.getElementById('btnPlay').classList.add('hidden');
-            document.getElementById('btnPausa').classList.remove('hidden');
-        })
-        .catch(err => {
-            console.warn("No se pudo reproducir el audio:", err);
-        });
-}
+// 🎵 Funciones del reproductor de audio de la página 
+function playAudio() { const audio = document.getElementById('audioPrueba'); 
+audio.play(); 
+document.getElementById('btnPlay').classList.add('hidden');
 
-function pauseAudio() {
-    const audio = document.getElementById('audioPrueba');
-    if (!audio.paused) { // Evita AbortError si ya estaba pausado
-        audio.pause();
-        document.getElementById('btnPausa').classList.add('hidden');
-        document.getElementById('btnPlay').classList.remove('hidden');
-    }
+document.getElementById('btnPausa').classList.remove('hidden'); } 
+
+function pauseAudio() { const audio = document.getElementById('audioPrueba'); 
+audio.pause(); 
+document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); 
 }
     </script>
     <!-- Scripts de seguimiento -->
@@ -1462,6 +1451,7 @@ function pauseAudio() {
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
