@@ -615,6 +615,17 @@
 
                 <div class="music-player">
                     <!-- Reproductor de Spotify -->
+
+                    <!-- Dentro del contenedor del reproductor -->
+<div class="refresh-indicator" id="refreshIndicator">
+    <i class="fas fa-sync fa-spin"></i>
+    <span>Actualizando playlist...</span>
+</div>
+
+<!-- Botón para móviles -->
+<button class="mobile-refresh-btn" id="mobileRefreshBtn" onclick="manualRefreshPlayer()">
+    <i class="fas fa-sync"></i> Actualizar playlist manualmente
+</button>
                     <div class="spotify-embed-guest">
                         <iframe 
                             src="https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u?utm_source=generator&theme=0" 
@@ -1318,21 +1329,29 @@
     }
 
     // 🔄 Actualizar reproductor de Spotify
-    function refreshPlayer() {
-        const iframe = document.querySelector('.spotify-embed-guest iframe');
-        if (iframe) {
-            console.log('🔄 Actualizando reproductor...');
-            
-            const currentSrc = iframe.src;
-            const separator = currentSrc.includes('?') ? '&' : '?';
-            const timestamp = Date.now();
-            
-            // Recarga suave con timestamp
-            iframe.src = `${currentSrc}${separator}_refresh=${timestamp}`;
-            
-            showAuthStatus("🎵 ¡Playlist actualizada! Puede tardar unos segundos en verse.", "success");
+ // Reemplazar esta función en tu código
+function refreshPlayerSmart() {
+    const mobile = isMobileDevice();
+    console.log('🔄 Actualizando reproductor - Móvil:', mobile);
+    
+    if (mobile) {
+        // En móviles: mostrar indicador y opción manual
+        showRefreshIndicator("Playlist actualizada. Si no ves los cambios, usa el botón de abajo.");
+        refreshPlayerGentle();
+        
+        // Mostrar botón de actualización manual
+        if (mobileRefreshBtn) {
+            mobileRefreshBtn.style.display = 'block';
+            mobileRefreshBtn.innerHTML = '<i class="fas fa-sync"></i> ¡Toca aquí para ver tu canción!';
         }
+    } else {
+        // En desktop: actualización automática más agresiva
+        showRefreshIndicator("Actualizando playlist...");
+        setTimeout(() => {
+            refreshPlayerForce();
+        }, 1000);
     }
+}
 
     // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
@@ -1425,6 +1444,7 @@
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
