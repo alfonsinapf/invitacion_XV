@@ -494,7 +494,7 @@
                 </div>
                 <p class="num_cuenta">:</p>
                 <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="horas"></p>
+                    <p class="num_cueta" id="horas"></p>
                     <p class="text_cuenta">hs</p>
                 </div>
                 <p class="num_cuenta">:</p>
@@ -1140,7 +1140,7 @@
             showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
             
             // Actualizar reproductor después de un momento
-            setTimeout(refreshPlayer, 2500);
+            setTimeout(updateSpotifyPlayer, 2500);
             
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
@@ -1317,20 +1317,65 @@
         }, 5000);
     }
 
-    // 🔄 Actualizar reproductor de Spotify
+    // 🔄 Función mejorada para actualizar el reproductor de Spotify
     function refreshPlayer() {
         const iframe = document.querySelector('.spotify-embed-guest iframe');
-        if (iframe) {
-            console.log('🔄 Actualizando reproductor...');
-            
-            const currentSrc = iframe.src;
-            const separator = currentSrc.includes('?') ? '&' : '?';
-            const timestamp = Date.now();
-            
-            // Recarga suave con timestamp
-            iframe.src = `${currentSrc}${separator}_refresh=${timestamp}`;
-            
-            showAuthStatus("🎵 ¡Playlist actualizada! Puede tardar unos segundos en verse.", "success");
+        if (!iframe) return;
+        
+        console.log('🔄 Actualizando reproductor de Spotify...');
+        
+        // 1. Crear un nuevo iframe con un timestamp único
+        const newIframe = document.createElement('iframe');
+        const originalSrc = iframe.src.split('?')[0]; // Eliminar parámetros existentes
+        const timestamp = Date.now();
+        
+        // 2. Copiar todos los atributos del iframe original
+        for (let i = 0; i < iframe.attributes.length; i++) {
+            const attr = iframe.attributes[i];
+            if (attr.name !== 'src') {
+                newIframe.setAttribute(attr.name, attr.value);
+            }
+        }
+        
+        // 3. Establecer la nueva fuente con parámetro de cache busting
+        newIframe.src = `${originalSrc}?utm_source=generator&theme=0&_cachebust=${timestamp}`;
+        
+        // 4. Reemplazar el iframe existente
+        iframe.parentNode.replaceChild(newIframe, iframe);
+        
+        console.log('✅ Reproductor de Spotify actualizado');
+        showAuthStatus("🎵 ¡Playlist actualizada! Es posible que necesites tocar play manualmente.", "success");
+    }
+
+    // 📱 Función alternativa para dispositivos móviles con restricciones
+    function mobileRefreshPlayer() {
+        const playerContainer = document.querySelector('.spotify-embed-guest');
+        if (!playerContainer) return;
+        
+        console.log('📱 Usando método de actualización para móviles...');
+        
+        // Guardar el HTML original
+        const originalHTML = playerContainer.innerHTML;
+        
+        // Vaciar y restaurar el contenido después de un breve retraso
+        playerContainer.innerHTML = '';
+        
+        setTimeout(() => {
+            playerContainer.innerHTML = originalHTML;
+            console.log('✅ Reproductor restaurado para móviles');
+            showAuthStatus("🎵 Playlist actualizada. Por favor, inicia la reproducción manualmente.", "success");
+        }, 800);
+    }
+
+    // 🎯 Función unificada que elige el método apropiado
+    function updateSpotifyPlayer() {
+        // Detectar si es un dispositivo móvil
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+            mobileRefreshPlayer();
+        } else {
+            refreshPlayer();
         }
     }
 
@@ -1419,7 +1464,21 @@
         console.log('✅ Sistema de música listo para usar');
     });
 
-// 🎵 Funciones del reproductor de audio de la página function playAudio() { const audio = document.getElementById('audioPrueba'); audio.play(); document.getElementById('btnPlay').classList.add('hidden'); document.getElementById('btnPausa').classList.remove('hidden'); } function pauseAudio() { const audio = document.getElementById('audioPrueba'); audio.pause(); document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); } </script>
+    // 🎵 Funciones del reproductor de audio de la página
+    function playAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        audio.play(); 
+        document.getElementById('btnPlay').classList.add('hidden'); 
+        document.getElementById('btnPausa').classList.remove('hidden'); 
+    } 
+    
+    function pauseAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        audio.pause(); 
+        document.getElementById('btnPausa').classList.add('hidden'); 
+        document.getElementById('btnPlay').classList.remove('hidden'); 
+    }
+    </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
