@@ -1415,38 +1415,7 @@ function showSuccessMessage(message = "¡Operación exitosa!") {
         successMessage.style.display = 'none';
     }, isMobile ? 8000 : 5000); // Más tiempo en móviles
 }
-// Función para agregar botón de actualización manual
-function addManualRefreshButton() {
-    const musicPlayer = document.querySelector('.music-player');
-    if (!musicPlayer) return;
-    
-    // Verificar si ya existe el botón
-    if (document.getElementById('manualRefreshBtn')) return;
-    
-    // Crear botón de actualización manual
-    const refreshButton = document.createElement('button');
-    refreshButton.id = 'manualRefreshBtn';
-    refreshButton.className = 'btn manual-refresh-btn';
-    refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar playlist manualmente';
-    
-    refreshButton.addEventListener('click', () => {
-        refreshButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
-        refreshButton.disabled = true;
-        
-        refreshPlayer();
-        
-        setTimeout(() => {
-            refreshButton.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar playlist manualmente';
-            refreshButton.disabled = false;
-        }, 3000);
-    });
-    
-    // Insertar después del iframe
-    const spotifyEmbed = document.querySelector('.spotify-embed-guest');
-    if (spotifyEmbed) {
-        spotifyEmbed.parentNode.insertBefore(refreshButton, spotifyEmbed.nextSibling);
-    }
-}
+
         
   // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
 function refreshPlayer() {
@@ -1572,13 +1541,7 @@ function isMobileDevice() {
             authStatus.innerHTML = '🎵 ¡Haz clic en "Buscar y agregar canciones" para empezar a colaborar!';
             authStatus.classList.add('status-connected');
             authStatus.classList.remove('hidden');
-        }
-        // AGREGAR ESTO AL FINAL:
-    // Agregar botón de actualización manual
-    setTimeout(() => {
-        addManualRefreshButton();
-    }, 1000);
-        
+        }     
         console.log('✅ Sistema de música listo para usar');
     });
 
@@ -1588,4 +1551,5 @@ function isMobileDevice() {
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
