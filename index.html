@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -653,7 +653,7 @@
                         <!-- Sección de búsqueda -->
                         <div id="spotifySearchSection" class="hidden">
                             <div class="search-box">
-                                <input type="text" id="songSearch" placeholder="Busca por canción, artista or álbum...">
+                                <input type="text" id="songSearch" placeholder="Busca por canción, artista o álbum...">
                                 <button class="search-btn" id="searchBtn">
                                     <i class="fas fa-search"></i> Buscar
                                 </button>
@@ -834,11 +834,6 @@
     let isSearching = false;
     let searchTimeout = null;
 
-    // 🚀 Función para detectar si es un dispositivo móvil
-    function isMobileDevice() {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-
     // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
         const controller = new AbortController();
@@ -1011,7 +1006,7 @@
         const resultsContainer = document.createElement('div');
         resultsContainer.className = 'track-list';
         
-        tracks.forEach((track, index) {
+        tracks.forEach((track, index) => {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'track-item';
             trackDiv.style.animationDelay = `${index * 0.1}s`;
@@ -1085,7 +1080,7 @@
                     <li>• El álbum</li>
                     <li>• Términos en inglés</li>
                 </ul>
-                <p><small>💡 Ejemplo: "bohemian rhapsody queen" or "despacito luis fonsi"</small></p>
+                <p><small>💡 Ejemplo: "bohemian rhapsody queen" o "despacito luis fonsi"</small></p>
             </div>
         `;
     }
@@ -1145,7 +1140,7 @@
             showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
             
             // Actualizar reproductor después de un momento
-            setTimeout(updateSpotifyPlayer, 2500);
+            setTimeout(refreshPlayer, 2500);
             
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
@@ -1322,7 +1317,7 @@
         }, 5000);
     }
 
-    // 🔄 Función mejorada para actualizar el reproductor de Spotify
+    // 🔄 Actualizar reproductor de Spotify
     function refreshPlayer() {
         const iframe = document.querySelector('.spotify-embed-guest iframe');
         if (iframe) {
@@ -1336,38 +1331,6 @@
             iframe.src = `${currentSrc}${separator}_refresh=${timestamp}`;
             
             showAuthStatus("🎵 ¡Playlist actualizada! Puede tardar unos segundos en verse.", "success");
-        }
-    }
-
-    // 📱 Función alternativa para dispositivos móviles
-    function mobileRefreshPlayer() {
-        const playerContainer = document.querySelector('.spotify-embed-guest');
-        if (!playerContainer) return;
-        
-        console.log('📱 Usando método de actualización para móviles...');
-        
-        // Guardar el HTML original
-        const originalHTML = playerContainer.innerHTML;
-        
-        // Vaciar y restaurar el contenido después de un breve retraso
-        playerContainer.innerHTML = '';
-        
-        setTimeout(() => {
-            playerContainer.innerHTML = originalHTML;
-            console.log('✅ Reproductor restaurado para móviles');
-            showAuthStatus("🎵 Playlist actualizada. Por favor, inicia la reproducción manualmente.", "success");
-        }, 800);
-    }
-
-    // 🎯 Función unificada que elige el método apropiado
-    function updateSpotifyPlayer() {
-        // Detectar si es un dispositivo móvil
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        if (isMobile) {
-            mobileRefreshPlayer();
-        } else {
-            refreshPlayer();
         }
     }
 
@@ -1456,21 +1419,7 @@
         console.log('✅ Sistema de música listo para usar');
     });
 
-    // 🎵 Funciones del reproductor de audio de la página
-    function playAudio() { 
-        const audio = document.getElementById('audioPrueba'); 
-        audio.play(); 
-        document.getElementById('btnPlay').classList.add('hidden'); 
-        document.getElementById('btnPausa').classList.remove('hidden'); 
-    } 
-    
-    function pauseAudio() { 
-        const audio = document.getElementById('audioPrueba'); 
-        audio.pause(); 
-        document.getElementById('btnPausa').classList.add('hidden'); 
-        document.getElementById('btnPlay').classList.remove('hidden'); 
-    }
-    </script>
+// 🎵 Funciones del reproductor de audio de la página function playAudio() { const audio = document.getElementById('audioPrueba'); audio.play(); document.getElementById('btnPlay').classList.add('hidden'); document.getElementById('btnPausa').classList.remove('hidden'); } function pauseAudio() { const audio = document.getElementById('audioPrueba'); audio.pause(); document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); } </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
