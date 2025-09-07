@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
@@ -494,7 +494,7 @@
                 </div>
                 <p class="num_cuenta">:</p>
                 <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cueta" id="horas"></p>
+                    <p class="num_cuenta" id="horas"></p>
                     <p class="text_cuenta">hs</p>
                 </div>
                 <p class="num_cuenta">:</p>
@@ -653,7 +653,7 @@
                         <!-- Sección de búsqueda -->
                         <div id="spotifySearchSection" class="hidden">
                             <div class="search-box">
-                                <input type="text" id="songSearch" placeholder="Busca por canción, artista o álbum...">
+                                <input type="text" id="songSearch" placeholder="Busca por canción, artista or álbum...">
                                 <button class="search-btn" id="searchBtn">
                                     <i class="fas fa-search"></i> Buscar
                                 </button>
@@ -834,6 +834,11 @@
     let isSearching = false;
     let searchTimeout = null;
 
+    // 🚀 Función para detectar si es un dispositivo móvil
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
     // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
         const controller = new AbortController();
@@ -1006,7 +1011,7 @@
         const resultsContainer = document.createElement('div');
         resultsContainer.className = 'track-list';
         
-        tracks.forEach((track, index) => {
+        tracks.forEach((track, index) {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'track-item';
             trackDiv.style.animationDelay = `${index * 0.1}s`;
@@ -1080,7 +1085,7 @@
                     <li>• El álbum</li>
                     <li>• Términos en inglés</li>
                 </ul>
-                <p><small>💡 Ejemplo: "bohemian rhapsody queen" o "despacito luis fonsi"</small></p>
+                <p><small>💡 Ejemplo: "bohemian rhapsody queen" or "despacito luis fonsi"</small></p>
             </div>
         `;
     }
@@ -1320,34 +1325,21 @@
     // 🔄 Función mejorada para actualizar el reproductor de Spotify
     function refreshPlayer() {
         const iframe = document.querySelector('.spotify-embed-guest iframe');
-        if (!iframe) return;
-        
-        console.log('🔄 Actualizando reproductor de Spotify...');
-        
-        // 1. Crear un nuevo iframe con un timestamp único
-        const newIframe = document.createElement('iframe');
-        const originalSrc = iframe.src.split('?')[0]; // Eliminar parámetros existentes
-        const timestamp = Date.now();
-        
-        // 2. Copiar todos los atributos del iframe original
-        for (let i = 0; i < iframe.attributes.length; i++) {
-            const attr = iframe.attributes[i];
-            if (attr.name !== 'src') {
-                newIframe.setAttribute(attr.name, attr.value);
-            }
+        if (iframe) {
+            console.log('🔄 Actualizando reproductor...');
+            
+            const currentSrc = iframe.src;
+            const separator = currentSrc.includes('?') ? '&' : '?';
+            const timestamp = Date.now();
+            
+            // Recarga suave con timestamp
+            iframe.src = `${currentSrc}${separator}_refresh=${timestamp}`;
+            
+            showAuthStatus("🎵 ¡Playlist actualizada! Puede tardar unos segundos en verse.", "success");
         }
-        
-        // 3. Establecer la nueva fuente con parámetro de cache busting
-        newIframe.src = `${originalSrc}?utm_source=generator&theme=0&_cachebust=${timestamp}`;
-        
-        // 4. Reemplazar el iframe existente
-        iframe.parentNode.replaceChild(newIframe, iframe);
-        
-        console.log('✅ Reproductor de Spotify actualizado');
-        showAuthStatus("🎵 ¡Playlist actualizada! Es posible que necesites tocar play manualmente.", "success");
     }
 
-    // 📱 Función alternativa para dispositivos móviles con restricciones
+    // 📱 Función alternativa para dispositivos móviles
     function mobileRefreshPlayer() {
         const playerContainer = document.querySelector('.spotify-embed-guest');
         if (!playerContainer) return;
