@@ -1,0 +1,10 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:XV Alfonsina
+DTSTART:20251101T233000Z
+DTEND:20251102T080000Z
+DESCRIPTION:Celebramos los 15 años de Alfonsina. Dress code: Elegante.
+LOCATION:Salón Centro Empleado de Comercio, Bv. Damico S/N, Pergamino
+END:VEVENT
+END:VCALENDAR
