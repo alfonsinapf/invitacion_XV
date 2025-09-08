@@ -1867,8 +1867,7 @@ window.addEventListener('beforeunload', () => {
             if (!response.ok) {
                 throw new Error(data.error || data.message || "Error al agregar");
             }
-            
-           // ✅ Éxito total
+     // ✅ Éxito total
     console.log('✅ Canción agregada exitosamente');
     button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
     button.classList.add('added');
@@ -1888,7 +1887,7 @@ window.addEventListener('beforeunload', () => {
     } else {
         // En escritorio, actualización más rápida
         setTimeout(refreshPlayer, 2500);
-    }   
+    }
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
             
@@ -2069,9 +2068,9 @@ function showSuccessMessage(message = "¡Operación exitosa!") {
         successMessage.style.display = 'none';
     }, isMobile ? 8000 : 5000); // Más tiempo en móviles
 }
-
         
-  // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
+ 
+// 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
 function refreshPlayer() {
     const iframe = document.querySelector('.spotify-embed-guest iframe');
     if (!iframe) {
@@ -2114,6 +2113,7 @@ function isMobileDevice() {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
            (window.innerWidth <= 768);
 }
+
     // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
         authStatus.innerHTML = message;
@@ -2196,6 +2196,10 @@ function isMobileDevice() {
             authStatus.classList.add('status-connected');
             authStatus.classList.remove('hidden');
         }     
+ setTimeout(() => {
+        addManualRefreshButton();
+    }, 1000);
+        
         console.log('✅ Sistema de música listo para usar');
     });
 
@@ -2206,3 +2210,4 @@ function isMobileDevice() {
     
 </body>
 </html>
+
