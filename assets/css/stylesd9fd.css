@@ -27,62 +27,37 @@ h4
   font-weight: 400;
 }
 
-/* Contenedor de los botones */
-.btn-container {
-  display: flex;
-  justify-content: center; /* Centra los botones horizontalmente */
-  gap: 20px; /* Espacio entre botones en PC */
-  flex-wrap: wrap; /* Permite que los botones se acomoden en varias líneas si es necesario */
-}
-
-/* Botones */
-.btn, .btn-alt {
+.btn{
   font-family: 'Montserrat', sans-serif;
-  border-radius: 30px;
-  padding: 10px 40px;
-  text-transform: uppercase;
-  border: 1px solid var(--color-primario);
-  transition: all 0.3s ease;
-  flex: 1 1 200px; /* Mantiene el mismo tamaño mínimo y flexible */
-  max-width: 200px; /* Limita el tamaño máximo para que no crezcan demasiado en PC */
-  text-align: center;
-}
-
-/* Colores */
-.btn {
   color: white;
   background-color: var(--color-primario);
+  border-radius: 30px;
+  padding: 10px 40px;
+  border: 1px solid var(--color-primario);
+  text-transform: uppercase;
 }
-.btn:hover {
+
+.btn:hover{
+  color:var(--color-primario);
+  background-color: white;
+}
+
+.btn-alt{
+  font-family: 'Montserrat', sans-serif;
   color: var(--color-primario);
   background-color: white;
 }
 
-.btn-alt {
-  color: var(--color-primario);
-  background-color: white;
-}
-.btn-alt:hover {
+.btn-alt:hover{
   color: white;
   background-color: var(--color-primario);
   border: 1px solid white;
 }
 
-.btn:focus {
-  box-shadow: none;
+.btn:focus{
+  box-shadow:none;
 }
 
-/* Media query para móviles */
-@media (max-width: 768px) {
-  .btn-container {
-    flex-direction: column; /* Apila los botones */
-    gap: 10px; /* Espacio vertical entre botones */
-  }
-  .btn, .btn-alt {
-    width: 100%; /* Botones ocupan todo el ancho disponible */
-    max-width: none; /* Quita límite para móviles */
-  }
-}
 
 .fancybox-bg{
   background-color: var(--color-primario) !important;
