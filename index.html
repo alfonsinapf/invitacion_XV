@@ -578,83 +578,223 @@ color:var(--color-primario);
   transform: translateY(-2px);
 }
 /* Libro de visitas estilo fiesta */
-.guestbook {
-  background: linear-gradient(135deg, rgba(255,192,203,0.1), rgba(255,182,193,0.1));
-  padding: 40px 20px;
-  border-radius: 25px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-
-.guestbook input,
-.guestbook textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.05);
-  color: #fff;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.guestbook input:focus,
-.guestbook textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 15px;
-  border: 1px solid rgba(255,255,255,0.3);
-  background: rgba(0,0,0,0.6); /* ⚡ Fondo oscuro para que se vea el texto */
-  color: #fff; /* Texto blanco */
-  font-family: 'Montserrat', sans-serif;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.guestbook input::placeholder,
-.guestbook textarea::placeholder {
-  color: #ddd; /* placeholder visible */
-}
-
-.guestbook textarea {
-  min-height: 80px;
-  resize: none;
-}
-
-.btn-guestbook {
-  margin-top: 10px;
-  padding: 10px 40px;
-  border-radius: 30px;
-  background-color: var(--color-primario);
-  color: #fff;
-  border: 1px solid var(--color-primario);
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-guestbook:hover {
-  background-color: white;
-  color: var(--color-primario);
-  transform: translateY(-2px);
-}
-
-#guestbook-messages div {
-  text-align: left;
-  background: rgba(255, 255, 255, 0.05);
-  border-left: 4px solid var(--color-primario);
-  padding: 10px 15px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  animation: fadeInUp 0.3s ease-out;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-  
+  body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .guestbook {
+            background: linear-gradient(135deg, rgba(255,192,203,0.1), rgba(255,182,193,0.1));
+            padding: 40px 20px;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            max-width: 800px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        h4 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        p {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .guestbook input,
+        .guestbook textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .guestbook input:focus,
+        .guestbook textarea:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(0,0,0,0.7);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+        
+        .guestbook input::placeholder,
+        .guestbook textarea::placeholder {
+            color: #ddd;
+            opacity: 0.8;
+        }
+        
+        .guestbook textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-guestbook {
+            width: 100%;
+            padding: 15px 40px;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-guestbook:hover:not(:disabled) {
+            background: linear-gradient(135deg, #764ba2, #667eea);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .btn-guestbook:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #guestbook-messages {
+            margin-top: 30px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        #guestbook-messages div {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            animation: fadeInUp 0.5s ease-out;
+            backdrop-filter: blur(5px);
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        
+        .message-content {
+            color: rgba(255,255,255,0.9);
+            line-height: 1.4;
+            font-size: 15px;
+        }
+        
+        .message-date {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            margin-top: 8px;
+            text-align: right;
+        }
+        
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+        
+        .stats {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            color: white;
+        }
+        
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .success-message {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Scrollbar personalizada */
+        #guestbook-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        #guestbook-messages::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        #guestbook-messages::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+        
+        #guestbook-messages::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
     
     </style>
 </head>
@@ -2008,6 +2148,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
