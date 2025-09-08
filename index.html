@@ -919,7 +919,7 @@ color:var(--color-primario);
             margin-bottom: 15px;
             text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
             line-height: 1.2;
-        ">💌 Deja tu mensaje para Alfonsina</h4>
+        ">💌 Deja tu mensaje a Alfon</h4>
         
         <!-- Subtítulo -->
         <p style="
@@ -931,7 +931,7 @@ color:var(--color-primario);
             margin-bottom: 35px;
             text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
             line-height: 1.4;
-        ">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
+        ">Escribí unas palabras dedicatorias antes de la gran fiesta 🎉</p>
         
         <!-- Mensajes de estado -->
         <div id="error-message" class="hidden" style="
@@ -1135,6 +1135,7 @@ color:var(--color-primario);
     font-size: 16px !important;
     text-transform: capitalize !important;
     font-family: 'Montserrat', sans-serif !important;
+    font-style: italic !important; /* Nueva línea */
 }
 
 .guestbook-message-content {
@@ -1144,13 +1145,14 @@ color:var(--color-primario);
     font-weight: 400 !important;
     margin-bottom: 10px !important;
     font-family: 'Montserrat', sans-serif !important;
+    font-style: italic !important; /* Nueva línea */
 }
 
 .guestbook-message-date {
     color: #7f8c8d !important;
     font-size: 12px !important;
     margin-top: 12px !important;
-    text-align: right !important;
+    text-align: left !important; /* Cambiado de right a left */
     font-style: italic !important;
     font-weight: 300 !important;
     font-family: 'Montserrat', sans-serif !important;
@@ -1391,7 +1393,7 @@ async function submitMessage(event) {
     }
 }
 
-// 👂 Escuchar mensajes en tiempo real
+// Función actualizada para el listener de mensajes
 function setupRealtimeListener() {
     try {
         console.log('👂 Configurando escucha en tiempo real...');
@@ -1403,19 +1405,32 @@ function setupRealtimeListener() {
             
             if (snapshot.empty) {
                 messagesDiv.innerHTML = `
-                    <div style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px; font-style: italic;">
-                        <p>🌟 Sé el primero en dejar un mensaje</p>
-                    </div>
+                    
+
+                        
+                        
+🌟 Sé el primero en dejar un mensaje de cariño para Alfonsina
+
+
+                    
+
                 `;
             } else {
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     const messageDiv = document.createElement('div');
+                    messageDiv.className = 'guestbook-message-item';
                     
                     messageDiv.innerHTML = `
-                        <div class="message-author">${escapeHtml(data.name || 'Anónimo')}</div>
-                        <div class="message-content">${escapeHtml(data.message || '')}</div>
-                        <div class="message-date">${formatDate(data.timestamp)}</div>
+                        
+📝 ${escapeHtml(data.name || 'Anónimo')}
+
+                        
+"${escapeHtml(data.message || '')}"
+
+                        
+📅 ${formatDate(data.timestamp)}
+
                     `;
                     
                     messagesDiv.appendChild(messageDiv);
@@ -2190,6 +2205,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
