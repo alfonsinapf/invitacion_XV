@@ -1551,13 +1551,12 @@ window.addEventListener('beforeunload', () => {
     <!-- Script Principal de Música - MODO INVITADO -->
     <script>
  <!-- Script Principal de Música - MODO INVITADO MEJORADO PARA MÓVILES -->
-      // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - OPTIMIZADO PARA MÓVILES
+    // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - SOLUCIÓN DEFINITIVA PARA MÓVILES
     
     // Configuración
     const BACKEND_URL = 'https://invitacion-xv-alfon.vercel.app';
-    const SEARCH_ENDPOINT = '/api/search';
-    const ADD_ENDPOINT = '/api/add-to-playlist';
-
+    const SPOTIFY_PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
+    
     // Elementos del DOM
     const guestOptions = document.getElementById('guestOptions');
     const spotifySearchSection = document.getElementById('spotifySearchSection');
@@ -1576,6 +1575,8 @@ window.addEventListener('beforeunload', () => {
     // Estado de la aplicación
     let isSearching = false;
     let searchTimeout = null;
+    let refreshAttempts = 0;
+    const MAX_REFRESH_ATTEMPTS = 3;
 
     // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
@@ -1600,6 +1601,8 @@ window.addEventListener('beforeunload', () => {
 
     // 🎨 Mostrar sección de búsqueda
     function showSearchSection() {
+        if (!guestOptions || !spotifySearchSection) return;
+        
         guestOptions.classList.add('hidden');
         spotifySearchSection.classList.remove('hidden');
         
@@ -1630,7 +1633,7 @@ window.addEventListener('beforeunload', () => {
     function showBackendError() {
         if (backendError) {
             backendError.classList.remove('hidden');
-            searchResults.innerHTML = '';
+            if (searchResults) searchResults.innerHTML = '';
         }
     }
 
@@ -1678,7 +1681,7 @@ window.addEventListener('beforeunload', () => {
         try {
             console.log('🔍 Buscando:', query);
             
-            const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
+            const response = await fetchWithTimeout(`${BACKEND_URL}/api/search`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1849,7 +1852,7 @@ window.addEventListener('beforeunload', () => {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
-    // ➕ Agregar canción a la playlist - Versión mejorada para móviles
+    // ➕ Agregar canción a la playlist - SOLUCIÓN DEFINITIVA
     async function addToPlaylist(trackUri, trackName, artistName, button) {
         if (!trackUri) {
             showAuthStatus("❌ Error: Canción inválida", "error");
@@ -1863,7 +1866,7 @@ window.addEventListener('beforeunload', () => {
         try {
             console.log('➕ Agregando:', trackName, '-', artistName);
             
-            const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
+            const response = await fetchWithTimeout(`${BACKEND_URL}/api/add-to-playlist`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1873,7 +1876,7 @@ window.addEventListener('beforeunload', () => {
                     trackName: trackName,
                     artistName: artistName
                 })
-            }, 15000);
+            }, 20000); // Timeout más largo para móviles
             
             const data = await response.json();
             
@@ -1896,24 +1899,17 @@ window.addEventListener('beforeunload', () => {
             
             showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
             
-            // Estrategia de actualización mejorada para móviles
+            // Estrategia de actualización AGRESIVA para móviles
             if (isMobileDevice()) {
-                showAuthStatus("📱 En móvil: La actualización puede tardar hasta 30 segundos", "warning");
+                showAuthStatus("📱 Actualizando playlist móvil... Esto puede tomar hasta 1 minuto", "warning");
                 
-                // Esperar un poco más en móviles
+                // Esperar y usar método de fuerza bruta
                 setTimeout(() => {
-                    refreshPlayer();
-                    
-                    // Mensaje adicional para iOS
-                    if (isIOS()) {
-                        setTimeout(() => {
-                            showAuthStatus("📱 En iOS: Si no ves los cambios, toca 'Actualizar playlist'", "warning");
-                        }, 5000);
-                    }
-                }, 3000);
+                    refreshPlayerAggressive();
+                }, 2000);
             } else {
-                // En escritorio, actualización más rápida
-                setTimeout(refreshPlayer, 1500);
+                // En escritorio, actualización normal
+                setTimeout(refreshPlayer, 1000);
             }   
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
@@ -1940,176 +1936,153 @@ window.addEventListener('beforeunload', () => {
         }
     }
 
-    // 🔄 Búsqueda alternativa con Last.fm
-    async function alternativeSearch(query) {
-        if (!query) query = songSearch ? songSearch.value.trim() : '';
-        
-        if (!query) {
-            showAuthStatus("Escribe algo para buscar", "error");
-            if (songSearch) songSearch.focus();
+    // 🔄 MÉTODO AGRESIVO de actualización - SOLUCIÓN DEFINITIVA
+    function refreshPlayerAggressive() {
+        console.log('💥 Iniciando actualización AGRESIVA del reproductor...');
+        refreshAttempts = 0;
+        forceRefreshWithRetry();
+    }
+
+    function forceRefreshWithRetry() {
+        if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
+            console.log('🛑 Máximo de intentos de actualización alcanzado');
+            showAuthStatus("⚠️ Si no ves los cambios, recarga la página completa", "warning");
             return;
         }
+
+        refreshAttempts++;
+        console.log(`🔄 Intento ${refreshAttempts} de ${MAX_REFRESH_ATTEMPTS}`);
         
-        if (!searchResults) return;
-        
-        searchResults.innerHTML = `
-            <div class="loading">
-                <i class="fas fa-satellite-dish" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
-                <h3>Buscando de otra forma...</h3>
-                <p>Usando nuestra base de datos alternativa</p>
-            </div>
-        `;
-        
-        hideBackendError();
-        showAuthStatus("🛰️ Buscando con método alternativo...", "success");
-        
-        try {
-            const response = await fetchWithTimeout(
-                `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=5a8e1586e85b499c62d9f3a4bfa5b6a9&format=json&limit=12`,
-                {},
-                12000
-            );
-            
-            if (!response.ok) throw new Error('Error en búsqueda alternativa');
-            
-            const data = await response.json();
-            let tracks = data.results?.trackmatches?.track || [];
-            
-            if (!Array.isArray(tracks)) tracks = tracks ? [tracks] : [];
-            
-            if (tracks.length === 0) {
-                searchResults.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search-minus" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                        <h3>Tampoco encontramos nada aquí</h3>
-                        <p>Intenta con términos más específicos o usa el formulario de sugerencias</p>
-                        <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
-                            <i class="fas fa-external-link-alt"></i> Sugerir por formulario
-                        </button>
-                    </div>
-                `;
-                showAuthStatus("😕 Sin resultados en método alternativo", "warning");
-                return;
-            }
-            
-            displayAlternativeResults(tracks);
-            showAuthStatus(`🎉 ¡${tracks.length} resultados con método alternativo!`, "success");
-            
-        } catch (error) {
-            console.error('❌ Error en búsqueda alternativa:', error);
-            if (searchResults) {
-                searchResults.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; color: #dc3545;"></i>
-                        <h3>Error técnico temporal</h3>
-                        <p>Intenta nuevamente en un momento o usa el formulario</p>
-                        <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
-                            <i class="fas fa-external-link-alt"></i> Formulario de sugerencias
-                        </button>
-                    </div>
-                `;
-            }
-            showAuthStatus("❌ Error en búsqueda alternativa", "error");
+        showAuthStatus(`🔄 Actualizando... Intento ${refreshAttempts}/${MAX_REFRESH_ATTEMPTS}`, "success");
+
+        // Método SUPER AGRESIVO: Destruir y recrear completamente
+        const container = document.querySelector('.spotify-embed-guest');
+        if (!container) return;
+
+        // 1. Remover completamente el iframe existente
+        const oldIframe = container.querySelector('iframe');
+        if (oldIframe) {
+            container.removeChild(oldIframe);
         }
-    }
 
-    // 🎵 Mostrar resultados alternativos
-    function displayAlternativeResults(tracks) {
-        if (!searchResults) return;
+        // 2. Crear nuevo iframe con parámetros únicos extremos
+        const newIframe = document.createElement('iframe');
         
-        searchResults.innerHTML = '';
-        
-        const alertDiv = document.createElement('div');
-        alertDiv.className = 'auth-status status-warning';
-        alertDiv.style.marginBottom = '20px';
-        alertDiv.innerHTML = '⚠️ Estos resultados son sugerencias - se enviarán al organizador para revisión';
-        
-        const resultsContainer = document.createElement('div');
-        resultsContainer.className = 'track-list';
-        
-        tracks.forEach((track, index) => {
-            const trackDiv = document.createElement('div');
-            trackDiv.className = 'track-item';
-            trackDiv.style.animationDelay = `${index * 0.1}s`;
-            
-            const trackName = track.name || 'Canción desconocida';
-            const artistName = track.artist || 'Artista desconocido';
-            
-            trackDiv.innerHTML = `
-                <div class="track-info">
-                    <div class="track-image-placeholder"><i class="fas fa-music"></i></div>
-                    <div class="track-details">
-                        <div class="track-name" title="${trackName}">${trackName}</div>
-                        <div class="track-artist" title="${artistName}">${artistName}</div>
-                    </div>
-                </div>
-                <button class="add-btn" data-name="${trackName}" data-artist="${artistName}">
-                    <i class="fas fa-paper-plane"></i> Sugerir
-                </button>
-            `;
-            
-            resultsContainer.appendChild(trackDiv);
+        // Parámetros ÚNICOS y ALEATORIOS para evitar cache
+        const uniqueParams = new URLSearchParams({
+            utm_source: 'generator',
+            theme: '0',
+            _t: Date.now(),
+            _rand: Math.random().toString(36).substring(2, 15),
+            _v: 'mobile_force_refresh',
+            _attempt: refreshAttempts,
+            _session: Math.random().toString(36).substring(2, 9),
+            _cache: 'bust_' + Date.now()
         });
-        
-        searchResults.appendChild(alertDiv);
-        searchResults.appendChild(resultsContainer);
-        
-        // Event listeners para sugerir
-        document.querySelectorAll('.add-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const trackName = this.getAttribute('data-name');
-                const artistName = this.getAttribute('data-artist');
-                suggestSong(trackName, artistName, this);
-            });
-        });
+
+        newIframe.src = `https://open.spotify.com/embed/playlist/${SPOTIFY_PLAYLIST_ID}?${uniqueParams.toString()}`;
+        newIframe.width = "100%";
+        newIframe.height = "380";
+        newIframe.frameBorder = "0";
+        newIframe.allowFullscreen = "";
+        newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+        newIframe.loading = "eager"; // Forzar carga inmediata
+        newIframe.style.borderRadius = "12px";
+        newIframe.style.opacity = "0";
+        newIframe.style.transition = "opacity 0.8s ease";
+
+        // 3. Agregar el nuevo iframe
+        container.appendChild(newIframe);
+
+        // 4. Forzar eventos de carga
+        newIframe.onload = function() {
+            console.log('✅ Iframe cargado exitosamente');
+            setTimeout(() => {
+                newIframe.style.opacity = "1";
+                showAuthStatus("✅ Playlist actualizada con éxito", "success");
+                
+                // Forzar redibujado en móviles
+                forceMobileRedraw(newIframe);
+            }, 500);
+        };
+
+        newIframe.onerror = function() {
+            console.log('❌ Error cargando iframe, reintentando...');
+            setTimeout(() => forceRefreshWithRetry(), 2000);
+        };
+
+        // 5. Timeout por si falla la carga
+        setTimeout(() => {
+            if (newIframe.style.opacity === "0") {
+                console.log('⏰ Timeout de carga, reintentando...');
+                forceRefreshWithRetry();
+            }
+        }, 8000);
     }
 
-    // 💌 Sugerir canción
-    async function suggestSong(trackName, artistName, button) {
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    function forceMobileRedraw(iframe) {
+        // Técnicas forzadas para redibujar en móviles
+        if (!isMobileDevice()) return;
+
+        console.log('📱 Forzando redibujado en móvil...');
         
-        // Simular envío
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        showSuccessMessage(`📨 ¡Sugerencia enviada! "${trackName}" - ${artistName}`);
-        
-        button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
-        button.classList.add('added');
+        // 1. Cambiar dimensiones ligeramente
+        setTimeout(() => {
+            iframe.style.height = '379px';
+            setTimeout(() => {
+                iframe.style.height = '380px';
+                
+                // 2. Forzar repaint con transform
+                iframe.style.transform = 'translateZ(0)';
+                
+                // 3. Técnica específica para iOS
+                if (isIOS()) {
+                    forceIOSRedraw(iframe);
+                }
+            }, 100);
+        }, 1500);
     }
 
-    // ✅ Mostrar mensaje de éxito mejorado para móviles
+    function forceIOSRedraw(iframe) {
+        console.log('🍎 Forzando redibujado en iOS...');
+        
+        // Técnicas específicas para Safari iOS
+        setTimeout(() => {
+            // Cambiar opacity brevemente
+            iframe.style.opacity = '0.99';
+            setTimeout(() => {
+                iframe.style.opacity = '1';
+                
+                // Scroll forzado para triggerear render
+                window.scrollBy(0, 1);
+                setTimeout(() => window.scrollBy(0, -1), 50);
+            }, 100);
+        }, 2000);
+    }
+
+    // ✅ Mostrar mensaje de éxito mejorado
     function showSuccessMessage(message = "¡Operación exitosa!") {
         if (!successMessage) return;
         
         const isMobile = isMobileDevice();
-        const isIOSDevice = isIOS();
         
         let enhancedMessage = message;
         
         if (isMobile) {
             enhancedMessage += '<br><small style="opacity: 0.8;">📱 ';
-            
-            if (isIOSDevice) {
-                enhancedMessage += 'En iOS: La actualización puede tardar. Si no ves cambios, toca "Actualizar playlist" o reinicia la app web.';
-            } else {
-                enhancedMessage += 'En móvil: La actualización puede tardar. Si no ves cambios, usa el botón "Actualizar playlist".';
-            }
-            
+            enhancedMessage += 'En móvil: La actualización puede tardar. ';
+            enhancedMessage += 'Si no ves cambios, usa el botón "Actualizar playlist".';
             enhancedMessage += '</small>';
         }
         
         successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
         successMessage.style.display = 'block';
         
-        // Scroll suave al mensaje
         successMessage.scrollIntoView({ 
             behavior: 'smooth', 
             block: 'center'
         });
         
-        // Tiempo de visualización más largo en móviles
         setTimeout(() => {
             if (successMessage) {
                 successMessage.style.display = 'none';
@@ -2117,148 +2090,15 @@ window.addEventListener('beforeunload', () => {
         }, isMobile ? 10000 : 5000);
     }
 
-    // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify para móviles
-    function refreshPlayer() {
-        const iframeContainer = document.querySelector('.spotify-embed-guest');
-        if (!iframeContainer) {
-            console.log('❌ No se encontró el contenedor del iframe de Spotify');
-            return;
-        }
-        
-        console.log('🔄 Iniciando actualización del reproductor para móvil...');
-        
-        // Mostrar indicador de carga
-        showAuthStatus("🔄 Actualizando playlist para móvil...", "success");
-        
-        // Estrategia 1: Forzar recarga completa con parámetros únicos
-        const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
-        const params = new URLSearchParams({
-            utm_source: 'generator',
-            theme: '0',
-            _t: Date.now(), // Timestamp único
-            _rand: Math.random().toString(36).substring(2, 15), // Valor aleatorio
-            _refresh: '1',
-            _v: 'mobile_optimized' // Versión móvil
-        });
-        
-        const newSrc = `${baseUrl}?${params.toString()}`;
-        
-        // Estrategias diferentes según el navegador móvil
-        const userAgent = navigator.userAgent.toLowerCase();
-        
-        if (userAgent.includes('safari') && !userAgent.includes('chrome')) {
-            // Safari iOS - requiere enfoque especial
-            refreshForSafariiOS(iframeContainer, newSrc);
-        } else if (userAgent.includes('android')) {
-            // Android - enfoque alternativo
-            refreshForAndroid(iframeContainer, newSrc);
-        } else {
-            // Otros navegadores móviles
-            refreshGenericMobile(iframeContainer, newSrc);
-        }
-    }
-
-    // Estrategia específica para Safari en iOS
-    function refreshForSafariiOS(container, newSrc) {
-        console.log('📱 Usando estrategia para Safari iOS');
-        
-        // Safari iOS es particularmente problemático con iframes
-        // Creamos un iframe completamente nuevo
-        
-        // 1. Ocultar el iframe actual suavemente
-        const oldIframe = container.querySelector('iframe');
-        if (oldIframe) {
-            oldIframe.style.opacity = '0';
-            oldIframe.style.transition = 'opacity 0.5s ease';
-        }
-        
-        // 2. Crear nuevo iframe
-        setTimeout(() => {
-            const newIframe = document.createElement('iframe');
-            newIframe.src = newSrc;
-            newIframe.width = "100%";
-            newIframe.height = "380";
-            newIframe.frameBorder = "0";
-            newIframe.allowFullscreen = "";
-            newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-            newIframe.loading = "lazy";
-            newIframe.style.borderRadius = "12px";
-            newIframe.style.opacity = "0";
-            newIframe.style.transition = "opacity 0.5s ease";
-            
-            // Reemplazar el iframe
-            if (oldIframe) {
-                container.removeChild(oldIframe);
-            }
-            container.appendChild(newIframe);
-            
-            // Animar la aparición del nuevo iframe
-            setTimeout(() => {
-                newIframe.style.opacity = "1";
-            }, 100);
-            
-            console.log('✅ Iframe recreado para Safari iOS');
-            showAuthStatus("✅ Playlist actualizada en Safari", "success");
-            
-        }, 500);
-    }
-
-    // Estrategia para Android
-    function refreshForAndroid(container, newSrc) {
-        console.log('🤖 Usando estrategia para Android');
-        
-        const iframe = container.querySelector('iframe');
-        if (!iframe) return;
-        
-        // Android responde mejor a la recarga del src
-        iframe.src = newSrc;
-        
-        // Forzar redimensionado para triggerear repaint
-        setTimeout(() => {
-            iframe.style.height = '379px';
-            setTimeout(() => {
-                iframe.style.height = '380px';
-            }, 50);
-        }, 1000);
-        
-        console.log('✅ Iframe actualizado para Android');
-        showAuthStatus("✅ Playlist actualizada en Android", "success");
-    }
-
-    // Estrategia genérica para otros navegadores móviles
-    function refreshGenericMobile(container, newSrc) {
-        console.log('📱 Usando estrategia genérica para móvil');
-        
-        const iframe = container.querySelector('iframe');
-        if (!iframe) return;
-        
-        // Enfoque conservador: recargar src con parámetros únicos
-        iframe.src = newSrc;
-        
-        console.log('✅ Iframe actualizado (enfoque genérico)');
-        showAuthStatus("✅ Playlist actualizada", "success");
-    }
-
-    // Función para detectar iOS específicamente
+    // Función para detectar iOS
     function isIOS() {
-        return [
-            'iPad Simulator',
-            'iPhone Simulator',
-            'iPod Simulator',
-            'iPad',
-            'iPhone',
-            'iPod'
-        ].includes(navigator.platform) ||
-        (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     }
 
-    // Función mejorada para detectar dispositivos móviles
+    // Función para detectar dispositivos móviles
     function isMobileDevice() {
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
-        const isMobileViewport = window.innerWidth <= 768;
-        
-        return isMobile || isMobileViewport;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               window.innerWidth <= 768;
     }
 
     // 💬 Mostrar mensajes de estado
@@ -2273,110 +2113,62 @@ window.addEventListener('beforeunload', () => {
             type === "warning" ? 'status-warning' : 'status-connected'
         );
         authStatus.classList.remove('hidden');
-        
-        // Auto-ocultar mensajes exitosos
-        if (type === "success") {
-            setTimeout(() => {
-                if (authStatus && authStatus.classList.contains('status-connected')) {
-                    authStatus.classList.add('hidden');
-                }
-            }, 4000);
-        }
     }
 
-    // 🎬 Inicialización cuando carga la página - Mejorada para móviles
+    // 🎬 Inicialización cuando carga la página
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🎵 Iniciando sistema de música para invitados...');
+        console.log('🎵 Iniciando sistema de música mejorado...');
         
-        const isMobile = isMobileDevice();
-        const isIOSDevice = isIOS();
+        // Configurar event listeners
+        if (suggestBtn) suggestBtn.addEventListener('click', openSuggestionForm);
+        if (searchSongBtn) searchSongBtn.addEventListener('click', handleSearchSongClick);
+        if (searchBtn) searchBtn.addEventListener('click', searchSong);
+        if (refreshPlaylistBtn) refreshPlaylistBtn.addEventListener('click', refreshPlayerAggressive);
+        if (retryButton) retryButton.addEventListener('click', () => { hideBackendError(); searchSong(); });
+        if (useAlternativeButton) useAlternativeButton.addEventListener('click', alternativeSearch);
         
-        console.log('📱 Dispositivo móvil:', isMobile);
-        console.log('🍎 Dispositivo iOS:', isIOSDevice);
+        if (songSearch) {
+            songSearch.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !isSearching) searchSong();
+            });
+        }
         
-        // Mensaje inicial específico para móviles
+        // Mensaje inicial
         if (authStatus) {
-            if (isMobile) {
-                let mobileMessage = '🎵 ¡Toca "Buscar y agregar canciones" para colaborar! ';
-                
-                if (isIOSDevice) {
-                    mobileMessage += '<br><small>💡 En iOS: Si no ves cambios después de agregar, toca "Actualizar playlist"</small>';
-                } else {
-                    mobileMessage += '<br><small>💡 En móvil: Usa "Actualizar playlist" si no ves tus canciones</small>';
-                }
-                
-                authStatus.innerHTML = mobileMessage;
-            } else {
-                authStatus.innerHTML = '🎵 ¡Haz clic en "Buscar y agregar canciones" para empezar a colaborar!';
-            }
-            
+            authStatus.innerHTML = '🎵 ¡Toca "Buscar y agregar canciones" para colaborar!';
             authStatus.classList.add('status-connected');
             authStatus.classList.remove('hidden');
         }
         
-        // Configurar event listeners
-        if (suggestBtn) {
-            suggestBtn.addEventListener('click', openSuggestionForm);
-        }
-        
-        if (searchSongBtn) {
-            searchSongBtn.addEventListener('click', handleSearchSongClick);
-        }
-        
-        if (searchBtn) {
-            searchBtn.addEventListener('click', searchSong);
-        }
-        
-        if (refreshPlaylistBtn) {
-            refreshPlaylistBtn.addEventListener('click', refreshPlayer);
-        }
-        
-        if (songSearch) {
-            // Enter para buscar
-            songSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !isSearching) {
-                    searchSong();
-                }
-            });
-            
-            // Búsqueda en tiempo real (opcional)
-            songSearch.addEventListener('input', function() {
-                clearTimeout(searchTimeout);
-                const query = this.value.trim();
-                
-                if (query.length >= 3) {
-                    searchTimeout = setTimeout(() => {
-                        if (!isSearching) {
-                            console.log('🔍 Búsqueda automática:', query);
-                            // searchSong(); // Descomenta para búsqueda automática
-                        }
-                    }, 1500);
-                }
-            });
-        }
-        
-        if (retryButton) {
-            retryButton.addEventListener('click', () => {
-                hideBackendError();
-                searchSong();
-            });
-        }
-        
-        if (useAlternativeButton) {
-            useAlternativeButton.addEventListener('click', () => {
-                alternativeSearch();
-            });
-        }
-        
         console.log('✅ Sistema de música listo para usar');
     });
-// 🎵 Funciones del reproductor de audio de la página function playAudio() { const audio = document.getElementById('audioPrueba'); audio.play(); document.getElementById('btnPlay').classList.add('hidden'); document.getElementById('btnPausa').classList.remove('hidden'); } function pauseAudio() { const audio = document.getElementById('audioPrueba'); audio.pause(); document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); } </script>
+
+    // 🎵 Funciones del reproductor de audio
+    function playAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        if (audio) {
+            audio.play(); 
+            document.getElementById('btnPlay').classList.add('hidden'); 
+            document.getElementById('btnPausa').classList.remove('hidden'); 
+        }
+    } 
+    
+    function pauseAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        if (audio) {
+            audio.pause(); 
+            document.getElementById('btnPausa').classList.add('hidden'); 
+            document.getElementById('btnPlay').classList.remove('hidden'); 
+        }
+    }
+</script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     
 </body>
 </html>
+
 
 
 
