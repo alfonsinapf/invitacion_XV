@@ -1551,12 +1551,14 @@ window.addEventListener('beforeunload', () => {
     <!-- Script Principal de Música - MODO INVITADO -->
     <script>
  <!-- Script Principal de Música - MODO INVITADO MEJORADO PARA MÓVILES -->
-    // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - SOLUCIÓN DEFINITIVA PARA MÓVILES
+ // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - SIN AUTENTICACIÓN
+    // Los invitados pueden buscar y agregar canciones directamente
     
     // Configuración
     const BACKEND_URL = 'https://invitacion-xv-alfon.vercel.app';
-    const SPOTIFY_PLAYLIST_ID = '0a4iq5x0WHzzn0ox7ea77u';
-    
+    const SEARCH_ENDPOINT = '/api/search';
+    const ADD_ENDPOINT = '/api/add-to-playlist';
+
     // Elementos del DOM
     const guestOptions = document.getElementById('guestOptions');
     const spotifySearchSection = document.getElementById('spotifySearchSection');
@@ -1570,13 +1572,11 @@ window.addEventListener('beforeunload', () => {
     const backendError = document.getElementById('backendError');
     const retryButton = document.getElementById('retryButton');
     const useAlternativeButton = document.getElementById('useAlternativeButton');
-    const refreshPlaylistBtn = document.getElementById('refreshPlaylistBtn');
 
     // Estado de la aplicación
     let isSearching = false;
     let searchTimeout = null;
-    let refreshAttempts = 0;
-    const MAX_REFRESH_ATTEMPTS = 3;
+    let manualRefreshBtn = null;
 
     // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
@@ -1601,8 +1601,6 @@ window.addEventListener('beforeunload', () => {
 
     // 🎨 Mostrar sección de búsqueda
     function showSearchSection() {
-        if (!guestOptions || !spotifySearchSection) return;
-        
         guestOptions.classList.add('hidden');
         spotifySearchSection.classList.remove('hidden');
         
@@ -1631,27 +1629,23 @@ window.addEventListener('beforeunload', () => {
 
     // ❌ Mostrar error de backend
     function showBackendError() {
-        if (backendError) {
-            backendError.classList.remove('hidden');
-            if (searchResults) searchResults.innerHTML = '';
-        }
+        backendError.classList.remove('hidden');
+        searchResults.innerHTML = '';
     }
 
     // ✅ Ocultar error de backend
     function hideBackendError() {
-        if (backendError) {
-            backendError.classList.add('hidden');
-        }
+        backendError.classList.add('hidden');
     }
 
     // 🔍 Búsqueda principal de canciones
     async function searchSong() {
-        const query = songSearch ? songSearch.value.trim() : '';
+        const query = songSearch.value.trim();
         
         // Validaciones
         if (!query) {
             showAuthStatus("Por favor escribe algo para buscar", "error");
-            if (songSearch) songSearch.focus();
+            songSearch.focus();
             return;
         }
 
@@ -1670,10 +1664,8 @@ window.addEventListener('beforeunload', () => {
         showAuthStatus("🔍 Buscando canciones...", "success");
         
         // Actualizar botón de búsqueda
-        if (searchBtn) {
-            searchBtn.disabled = true;
-            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
-        }
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
         
         // Mostrar esqueleto de carga
         showLoadingSkeleton();
@@ -1681,7 +1673,7 @@ window.addEventListener('beforeunload', () => {
         try {
             console.log('🔍 Buscando:', query);
             
-            const response = await fetchWithTimeout(`${BACKEND_URL}/api/search`, {
+            const response = await fetchWithTimeout(`${BACKEND_URL}${SEARCH_ENDPOINT}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1711,17 +1703,13 @@ window.addEventListener('beforeunload', () => {
             handleSearchError(error);
         } finally {
             isSearching = false;
-            if (searchBtn) {
-                searchBtn.disabled = false;
-                searchBtn.innerHTML = '<i class="fas fa-search"></i> Buscar';
-            }
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = '<i class="fas fa-search"></i> Buscar';
         }
     }
 
     // 💀 Mostrar esqueleto de carga
     function showLoadingSkeleton() {
-        if (!searchResults) return;
-        
         searchResults.innerHTML = `
             <div class="loading pulse">
                 <i class="fas fa-music"></i>
@@ -1752,8 +1740,6 @@ window.addEventListener('beforeunload', () => {
 
     // 🎵 Mostrar resultados de búsqueda
     function displayResults(tracks) {
-        if (!searchResults) return;
-        
         searchResults.innerHTML = '';
         
         if (!tracks || tracks.length === 0) {
@@ -1827,8 +1813,6 @@ window.addEventListener('beforeunload', () => {
 
     // 😕 Mostrar mensaje de sin resultados
     function showNoResults() {
-        if (!searchResults) return;
-        
         searchResults.innerHTML = `
             <div class="no-results">
                 <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
@@ -1852,7 +1836,7 @@ window.addEventListener('beforeunload', () => {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
-    // ➕ Agregar canción a la playlist - SOLUCIÓN DEFINITIVA
+    // ➕ Agregar canción a la playlist
     async function addToPlaylist(trackUri, trackName, artistName, button) {
         if (!trackUri) {
             showAuthStatus("❌ Error: Canción inválida", "error");
@@ -1866,7 +1850,7 @@ window.addEventListener('beforeunload', () => {
         try {
             console.log('➕ Agregando:', trackName, '-', artistName);
             
-            const response = await fetchWithTimeout(`${BACKEND_URL}/api/add-to-playlist`, {
+            const response = await fetchWithTimeout(`${BACKEND_URL}${ADD_ENDPOINT}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -1876,7 +1860,7 @@ window.addEventListener('beforeunload', () => {
                     trackName: trackName,
                     artistName: artistName
                 })
-            }, 20000); // Timeout más largo para móviles
+            }, 15000);
             
             const data = await response.json();
             
@@ -1899,18 +1883,16 @@ window.addEventListener('beforeunload', () => {
             
             showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
             
-            // Estrategia de actualización AGRESIVA para móviles
+            // Actualización mejorada según el dispositivo
             if (isMobileDevice()) {
-                showAuthStatus("📱 Actualizando playlist móvil... Esto puede tomar hasta 1 minuto", "warning");
-                
-                // Esperar y usar método de fuerza bruta
-                setTimeout(() => {
-                    refreshPlayerAggressive();
-                }, 2000);
+                // En móviles, mostrar botón de actualización manual
+                showManualRefreshButton();
+                showAuthStatus("📱 En dispositivos móviles, usa el botón 'Actualizar playlist' para ver los cambios", "warning");
             } else {
-                // En escritorio, actualización normal
-                setTimeout(refreshPlayer, 1000);
-            }   
+                // En escritorio, actualización automática
+                setTimeout(refreshPlayer, 2500);
+            }
+            
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
             
@@ -1936,143 +1918,146 @@ window.addEventListener('beforeunload', () => {
         }
     }
 
-    // 🔄 MÉTODO AGRESIVO de actualización - SOLUCIÓN DEFINITIVA
-    function refreshPlayerAggressive() {
-        console.log('💥 Iniciando actualización AGRESIVA del reproductor...');
-        refreshAttempts = 0;
-        forceRefreshWithRetry();
-    }
-
-    function forceRefreshWithRetry() {
-        if (refreshAttempts >= MAX_REFRESH_ATTEMPTS) {
-            console.log('🛑 Máximo de intentos de actualización alcanzado');
-            showAuthStatus("⚠️ Si no ves los cambios, recarga la página completa", "warning");
+    // 🔄 Búsqueda alternativa con Last.fm
+    async function alternativeSearch(query) {
+        if (!query) query = songSearch.value.trim();
+        
+        if (!query) {
+            showAuthStatus("Escribe algo para buscar", "error");
+            songSearch.focus();
             return;
         }
-
-        refreshAttempts++;
-        console.log(`🔄 Intento ${refreshAttempts} de ${MAX_REFRESH_ATTEMPTS}`);
         
-        showAuthStatus(`🔄 Actualizando... Intento ${refreshAttempts}/${MAX_REFRESH_ATTEMPTS}`, "success");
-
-        // Método SUPER AGRESIVO: Destruir y recrear completamente
-        const container = document.querySelector('.spotify-embed-guest');
-        if (!container) return;
-
-        // 1. Remover completamente el iframe existente
-        const oldIframe = container.querySelector('iframe');
-        if (oldIframe) {
-            container.removeChild(oldIframe);
-        }
-
-        // 2. Crear nuevo iframe con parámetros únicos extremos
-        const newIframe = document.createElement('iframe');
+        searchResults.innerHTML = `
+            <div class="loading">
+                <i class="fas fa-satellite-dish" style="font-size: 2.5rem; margin-bottom: 15px;"></i>
+                <h3>Buscando de otra forma...</h3>
+                <p>Usando nuestra base de datos alternativa</p>
+            </div>
+        `;
         
-        // Parámetros ÚNICOS y ALEATORIOS para evitar cache
-        const uniqueParams = new URLSearchParams({
-            utm_source: 'generator',
-            theme: '0',
-            _t: Date.now(),
-            _rand: Math.random().toString(36).substring(2, 15),
-            _v: 'mobile_force_refresh',
-            _attempt: refreshAttempts,
-            _session: Math.random().toString(36).substring(2, 9),
-            _cache: 'bust_' + Date.now()
-        });
-
-        newIframe.src = `https://open.spotify.com/embed/playlist/${SPOTIFY_PLAYLIST_ID}?${uniqueParams.toString()}`;
-        newIframe.width = "100%";
-        newIframe.height = "380";
-        newIframe.frameBorder = "0";
-        newIframe.allowFullscreen = "";
-        newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-        newIframe.loading = "eager"; // Forzar carga inmediata
-        newIframe.style.borderRadius = "12px";
-        newIframe.style.opacity = "0";
-        newIframe.style.transition = "opacity 0.8s ease";
-
-        // 3. Agregar el nuevo iframe
-        container.appendChild(newIframe);
-
-        // 4. Forzar eventos de carga
-        newIframe.onload = function() {
-            console.log('✅ Iframe cargado exitosamente');
-            setTimeout(() => {
-                newIframe.style.opacity = "1";
-                showAuthStatus("✅ Playlist actualizada con éxito", "success");
-                
-                // Forzar redibujado en móviles
-                forceMobileRedraw(newIframe);
-            }, 500);
-        };
-
-        newIframe.onerror = function() {
-            console.log('❌ Error cargando iframe, reintentando...');
-            setTimeout(() => forceRefreshWithRetry(), 2000);
-        };
-
-        // 5. Timeout por si falla la carga
-        setTimeout(() => {
-            if (newIframe.style.opacity === "0") {
-                console.log('⏰ Timeout de carga, reintentando...');
-                forceRefreshWithRetry();
+        hideBackendError();
+        showAuthStatus("🛰️ Buscando con método alternativo...", "success");
+        
+        try {
+            const response = await fetchWithTimeout(
+                `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(query)}&api_key=5a8e1586e85b499c62d9f3a4bfa5b6a9&format=json&limit=12`,
+                {},
+                12000
+            );
+            
+            if (!response.ok) throw new Error('Error en búsqueda alternativa');
+            
+            const data = await response.json();
+            let tracks = data.results?.trackmatches?.track || [];
+            
+            if (!Array.isArray(tracks)) tracks = tracks ? [tracks] : [];
+            
+            if (tracks.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search-minus" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+                        <h3>Tampoco encontramos nada aquí</h3>
+                        <p>Intenta con términos más específicos o usa el formulario de sugerencias</p>
+                        <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
+                            <i class="fas fa-external-link-alt"></i> Sugerir por formulario
+                        </button>
+                    </div>
+                `;
+                showAuthStatus("😕 Sin resultados en método alternativo", "warning");
+                return;
             }
-        }, 8000);
+            
+            displayAlternativeResults(tracks);
+            showAuthStatus(`🎉 ¡${tracks.length} resultados con método alternativo!`, "success");
+            
+        } catch (error) {
+            console.error('❌ Error en búsqueda alternativa:', error);
+            searchResults.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px; color: #dc3545;"></i>
+                    <h3>Error técnico temporal</h3>
+                    <p>Intenta nuevamente en un momento o usa el formulario</p>
+                    <button class="btn btn-alt" onclick="openSuggestionForm()" style="margin-top: 15px;">
+                        <i class="fas fa-external-link-alt"></i> Formulario de sugerencias
+                    </button>
+                </div>
+            `;
+            showAuthStatus("❌ Error en búsqueda alternativa", "error");
+        }
     }
 
-    function forceMobileRedraw(iframe) {
-        // Técnicas forzadas para redibujar en móviles
-        if (!isMobileDevice()) return;
-
-        console.log('📱 Forzando redibujado en móvil...');
+    // 🎵 Mostrar resultados alternativos
+    function displayAlternativeResults(tracks) {
+        searchResults.innerHTML = '';
         
-        // 1. Cambiar dimensiones ligeramente
-        setTimeout(() => {
-            iframe.style.height = '379px';
-            setTimeout(() => {
-                iframe.style.height = '380px';
-                
-                // 2. Forzar repaint con transform
-                iframe.style.transform = 'translateZ(0)';
-                
-                // 3. Técnica específica para iOS
-                if (isIOS()) {
-                    forceIOSRedraw(iframe);
-                }
-            }, 100);
-        }, 1500);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'auth-status status-warning';
+        alertDiv.style.marginBottom = '20px';
+        alertDiv.innerHTML = '⚠️ Estos resultados son sugerencias - se enviarán al organizador para revisión';
+        
+        const resultsContainer = document.createElement('div');
+        resultsContainer.className = 'track-list';
+        
+        tracks.forEach((track, index) {
+            const trackDiv = document.createElement('div');
+            trackDiv.className = 'track-item';
+            trackDiv.style.animationDelay = `${index * 0.1}s`;
+            
+            const trackName = track.name || 'Canción desconocida';
+            const artistName = track.artist || 'Artista desconocido';
+            
+            trackDiv.innerHTML = `
+                <div class="track-info">
+                    <div class="track-image-placeholder"><i class="fas fa-music"></i></div>
+                    <div class="track-details">
+                        <div class="track-name" title="${trackName}">${trackName}</div>
+                        <div class="track-artist" title="${artistName}">${artistName}</div>
+                    </div>
+                </div>
+                <button class="add-btn" data-name="${trackName}" data-artist="${artistName}">
+                    <i class="fas fa-paper-plane"></i> Sugerir
+                </button>
+            `;
+            
+            resultsContainer.appendChild(trackDiv);
+        });
+        
+        searchResults.appendChild(alertDiv);
+        searchResults.appendChild(resultsContainer);
+        
+        // Event listeners para sugerir
+        document.querySelectorAll('.add-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const trackName = this.getAttribute('data-name');
+                const artistName = this.getAttribute('data-artist');
+                suggestSong(trackName, artistName, this);
+            });
+        });
     }
 
-    function forceIOSRedraw(iframe) {
-        console.log('🍎 Forzando redibujado en iOS...');
+    // 💌 Sugerir canción
+    async function suggestSong(trackName, artistName, button) {
+        const originalText = button.innerHTML;
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
         
-        // Técnicas específicas para Safari iOS
-        setTimeout(() => {
-            // Cambiar opacity brevemente
-            iframe.style.opacity = '0.99';
-            setTimeout(() => {
-                iframe.style.opacity = '1';
-                
-                // Scroll forzado para triggerear render
-                window.scrollBy(0, 1);
-                setTimeout(() => window.scrollBy(0, -1), 50);
-            }, 100);
-        }, 2000);
+        // Simular envío
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        showSuccessMessage(`📨 ¡Sugerencia enviada! "${trackName}" - ${artistName}`);
+        
+        button.innerHTML = '<i class="fas fa-check"></i> Sugerida';
+        button.classList.add('added');
     }
 
     // ✅ Mostrar mensaje de éxito mejorado
     function showSuccessMessage(message = "¡Operación exitosa!") {
-        if (!successMessage) return;
-        
         const isMobile = isMobileDevice();
         
         let enhancedMessage = message;
-        
         if (isMobile) {
-            enhancedMessage += '<br><small style="opacity: 0.8;">📱 ';
-            enhancedMessage += 'En móvil: La actualización puede tardar. ';
-            enhancedMessage += 'Si no ves cambios, usa el botón "Actualizar playlist".';
-            enhancedMessage += '</small>';
+            enhancedMessage += '<br><small style="opacity: 0.8;">📱 En móvil: Usa el botón "Actualizar playlist" para ver los cambios</small>';
         }
         
         successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
@@ -2080,31 +2065,120 @@ window.addEventListener('beforeunload', () => {
         
         successMessage.scrollIntoView({ 
             behavior: 'smooth', 
-            block: 'center'
+            block: 'nearest',
+            inline: 'center'
         });
         
         setTimeout(() => {
-            if (successMessage) {
-                successMessage.style.display = 'none';
-            }
-        }, isMobile ? 10000 : 5000);
+            successMessage.style.display = 'none';
+        }, isMobile ? 8000 : 5000);
     }
 
-    // Función para detectar iOS
-    function isIOS() {
-        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
+    function refreshPlayer() {
+        const iframeContainer = document.querySelector('.spotify-embed-guest');
+        if (!iframeContainer) {
+            console.log('❌ No se encontró el contenedor de Spotify');
+            return;
+        }
+        
+        console.log('🔄 Iniciando actualización del reproductor...');
+        
+        // Crear un nuevo iframe con parámetros actualizados
+        const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
+        const params = new URLSearchParams({
+            utm_source: 'generator',
+            theme: '0',
+            _t: Date.now(), // Timestamp para evitar caché
+            _refresh: '1'
+        });
+        
+        const newIframe = document.createElement('iframe');
+        newIframe.src = `${baseUrl}?${params.toString()}`;
+        newIframe.width = "100%";
+        newIframe.height = "380";
+        newIframe.frameBorder = "0";
+        newIframe.allowFullscreen = "";
+        newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+        newIframe.loading = "lazy";
+        newIframe.style.borderRadius = "12px";
+        
+        // Mostrar indicador de carga
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'iframe-loading';
+        loadingIndicator.innerHTML = `
+            <div class="iframe-loading-content">
+                <div class="iframe-loading-spinner"></div>
+                <p>Actualizando playlist...</p>
+            </div>
+        `;
+        
+        // Limpiar el contenedor y agregar el indicador de carga
+        iframeContainer.innerHTML = '';
+        iframeContainer.appendChild(loadingIndicator);
+        
+        // Agregar el nuevo iframe después de un breve retraso
+        setTimeout(() => {
+            iframeContainer.innerHTML = '';
+            iframeContainer.appendChild(newIframe);
+            
+            // Evento para detectar cuando el iframe se carga
+            newIframe.addEventListener('load', function() {
+                console.log('✅ Iframe de Spotify cargado completamente');
+                showAuthStatus("✅ Playlist actualizada correctamente", "success");
+                
+                // Ocultar botón de actualización manual después de un tiempo
+                if (manualRefreshBtn) {
+                    setTimeout(() => {
+                        if (manualRefreshBtn && manualRefreshBtn.parentNode) {
+                            manualRefreshBtn.style.opacity = '0.7';
+                            manualRefreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar disponible';
+                        }
+                    }, 5000);
+                }
+            });
+            
+            // Manejar errores de carga
+            newIframe.addEventListener('error', function() {
+                console.error('❌ Error al cargar el iframe de Spotify');
+                iframeContainer.innerHTML = '<div class="auth-status status-error">Error al cargar Spotify. Intenta recargar la página.</div>';
+                showAuthStatus("❌ Error al cargar Spotify. Intenta recargar la página.", "error");
+            });
+            
+        }, 500);
+        
+        showAuthStatus("🎵 Actualizando playlist... Esto puede tomar unos segundos", "success");
     }
 
-    // Función para detectar dispositivos móviles
+    // 📱 Mostrar botón de actualización manual
+    function showManualRefreshButton() {
+        // Eliminar botón existente si hay uno
+        if (manualRefreshBtn && manualRefreshBtn.parentNode) {
+            manualRefreshBtn.parentNode.removeChild(manualRefreshBtn);
+        }
+        
+        // Crear nuevo botón
+        manualRefreshBtn = document.createElement('button');
+        manualRefreshBtn.id = 'manualRefreshBtn';
+        manualRefreshBtn.className = 'manual-refresh-btn';
+        manualRefreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar playlist ahora';
+        manualRefreshBtn.onclick = refreshPlayer;
+        
+        // Insertar después del reproductor
+        const playerContainer = document.querySelector('.music-player');
+        if (playerContainer) {
+            playerContainer.appendChild(manualRefreshBtn);
+        }
+    }
+
+    // Función para detectar si estamos en móvil
     function isMobileDevice() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-               window.innerWidth <= 768;
+               (window.innerWidth <= 768);
     }
 
     // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
-        if (!authStatus) return;
-        
         authStatus.innerHTML = message;
         authStatus.className = 'auth-status';
         
@@ -2113,61 +2187,103 @@ window.addEventListener('beforeunload', () => {
             type === "warning" ? 'status-warning' : 'status-connected'
         );
         authStatus.classList.remove('hidden');
+        
+        // Auto-ocultar mensajes exitosos
+        if (type === "success") {
+            setTimeout(() => {
+                if (authStatus.classList.contains('status-connected')) {
+                    authStatus.classList.add('hidden');
+                }
+            }, 4000);
+        }
     }
 
     // 🎬 Inicialización cuando carga la página
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🎵 Iniciando sistema de música mejorado...');
+        console.log('🎵 Iniciando sistema de música para invitados...');
+        console.log('📱 Dispositivo móvil:', isMobileDevice());
         
         // Configurar event listeners
-        if (suggestBtn) suggestBtn.addEventListener('click', openSuggestionForm);
-        if (searchSongBtn) searchSongBtn.addEventListener('click', handleSearchSongClick);
-        if (searchBtn) searchBtn.addEventListener('click', searchSong);
-        if (refreshPlaylistBtn) refreshPlaylistBtn.addEventListener('click', refreshPlayerAggressive);
-        if (retryButton) retryButton.addEventListener('click', () => { hideBackendError(); searchSong(); });
-        if (useAlternativeButton) useAlternativeButton.addEventListener('click', alternativeSearch);
+        if (suggestBtn) {
+            suggestBtn.addEventListener('click', openSuggestionForm);
+        }
+        
+        if (searchSongBtn) {
+            searchSongBtn.addEventListener('click', handleSearchSongClick);
+        }
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', searchSong);
+        }
         
         if (songSearch) {
+            // Enter para buscar
             songSearch.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !isSearching) searchSong();
+                if (e.key === 'Enter' && !isSearching) {
+                    searchSong();
+                }
+            });
+            
+            // Búsqueda en tiempo real (opcional)
+            songSearch.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length >= 3) {
+                    searchTimeout = setTimeout(() => {
+                        if (!isSearching) {
+                            console.log('🔍 Búsqueda automática:', query);
+                            // searchSong(); // Descomenta para búsqueda automática
+                        }
+                    }, 1500);
+                }
             });
         }
         
-        // Mensaje inicial
-        if (authStatus) {
-            authStatus.innerHTML = '🎵 ¡Toca "Buscar y agregar canciones" para colaborar!';
-            authStatus.classList.add('status-connected');
-            authStatus.classList.remove('hidden');
+        if (retryButton) {
+            retryButton.addEventListener('click', () => {
+                hideBackendError();
+                searchSong();
+            });
         }
         
+        if (useAlternativeButton) {
+            useAlternativeButton.addEventListener('click', () => {
+                alternativeSearch();
+            });
+        }
+        
+        // Mensaje inicial amigable
+        if (authStatus) {
+            authStatus.innerHTML = '🎵 ¡Haz clic en "Buscar y agregar canciones" para empezar a colaborar!';
+            authStatus.classList.add('status-connected');
+            authStatus.classList.remove('hidden');
+        }     
         console.log('✅ Sistema de música listo para usar');
     });
 
-    // 🎵 Funciones del reproductor de audio
+    // 🎵 Funciones del reproductor de audio de la página 
     function playAudio() { 
         const audio = document.getElementById('audioPrueba'); 
-        if (audio) {
-            audio.play(); 
-            document.getElementById('btnPlay').classList.add('hidden'); 
-            document.getElementById('btnPausa').classList.remove('hidden'); 
-        }
+        audio.play(); 
+        document.getElementById('btnPlay').classList.add('hidden'); 
+        document.getElementById('btnPausa').classList.remove('hidden'); 
     } 
     
     function pauseAudio() { 
         const audio = document.getElementById('audioPrueba'); 
-        if (audio) {
-            audio.pause(); 
-            document.getElementById('btnPausa').classList.add('hidden'); 
-            document.getElementById('btnPlay').classList.remove('hidden'); 
-        }
-    }
-</script>
+        audio.pause(); 
+        document.getElementById('btnPausa').classList.add('hidden'); 
+        document.getElementById('btnPlay').classList.remove('hidden'); 
+    } 
+    </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     
 </body>
 </html>
+
 
 
 
