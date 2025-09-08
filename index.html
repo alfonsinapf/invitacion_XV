@@ -893,40 +893,310 @@ color:var(--color-primario);
     </section>
 
 <!-- Libro de visitas -->
-<section class="guestbook my-5">
-  <div class="container text-center">
-    <h4>💌 Deja tu mensaje para Alfonsina</h4>
-    <p class="subtitle">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
-    
-    <!-- Mensajes de estado -->
-    <div id="error-message" class="error-message hidden"></div>
-    <div id="success-message" class="success-message hidden"></div>
-    
-    <form id="guestbook-form">
-      <div class="form-group">
-        <input type="text" id="guestbook-name" placeholder="Tu nombre *" required maxlength="50" />
-      </div>
-      
-      <div class="form-group">
-        <textarea id="guestbook-message" placeholder="Escribe tu mensaje aquí... *" required maxlength="500"></textarea>
-      </div>
-      
-      <button type="submit" id="guestbook-submit" class="btn-guestbook">
-        <span class="btn-text">Enviar 💌</span>
-        <div class="loading hidden">
-          <div class="spinner"></div>
-          Enviando...
-        </div>
-      </button>
-    </form>
+<!-- Libro de visitas con estilos integrados -->
+<section class="my-5" style="
+    background: linear-gradient(135deg, rgba(255,192,203,0.15), rgba(255,182,193,0.15));
+    padding: 50px 30px;
+    border-radius: 25px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255,255,255,0.2);
+    margin: 40px auto;
+    max-width: 800px;
+    position: relative;
+    overflow: hidden;
+">
+    <div class="container text-center">
+        <!-- Título principal -->
+        <h4 style="
+            font-family: 'Montserrat', sans-serif !important;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-size: 28px !important;
+            font-weight: 600 !important;
+            color: #2c3e50 !important;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            line-height: 1.2;
+        ">💌 Deja tu mensaje para Alfonsina</h4>
+        
+        <!-- Subtítulo -->
+        <p style="
+            font-family: 'Montserrat', sans-serif !important;
+            font-weight: 400 !important;
+            font-size: 18px !important;
+            color: #34495e !important;
+            text-align: center;
+            margin-bottom: 35px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.7);
+            line-height: 1.4;
+        ">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
+        
+        <!-- Mensajes de estado -->
+        <div id="error-message" class="hidden" style="
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.15));
+            border: 2px solid rgba(220, 53, 69, 0.4);
+            color: #fff !important;
+            padding: 18px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.2);
+            backdrop-filter: blur(10px);
+        "></div>
+        
+        <div id="success-message" class="hidden" style="
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.25), rgba(40, 167, 69, 0.15));
+            border: 2px solid rgba(40, 167, 69, 0.4);
+            color: #fff !important;
+            padding: 18px 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+            backdrop-filter: blur(10px);
+        "></div>
+        
+        <!-- Formulario -->
+        <form id="guestbook-form">
+            <div style="margin-bottom: 25px;">
+                <input 
+                    type="text" 
+                    id="guestbook-name" 
+                    placeholder="Tu nombre *" 
+                    required 
+                    maxlength="50"
+                    style="
+                        width: 100%;
+                        padding: 18px 20px;
+                        border-radius: 15px;
+                        border: 2px solid rgba(158, 198, 182, 0.4);
+                        background: rgba(255, 255, 255, 0.95) !important;
+                        color: #2c3e50 !important;
+                        font-family: 'Montserrat', sans-serif !important;
+                        font-size: 16px;
+                        font-weight: 400;
+                        transition: all 0.3s ease;
+                        box-sizing: border-box;
+                        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                    "
+                    onfocus="this.style.borderColor='#9ec6b6'; this.style.background='rgba(255, 255, 255, 1)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.1), 0 0 20px rgba(158, 198, 182, 0.4), 0 0 0 3px rgba(158, 198, 182, 0.2)'; this.style.transform='translateY(-2px)';"
+                    onblur="this.style.borderColor='rgba(158, 198, 182, 0.4)'; this.style.background='rgba(255, 255, 255, 0.95)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.1)'; this.style.transform='translateY(0)';"
+                />
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <textarea 
+                    id="guestbook-message" 
+                    placeholder="Escribe tu mensaje aquí... *" 
+                    required
+                    maxlength="500"
+                    style="
+                        width: 100%;
+                        min-height: 120px;
+                        padding: 18px 20px;
+                        border-radius: 15px;
+                        border: 2px solid rgba(158, 198, 182, 0.4);
+                        background: rgba(255, 255, 255, 0.95) !important;
+                        color: #2c3e50 !important;
+                        font-family: 'Montserrat', sans-serif !important;
+                        font-size: 16px;
+                        font-weight: 400;
+                        transition: all 0.3s ease;
+                        box-sizing: border-box;
+                        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                        resize: vertical;
+                        line-height: 1.5;
+                    "
+                    onfocus="this.style.borderColor='#9ec6b6'; this.style.background='rgba(255, 255, 255, 1)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.1), 0 0 20px rgba(158, 198, 182, 0.4), 0 0 0 3px rgba(158, 198, 182, 0.2)'; this.style.transform='translateY(-2px)';"
+                    onblur="this.style.borderColor='rgba(158, 198, 182, 0.4)'; this.style.background='rgba(255, 255, 255, 0.95)'; this.style.boxShadow='inset 0 2px 4px rgba(0,0,0,0.1)'; this.style.transform='translateY(0)';"
+                ></textarea>
+            </div>
+            
+            <button 
+                type="submit" 
+                id="guestbook-submit" 
+                style="
+                    margin-top: 20px;
+                    padding: 18px 50px;
+                    border-radius: 35px;
+                    background: linear-gradient(135deg, #9ec6b6, #7fb3d3);
+                    color: #fff !important;
+                    border: 2px solid #9ec6b6;
+                    font-family: 'Montserrat', sans-serif !important;
+                    font-weight: 700;
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    width: 100%;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    box-shadow: 0 6px 20px rgba(158, 198, 182, 0.3);
+                    position: relative;
+                    overflow: hidden;
+                "
+                onmouseover="this.style.background='linear-gradient(135deg, #7fb3d3, #9ec6b6)'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 25px rgba(158, 198, 182, 0.4)';"
+                onmouseout="this.style.background='linear-gradient(135deg, #9ec6b6, #7fb3d3)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 6px 20px rgba(158, 198, 182, 0.3)';"
+            >
+                <span class="btn-text">Enviar 💌</span>
+                <div class="loading hidden" style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                    <div style="
+                        width: 20px;
+                        height: 20px;
+                        border: 3px solid rgba(255,255,255,0.3);
+                        border-top: 3px solid white;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                    "></div>
+                    Enviando...
+                </div>
+            </button>
+        </form>
 
-    <div id="guestbook-messages"></div>
-    
-    <div class="stats">
-      <p>✨ Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
+        <!-- Contenedor de mensajes -->
+        <div id="guestbook-messages" style="
+            margin-top: 40px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 10px;
+        "></div>
+        
+        <!-- Estadísticas -->
+        <div style="
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.15));
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        ">
+            <p style="
+                color: #2c3e50 !important;
+                margin: 0;
+                font-size: 16px;
+                font-weight: 600;
+                font-family: 'Montserrat', sans-serif !important;
+            ">✨ Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
+        </div>
     </div>
-  </div>
 </section>
+
+<!-- Estilos adicionales para animaciones -->
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Estilos para los mensajes dinámicos */
+.guestbook-message-item {
+    text-align: left !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)) !important;
+    border-left: 5px solid #9ec6b6 !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+    margin-bottom: 20px !important;
+    animation: fadeInUp 0.6s ease-out;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    transition: transform 0.3s ease !important;
+}
+
+.guestbook-message-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15) !important;
+}
+
+.guestbook-message-author {
+    font-weight: 700 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 8px !important;
+    font-size: 16px !important;
+    text-transform: capitalize !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.guestbook-message-content {
+    color: #34495e !important;
+    line-height: 1.6 !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    margin-bottom: 10px !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.guestbook-message-date {
+    color: #7f8c8d !important;
+    font-size: 12px !important;
+    margin-top: 12px !important;
+    text-align: right !important;
+    font-style: italic !important;
+    font-weight: 300 !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.guestbook-empty-messages {
+    text-align: center !important;
+    padding: 50px 20px !important;
+    color: #7f8c8d !important;
+    font-style: italic !important;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)) !important;
+    border-radius: 15px !important;
+    border: 2px dashed rgba(158, 198, 182, 0.3) !important;
+    margin: 20px 0 !important;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.guestbook-empty-messages i {
+    font-size: 3rem !important;
+    margin-bottom: 15px !important;
+    opacity: 0.6 !important;
+}
+
+/* Placeholders más visibles */
+#guestbook-name::placeholder,
+#guestbook-message::placeholder {
+    color: #7f8c8d !important;
+    font-weight: 300 !important;
+    font-style: italic !important;
+    opacity: 1 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #guestbook-name,
+    #guestbook-message {
+        padding: 15px 18px !important;
+        font-size: 15px !important;
+    }
+    
+    #guestbook-submit {
+        padding: 16px 40px !important;
+        font-size: 15px !important;
+    }
+}
+</style>
 
 <!-- Confetti Library -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -1920,6 +2190,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
