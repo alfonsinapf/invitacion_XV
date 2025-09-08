@@ -555,12 +555,12 @@
 
 .btn-calendar {
   display: inline-block;
-  padding: 14px 28px;
+  padding: 10px 40px;
   margin: 10px 0;              /* 👈 margen vertical */
-  background-color: #9AB8AA;   /* relleno verde pastel */
-  color: #fff !important;      /* texto blanco */
-  border: 2px solid #9AB8AA;   /* mismo color en borde */
-  border-radius: 50px;
+  background-color: var;   /* relleno verde pastel */
+  color: white;      /* texto blanco */
+  border:  1px solid var(--color-primario);   /* mismo color en borde */
+  border-radius: 30px;
   font-size: 15px;
   font-weight: normal;  
   font-family: 'Montserrat', sans-serif; /* tipografía igual */
@@ -573,8 +573,8 @@
 }
 
 .btn-calendar:hover {
-  background-color: transparent; 
-  color: #9AB8AA !important;    
+  background-color: white; 
+color:var(--color-primario);    
   transform: translateY(-2px);
 }
     </style>
@@ -1595,6 +1595,7 @@ function isMobileDevice() {
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
 
