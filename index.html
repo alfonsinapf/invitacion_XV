@@ -599,9 +599,21 @@ color:var(--color-primario);
 }
 
 .guestbook input:focus,
-.guestbook textarea:focus {
-  outline: none;
-  background: rgba(255,255,255,0.15);
+.guestbook textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(0,0,0,0.6); /* ⚡ Fondo oscuro para que se vea el texto */
+  color: #fff; /* Texto blanco */
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.guestbook input::placeholder,
+.guestbook textarea::placeholder {
+  color: #ddd; /* placeholder visible */
 }
 
 .guestbook textarea {
@@ -1750,6 +1762,7 @@ function isMobileDevice() {
 
 </body>
 </html>
+
 
 
 
