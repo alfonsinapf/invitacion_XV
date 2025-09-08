@@ -577,6 +577,73 @@
 color:var(--color-primario);    
   transform: translateY(-2px);
 }
+/* Libro de visitas estilo fiesta */
+.guestbook {
+  background: linear-gradient(135deg, rgba(255,192,203,0.1), rgba(255,182,193,0.1));
+  padding: 40px 20px;
+  border-radius: 25px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+
+.guestbook input,
+.guestbook textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 15px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.guestbook input:focus,
+.guestbook textarea:focus {
+  outline: none;
+  background: rgba(255,255,255,0.15);
+}
+
+.guestbook textarea {
+  min-height: 80px;
+  resize: none;
+}
+
+.btn-guestbook {
+  margin-top: 10px;
+  padding: 10px 40px;
+  border-radius: 30px;
+  background-color: var(--color-primario);
+  color: #fff;
+  border: 1px solid var(--color-primario);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-guestbook:hover {
+  background-color: white;
+  color: var(--color-primario);
+  transform: translateY(-2px);
+}
+
+#guestbook-messages div {
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid var(--color-primario);
+  padding: 10px 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+  
+    
     </style>
 </head>
 <body>
@@ -891,6 +958,24 @@ color:var(--color-primario);
         </div>
     </section>
 
+<!-- Libro de visitas -->
+<section class="guestbook my-5">
+  <div class="container text-center">
+    <h4 class="mb-3">💌 Deja tu mensaje para Alfonsina</h4>
+    <p class="mb-4">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
+    
+    <div id="guestbook-form" class="mb-3">
+      <input type="text" id="guestbook-name" placeholder="Tu nombre" class="form-control mb-2" />
+      <textarea id="guestbook-message" placeholder="Tu mensaje" class="form-control mb-2"></textarea>
+      <button id="guestbook-submit" class="btn btn-guestbook">Enviar 💌</button>
+    </div>
+
+    <div id="guestbook-messages" class="mt-4"></div>
+    <p class="mt-3">Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
+  </div>
+</section>
+
+    
     <!-- Contacto -->
     <section class="contacto">
         <div class="container">
@@ -1593,8 +1678,79 @@ function isMobileDevice() {
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
+    
+<!-- Firebase + Libro de visitas con confeti -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+  import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+
+  // 🔹 Configuración de Firebase
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "tu-proyecto.firebaseapp.com",
+    projectId: "tu-proyecto",
+    storageBucket: "tu-proyecto.appspot.com",
+    messagingSenderId: "TU_MESSAGING_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // 🔹 Referencias a Firestore
+  const messagesRef = collection(db, "guestbook");
+  const messagesQuery = query(messagesRef, orderBy("date", "desc"));
+
+  // 🔹 Referencias a DOM
+  const nameInput = document.getElementById("guestbook-name");
+  const messageInput = document.getElementById("guestbook-message");
+  const submitBtn = document.getElementById("guestbook-submit");
+  const messagesDiv = document.getElementById("guestbook-messages");
+  const countSpan = document.getElementById("guestbook-count");
+
+  // 🔹 Evento click en enviar
+  submitBtn.addEventListener("click", async (e) => {
+    e.preventDefault();
+    if (!nameInput.value || !messageInput.value) return;
+
+    // Guardar en Firestore
+    await addDoc(messagesRef, {
+      name: nameInput.value,
+      message: messageInput.value,
+      date: serverTimestamp()
+    });
+
+    // Confeti 🎉
+    confetti({
+      particleCount: 70,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+
+    nameInput.value = "";
+    messageInput.value = "";
+  });
+
+  // 🔹 Escucha en tiempo real
+  onSnapshot(messagesQuery, (snapshot) => {
+    messagesDiv.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const div = document.createElement("div");
+      div.innerHTML = `<strong>${data.name}:</strong> ${data.message}`;
+      messagesDiv.appendChild(div);
+    });
+    countSpan.textContent = snapshot.size;
+  });
+</script>
+
+
+
+
 </body>
 </html>
+
 
 
 
