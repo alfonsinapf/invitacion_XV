@@ -892,50 +892,40 @@ color:var(--color-primario);
         </div>
     </section>
 
-<section class="guestbook">
-    <div class="container">
-        <h4>💌 Deja tu mensaje para Alfonsina</h4>
-        <p>Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
-        
-        <!-- Mensajes de estado -->
-        <div id="error-message" class="error-message hidden"></div>
-        <div id="success-message" class="success-message hidden"></div>
-        
-        <form id="guestbook-form">
-            <div class="form-group">
-                <input 
-                    type="text" 
-                    id="guestbook-name" 
-                    placeholder="Tu nombre *" 
-                    required 
-                    maxlength="50"
-                />
-            </div>
-            
-            <div class="form-group">
-                <textarea 
-                    id="guestbook-message" 
-                    placeholder="Escribe tu mensaje aquí... *" 
-                    required
-                    maxlength="500"
-                ></textarea>
-            </div>
-            
-            <button type="submit" id="guestbook-submit" class="btn-guestbook">
-                <span class="btn-text">Enviar 💌</span>
-                <div class="loading hidden">
-                    <div class="spinner"></div>
-                    Enviando...
-                </div>
-            </button>
-        </form>
-
-        <div id="guestbook-messages"></div>
-        
-        <div class="stats">
-            <p>✨ Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
+<!-- Libro de visitas -->
+<section class="guestbook my-5">
+  <div class="container text-center">
+    <h4>💌 Deja tu mensaje para Alfonsina</h4>
+    <p class="subtitle">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
+    
+    <!-- Mensajes de estado -->
+    <div id="error-message" class="error-message hidden"></div>
+    <div id="success-message" class="success-message hidden"></div>
+    
+    <form id="guestbook-form">
+      <div class="form-group">
+        <input type="text" id="guestbook-name" placeholder="Tu nombre *" required maxlength="50" />
+      </div>
+      
+      <div class="form-group">
+        <textarea id="guestbook-message" placeholder="Escribe tu mensaje aquí... *" required maxlength="500"></textarea>
+      </div>
+      
+      <button type="submit" id="guestbook-submit" class="btn-guestbook">
+        <span class="btn-text">Enviar 💌</span>
+        <div class="loading hidden">
+          <div class="spinner"></div>
+          Enviando...
         </div>
+      </button>
+    </form>
+
+    <div id="guestbook-messages"></div>
+    
+    <div class="stats">
+      <p>✨ Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
     </div>
+  </div>
 </section>
 
 <!-- Confetti Library -->
@@ -1930,6 +1920,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
