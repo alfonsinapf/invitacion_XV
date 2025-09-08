@@ -1447,34 +1447,4 @@ section.cuenta-regresiva{
 }
 
 
-	/* Botón de actualización manual */
-.manual-refresh-btn {
-    background: linear-gradient(135deg, #1DB954, #1ed760);
-    border: 2px solid rgba(29, 185, 84, 0.3);
-    color: white;
-    margin-top: 15px;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-}
 
-.manual-refresh-btn:hover {
-    background: linear-gradient(135deg, #1ed760, #1DB954);
-    border-color: rgba(29, 185, 84, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
-}
-
-/* Optimización para iframe en móviles */
-@media (max-width: 768px) {
-    .spotify-embed-guest iframe {
-        height: 352px !important;
-    }
-}
