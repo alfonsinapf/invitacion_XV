@@ -2074,14 +2074,8 @@ function showSuccessMessage(message = "¡Operación exitosa!") {
   // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
 function refreshPlayer() {
     const iframe = document.querySelector('.spotify-embed-guest iframe');
-    if (!iframe) {
-        console.log('❌ No se encontró el iframe de Spotify');
-        return;
-    }
-    
-    console.log('🔄 Iniciando actualización del reproductor...');
-    
-    // Método 1: Recrear completamente el iframe (más efectivo en móviles)
+    if (!iframe) return;
+
     const parent = iframe.parentNode;
     parent.removeChild(iframe);
 
@@ -2091,7 +2085,8 @@ function refreshPlayer() {
         theme: '0',
         t: Date.now() // cache busting
     });
-  const newIframe = document.createElement("iframe");
+
+ const newIframe = document.createElement("iframe");
     newIframe.src = `${baseUrl}?${params.toString()}`;
     newIframe.width = "100%";
     newIframe.height = "380";
@@ -2102,7 +2097,6 @@ function refreshPlayer() {
 
     showAuthStatus("🎵 Actualizando playlist... Espera unos segundos", "success");
 }
- 
     
     // Timeout más largo para móviles
     setTimeout(() => {
@@ -2207,6 +2201,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
