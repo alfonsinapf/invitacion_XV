@@ -1544,8 +1544,9 @@ window.addEventListener('beforeunload', () => {
 
     <!-- Script Principal de Música - MODO INVITADO -->
     <script>
+    <!-- Script Principal de Música - MODO INVITADO (CORREGIDO) -->
+    <script>
     // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - SIN AUTENTICACIÓN
-    // Los invitados pueden buscar y agregar canciones directamente
     
     // Configuración
     const BACKEND_URL = 'https://invitacion-xv-alfon.vercel.app';
@@ -1565,6 +1566,7 @@ window.addEventListener('beforeunload', () => {
     const backendError = document.getElementById('backendError');
     const retryButton = document.getElementById('retryButton');
     const useAlternativeButton = document.getElementById('useAlternativeButton');
+    const refreshPlaylistBtn = document.getElementById('refreshPlaylistBtn'); // AÑADIDO
 
     // Estado de la aplicación
     let isSearching = false;
@@ -1868,27 +1870,27 @@ window.addEventListener('beforeunload', () => {
                 throw new Error(data.error || data.message || "Error al agregar");
             }
             
-           // ✅ Éxito total
-    console.log('✅ Canción agregada exitosamente');
-    button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
-    button.classList.add('added');
-    
-    showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
-    
-    // Actualización mejorada según el dispositivo
-    if (isMobileDevice()) {
-        // En móviles, esperar más tiempo y usar método más agresivo
-        setTimeout(() => {
-            refreshPlayer();
-            // Sugerir refresh manual como alternativa
-            setTimeout(() => {
-                showAuthStatus("💡 Consejo: Si no ves la canción, usa el botón 'Actualizar playlist' o desliza para refrescar", "warning");
-            }, 5000);
-        }, 4000);
-    } else {
-        // En escritorio, actualización más rápida
-        setTimeout(refreshPlayer, 2500);
-    }   
+            // ✅ Éxito total
+            console.log('✅ Canción agregada exitosamente');
+            button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
+            button.classList.add('added');
+            
+            showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
+            
+            // Actualización mejorada según el dispositivo
+            if (isMobileDevice()) {
+                // En móviles, esperar más tiempo y usar método más agresivo
+                setTimeout(() => {
+                    refreshPlayer();
+                    // Sugerir refresh manual como alternativa
+                    setTimeout(() => {
+                        showAuthStatus("💡 Consejo: Si no ves la canción, usa el botón 'Actualizar playlist' o desliza para refrescar", "warning");
+                    }, 5000);
+                }, 4000);
+            } else {
+                // En escritorio, actualización más rápida
+                setTimeout(refreshPlayer, 2500);
+            }   
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
             
@@ -2047,73 +2049,77 @@ window.addEventListener('beforeunload', () => {
         button.classList.add('added');
     }
 
-// ✅ Mostrar mensaje de éxito mejorado
-function showSuccessMessage(message = "¡Operación exitosa!") {
-    const isMobile = isMobileDevice();
-    
-    let enhancedMessage = message;
-    if (isMobile) {
-        enhancedMessage += '<br><small style="opacity: 0.8;">📱 En móvil: La actualización puede tardar más. Si no ves cambios, usa el botón "Actualizar playlist"</small>';
-    }
-    
-    successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
-    successMessage.style.display = 'block';
-    
-    successMessage.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'nearest',
-        inline: 'center'
-    });
-    
-    setTimeout(() => {
-        successMessage.style.display = 'none';
-    }, isMobile ? 8000 : 5000); // Más tiempo en móviles
-}
-
+    // ✅ Mostrar mensaje de éxito mejorado
+    function showSuccessMessage(message = "¡Operación exitosa!") {
+        const isMobile = isMobileDevice();
         
-  // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
-function refreshPlayer() {
-    const iframe = document.querySelector('.spotify-embed-guest iframe');
-    if (!iframe) return;
+        let enhancedMessage = message;
+        if (isMobile) {
+            enhancedMessage += '<br><small style="opacity: 0.8;">📱 En móvil: La actualización puede tardar más. Si no ves cambios, usa el botón "Actualizar playlist"</small>';
+        }
+        
+        successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
+        successMessage.style.display = 'block';
+        
+        successMessage.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest',
+            inline: 'center'
+        });
+        
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, isMobile ? 8000 : 5000); // Más tiempo en móviles
     }
-    
-    console.log('🔄 Iniciando actualización del reproductor...');
-    
-    // Método 1: Recrear completamente el iframe (más efectivo en móviles)
-    const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode(true);
-    
-    // Agregar parámetros para forzar recarga
-    const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
-    const params = new URLSearchParams({
-        utm_source: 'generator',
-        theme: '0',
-        _t: Date.now(), // Timestamp para cache busting
-        _refresh: '1'
-    });
-    
-    newIframe.src = `${baseUrl}?${params.toString()}`;
-    
-    // Reemplazar el iframe
-    parent.removeChild(iframe);
-    parent.appendChild(newIframe);
-    
-    // Mensaje de feedback mejorado
-    showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
-    
-    // Timeout más largo para móviles
-    setTimeout(() => {
-        showAuthStatus("✅ ¡Playlist actualizada! Si no ves los cambios, desliza para refrescar la página", "success");
-    }, 8000);
-}
 
-// Función para detectar si estamos en móvil
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (window.innerWidth <= 768);
-}
+    // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify (CORREGIDA)
+    function refreshPlayer() {
+        const iframe = document.querySelector('.spotify-embed-guest iframe');
+        if (!iframe) {
+            console.log('❌ No se encontró el iframe de Spotify');
+            return;
+        }
+        
+        console.log('🔄 Iniciando actualización del reproductor...');
+        
+        // Método: Recrear completamente el iframe (más efectivo en móviles)
+        const parent = iframe.parentNode;
+        const newIframe = iframe.cloneNode(true);
+        
+        // Agregar parámetros para forzar recarga
+        const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
+        const params = new URLSearchParams({
+            utm_source: 'generator',
+            theme: '0',
+            _t: Date.now(), // Timestamp para cache busting
+            _refresh: '1'
+        });
+        
+        newIframe.src = `${baseUrl}?${params.toString()}`;
+        
+        // Reemplazar el iframe
+        parent.removeChild(iframe);
+        parent.appendChild(newIframe);
+        
+        // Mensaje de feedback mejorado
+        showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
+        
+        // Timeout más largo para móviles
+        setTimeout(() => {
+            showAuthStatus("✅ ¡Playlist actualizada! Si no ves los cambios, desliza para refrescar la página", "success");
+        }, 8000);
+    }
+
+    // Función para detectar si estamos en móvil
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            (window.innerWidth <= 768);
+    }
+
     // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
+        if (!authStatus) return;
+        
         authStatus.innerHTML = message;
         authStatus.className = 'auth-status';
         
@@ -2126,7 +2132,7 @@ function isMobileDevice() {
         // Auto-ocultar mensajes exitosos
         if (type === "success") {
             setTimeout(() => {
-                if (authStatus.classList.contains('status-connected')) {
+                if (authStatus && authStatus.classList.contains('status-connected')) {
                     authStatus.classList.add('hidden');
                 }
             }, 4000);
@@ -2135,8 +2141,8 @@ function isMobileDevice() {
 
     // 🎬 Inicialización cuando carga la página
     document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎵 Iniciando sistema de música para invitados...');
-    console.log('📱 Dispositivo móvil:', isMobileDevice()); // NUEVO
+        console.log('🎵 Iniciando sistema de música para invitados...');
+        console.log('📱 Dispositivo móvil:', isMobileDevice());
         
         // Configurar event listeners
         if (suggestBtn) {
@@ -2149,6 +2155,10 @@ function isMobileDevice() {
         
         if (searchBtn) {
             searchBtn.addEventListener('click', searchSong);
+        }
+        
+        if (refreshPlaylistBtn) { // AÑADIDO
+            refreshPlaylistBtn.addEventListener('click', refreshPlayer);
         }
         
         if (songSearch) {
@@ -2204,4 +2214,5 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
