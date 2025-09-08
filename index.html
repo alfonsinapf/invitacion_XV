@@ -468,116 +468,143 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-/* NUEVOS ESTILOS PARA MEJORAR ACTUALIZACIÓN DE PLAYLIST */
 
-/* Botón de actualización manual */
-.manual-refresh-btn {
-    background: linear-gradient(135deg, #1DB954, #1ed760) !important;
-    border: 2px solid rgba(29, 185, 84, 0.3) !important;
-    color: white !important;
-    margin-top: 15px;
-    width: 100%;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+        /* NUEVOS ESTILOS PARA MEJORAR ACTUALIZACIÓN DE PLAYLIST */
 
-.manual-refresh-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #1ed760, #1DB954) !important;
-    border-color: rgba(29, 185, 84, 0.5) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
-}
+        /* Botón de actualización manual */
+        .manual-refresh-btn {
+            background: linear-gradient(135deg, #1DB954, #1ed760) !important;
+            border: 2px solid rgba(29, 185, 84, 0.3) !important;
+            color: white !important;
+            margin-top: 15px;
+            width: 100%;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
 
-.manual-refresh-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
-}
+        .manual-refresh-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #1ed760, #1DB954) !important;
+            border-color: rgba(29, 185, 84, 0.5) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
+        }
 
-/* Mejorar iframe en móviles */
-.spotify-embed-guest iframe {
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    width: 100% !important;
-    min-height: 380px !important;
-}
+        .manual-refresh-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
 
-/* Optimizaciones adicionales para dispositivos móviles */
-@media (max-width: 768px) {
-    .spotify-embed-guest iframe {
-        height: 352px !important;
-    }
-    
-    .manual-refresh-btn {
-        padding: 15px 20px;
-        font-size: 16px;
-    }
-    
-    .auth-status {
-        padding: 15px;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-    
-    .success-message {
-        padding: 18px;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-}
+        /* Mejorar iframe en móviles */
+        .spotify-embed-guest iframe {
+            border-radius: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+            width: 100% !important;
+            min-height: 380px !important;
+        }
 
-/* Optimizaciones para dispositivos táctiles */
-@media (hover: none) and (pointer: coarse) {
-    .add-btn, .search-btn, .manual-refresh-btn {
-        min-height: 48px;
-    }
-    
-    .track-item {
-        padding: 20px 15px;
-    }
-    
-    .search-box input {
-        font-size: 16px; /* Previene zoom en iOS */
-    }
-}
-/* Sección Guardá la fecha */
-.guardar-fecha {
-  padding: 40px 20px;
-}
+        /* Optimizaciones adicionales para dispositivos móviles */
+        @media (max-width: 768px) {
+            .spotify-embed-guest iframe {
+                height: 352px !important;
+            }
+            
+            .manual-refresh-btn {
+                padding: 15px 20px;
+                font-size: 16px;
+            }
+            
+            .auth-status {
+                padding: 15px;
+                font-size: 15px;
+                line-height: 1.4;
+            }
+            
+            .success-message {
+                padding: 18px;
+                font-size: 15px;
+                line-height: 1.4;
+            }
+        }
 
-.btn-calendar {
-  display: inline-block;
-  padding: 10px 40px;
-  margin: 10px 0;              /* 👈 margen vertical */
-  background-color: var;   /* relleno verde pastel */
-  color: white;      /* texto blanco */
-  border:  1px solid var(--color-primario);   /* mismo color en borde */
-  border-radius: 30px;
-  font-size: 15px;
-  font-weight: normal;  
-  font-family: 'Montserrat', sans-serif; /* tipografía igual */
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  width: 100%;                 /* 👈 ocupa todo el ancho en móvil */
-  max-width: 320px;            /* 👈 para que no sea gigante */
-}
+        /* Optimizaciones para dispositivos táctiles */
+        @media (hover: none) and (pointer: coarse) {
+            .add-btn, .search-btn, .manual-refresh-btn {
+                min-height: 48px;
+            }
+            
+            .track-item {
+                padding: 20px 15px;
+            }
+            
+            .search-box input {
+                font-size: 16px; /* Previene zoom en iOS */
+            }
+        }
 
-.btn-calendar:hover {
-  background-color: white; 
-color:var(--color-primario);    
-  transform: translateY(-2px);
-}
-   
+        /* Sección Guardá la fecha */
+        .guardar-fecha {
+          padding: 40px 20px;
+        }
+
+        .btn-calendar {
+          display: inline-block;
+          padding: 10px 40px;
+          margin: 10px 0;              /* 👈 margen vertical */
+          background-color: var;   /* relleno verde pastel */
+          color: white;      /* texto blanco */
+          border:  1px solid var(--color-primario);   /* mismo color en borde */
+          border-radius: 30px;
+          font-size: 15px;
+          font-weight: normal;  
+          font-family: 'Montserrat', sans-serif; /* tipografía igual */
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          text-decoration: none;
+          transition: all 0.3s ease;
+          width: 100%;                 /* 👈 ocupa todo el ancho en móvil */
+          max-width: 320px;            /* 👈 para que no sea gigante */
+        }
+
+        .btn-calendar:hover {
+          background-color: white; 
+          color:var(--color-primario);    
+          transform: translateY(-2px);
+        }
+
+        /* Indicador de carga para iframe */
+        .iframe-loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 10px 0;
+        }
+
+        .iframe-loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .iframe-loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #1DB954;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
     </style>
 </head>
 <body>
@@ -609,7 +636,7 @@ color:var(--color-primario);
                 </div>
                 <p class="num_cuenta">:</p>
                 <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="min"></p>
+                    <p class="num_cueta" id="min"></p>
                     <p class="text_cuenta">min</p>
                 </div>
                 <p class="num_cuenta">:</p>
@@ -780,7 +807,7 @@ color:var(--color-primario);
                         <!-- Sección de búsqueda -->
                         <div id="spotifySearchSection" class="hidden">
                             <div class="search-box">
-                                <input type="text" id="songSearch" placeholder="Busca por canción, artista o álbum...">
+                                <input type="text" id="songSearch" placeholder="Busca por canción, artista or álbum...">
                                 <button class="search-btn" id="searchBtn">
                                     <i class="fas fa-search"></i> Buscar
                                 </button>
@@ -1568,6 +1595,7 @@ window.addEventListener('beforeunload', () => {
     // Estado de la aplicación
     let isSearching = false;
     let searchTimeout = null;
+    let manualRefreshBtn = null;
 
     // 🚀 Función fetch con timeout mejorada
     async function fetchWithTimeout(resource, options = {}, timeout = 12000) {
@@ -1867,27 +1895,23 @@ window.addEventListener('beforeunload', () => {
                 throw new Error(data.error || data.message || "Error al agregar");
             }
             
-           // ✅ Éxito total
-    console.log('✅ Canción agregada exitosamente');
-    button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
-    button.classList.add('added');
-    
-    showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
-    
-    // Actualización mejorada según el dispositivo
-    if (isMobileDevice()) {
-        // En móviles, esperar más tiempo y usar método más agresivo
-        setTimeout(() => {
-            refreshPlayer();
-            // Sugerir refresh manual como alternativa
-            setTimeout(() => {
-                showAuthStatus("💡 Consejo: Si no ves la canción, usa el botón 'Actualizar playlist' o desliza para refrescar", "warning");
-            }, 5000);
-        }, 4000);
-    } else {
-        // En escritorio, actualización más rápida
-        setTimeout(refreshPlayer, 2500);
-    }   
+            // ✅ Éxito total
+            console.log('✅ Canción agregada exitosamente');
+            button.innerHTML = '<i class="fas fa-check"></i> ¡Agregada!';
+            button.classList.add('added');
+            
+            showSuccessMessage(`🎉 ¡"${trackName}" de ${artistName} se agregó a la playlist!`);
+            
+            // Actualización mejorada según el dispositivo
+            if (isMobileDevice()) {
+                // En móviles, mostrar botón de actualización manual
+                showManualRefreshButton();
+                showAuthStatus("📱 En dispositivos móviles, usa el botón 'Actualizar playlist' para ver los cambios", "warning");
+            } else {
+                // En escritorio, actualización automática
+                setTimeout(refreshPlayer, 2500);
+            }
+            
         } catch (error) {
             console.error("❌ Error agregando canción:", error);
             
@@ -1994,7 +2018,7 @@ window.addEventListener('beforeunload', () => {
         const resultsContainer = document.createElement('div');
         resultsContainer.className = 'track-list';
         
-        tracks.forEach((track, index) => {
+        tracks.forEach((track, index) {
             const trackDiv = document.createElement('div');
             trackDiv.className = 'track-item';
             trackDiv.style.animationDelay = `${index * 0.1}s`;
@@ -2046,73 +2070,132 @@ window.addEventListener('beforeunload', () => {
         button.classList.add('added');
     }
 
-// ✅ Mostrar mensaje de éxito mejorado
-function showSuccessMessage(message = "¡Operación exitosa!") {
-    const isMobile = isMobileDevice();
-    
-    let enhancedMessage = message;
-    if (isMobile) {
-        enhancedMessage += '<br><small style="opacity: 0.8;">📱 En móvil: La actualización puede tardar más. Si no ves cambios, usa el botón "Actualizar playlist"</small>';
-    }
-    
-    successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
-    successMessage.style.display = 'block';
-    
-    successMessage.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'nearest',
-        inline: 'center'
-    });
-    
-    setTimeout(() => {
-        successMessage.style.display = 'none';
-    }, isMobile ? 8000 : 5000); // Más tiempo en móviles
-}
-
+    // ✅ Mostrar mensaje de éxito mejorado
+    function showSuccessMessage(message = "¡Operación exitosa!") {
+        const isMobile = isMobileDevice();
         
-  // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
-function refreshPlayer() {
-    const iframe = document.querySelector('.spotify-embed-guest iframe');
-    if (!iframe) {
-        console.log('❌ No se encontró el iframe de Spotify');
-        return;
+        let enhancedMessage = message;
+        if (isMobile) {
+            enhancedMessage += '<br><small style="opacity: 0.8;">📱 En móvil: Usa el botón "Actualizar playlist" para ver los cambios</small>';
+        }
+        
+        successMessage.innerHTML = `<i class="fas fa-check-circle" style="margin-right: 10px;"></i>${enhancedMessage}`;
+        successMessage.style.display = 'block';
+        
+        successMessage.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'nearest',
+            inline: 'center'
+        });
+        
+        setTimeout(() => {
+            successMessage.style.display = 'none';
+        }, isMobile ? 8000 : 5000);
     }
-    
-    console.log('🔄 Iniciando actualización del reproductor...');
-    
-    // Método 1: Recrear completamente el iframe (más efectivo en móviles)
-    const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode();
-    
-    // Agregar parámetros para forzar recarga
-    const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
-    const params = new URLSearchParams({
-        utm_source: 'generator',
-        theme: '0',
-        _t: Date.now(), // Timestamp para cache busting
-        _refresh: '1'
-    });
-    
-    newIframe.src = `${baseUrl}?${params.toString()}`;
-    
-    // Reemplazar el iframe
-    parent.removeChild(iframe);
-    parent.appendChild(newIframe);
-    
-    // Mensaje de feedback mejorado
-    showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
-    
-    // Timeout más largo para móviles
-    setTimeout(() => {
-        showAuthStatus("✅ ¡Playlist actualizada! Si no ves los cambios, desliza para refrescar la página", "success");
-    }, 8000);
-}
 
-// Función para detectar si estamos en móvil
-function isMobileDevice() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           (window.innerWidth <= 768);
-}
+    // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
+    function refreshPlayer() {
+        const iframeContainer = document.querySelector('.spotify-embed-guest');
+        if (!iframeContainer) {
+            console.log('❌ No se encontró el contenedor de Spotify');
+            return;
+        }
+        
+        console.log('🔄 Iniciando actualización del reproductor...');
+        
+        // Crear un nuevo iframe con parámetros actualizados
+        const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
+        const params = new URLSearchParams({
+            utm_source: 'generator',
+            theme: '0',
+            _t: Date.now(), // Timestamp para evitar caché
+            _refresh: '1'
+        });
+        
+        const newIframe = document.createElement('iframe');
+        newIframe.src = `${baseUrl}?${params.toString()}`;
+        newIframe.width = "100%";
+        newIframe.height = "380";
+        newIframe.frameBorder = "0";
+        newIframe.allowFullscreen = "";
+        newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+        newIframe.loading = "lazy";
+        newIframe.style.borderRadius = "12px";
+        
+        // Mostrar indicador de carga
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'iframe-loading';
+        loadingIndicator.innerHTML = `
+            <div class="iframe-loading-content">
+                <div class="iframe-loading-spinner"></div>
+                <p>Actualizando playlist...</p>
+            </div>
+        `;
+        
+        // Limpiar el contenedor y agregar el indicador de carga
+        iframeContainer.innerHTML = '';
+        iframeContainer.appendChild(loadingIndicator);
+        
+        // Agregar el nuevo iframe después de un breve retraso
+        setTimeout(() => {
+            iframeContainer.innerHTML = '';
+            iframeContainer.appendChild(newIframe);
+            
+            // Evento para detectar cuando el iframe se carga
+            newIframe.addEventListener('load', function() {
+                console.log('✅ Iframe de Spotify cargado completamente');
+                showAuthStatus("✅ Playlist actualizada correctamente", "success");
+                
+                // Ocultar botón de actualización manual después de un tiempo
+                if (manualRefreshBtn) {
+                    setTimeout(() => {
+                        if (manualRefreshBtn && manualRefreshBtn.parentNode) {
+                            manualRefreshBtn.style.opacity = '0.7';
+                            manualRefreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar disponible';
+                        }
+                    }, 5000);
+                }
+            });
+            
+            // Manejar errores de carga
+            newIframe.addEventListener('error', function() {
+                console.error('❌ Error al cargar el iframe de Spotify');
+                iframeContainer.innerHTML = '<div class="auth-status status-error">Error al cargar Spotify. Intenta recargar la página.</div>';
+                showAuthStatus("❌ Error al cargar Spotify. Intenta recargar la página.", "error");
+            });
+            
+        }, 500);
+        
+        showAuthStatus("🎵 Actualizando playlist... Esto puede tomar unos segundos", "success");
+    }
+
+    // 📱 Mostrar botón de actualización manual
+    function showManualRefreshButton() {
+        // Eliminar botón existente si hay uno
+        if (manualRefreshBtn && manualRefreshBtn.parentNode) {
+            manualRefreshBtn.parentNode.removeChild(manualRefreshBtn);
+        }
+        
+        // Crear nuevo botón
+        manualRefreshBtn = document.createElement('button');
+        manualRefreshBtn.id = 'manualRefreshBtn';
+        manualRefreshBtn.className = 'manual-refresh-btn';
+        manualRefreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar playlist ahora';
+        manualRefreshBtn.onclick = refreshPlayer;
+        
+        // Insertar después del reproductor
+        const playerContainer = document.querySelector('.music-player');
+        if (playerContainer) {
+            playerContainer.appendChild(manualRefreshBtn);
+        }
+    }
+
+    // Función para detectar si estamos en móvil
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (window.innerWidth <= 768);
+    }
+
     // 💬 Mostrar mensajes de estado
     function showAuthStatus(message, type = "success") {
         authStatus.innerHTML = message;
@@ -2136,8 +2219,8 @@ function isMobileDevice() {
 
     // 🎬 Inicialización cuando carga la página
     document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎵 Iniciando sistema de música para invitados...');
-    console.log('📱 Dispositivo móvil:', isMobileDevice()); // NUEVO
+        console.log('🎵 Iniciando sistema de música para invitados...');
+        console.log('📱 Dispositivo móvil:', isMobileDevice());
         
         // Configurar event listeners
         if (suggestBtn) {
@@ -2198,45 +2281,24 @@ function isMobileDevice() {
         console.log('✅ Sistema de música listo para usar');
     });
 
-// 🎵 Funciones del reproductor de audio de la página function playAudio() { const audio = document.getElementById('audioPrueba'); audio.play(); document.getElementById('btnPlay').classList.add('hidden'); document.getElementById('btnPausa').classList.remove('hidden'); } function pauseAudio() { const audio = document.getElementById('audioPrueba'); audio.pause(); document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); } </script>
+    // 🎵 Funciones del reproductor de audio de la página 
+    function playAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        audio.play(); 
+        document.getElementById('btnPlay').classList.add('hidden'); 
+        document.getElementById('btnPausa').classList.remove('hidden'); 
+    } 
+    
+    function pauseAudio() { 
+        const audio = document.getElementById('audioPrueba'); 
+        audio.pause(); 
+        document.getElementById('btnPausa').classList.add('hidden'); 
+        document.getElementById('btnPlay').classList.remove('hidden'); 
+    } 
+    </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
