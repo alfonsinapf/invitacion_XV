@@ -548,7 +548,35 @@
         font-size: 16px; /* Previene zoom en iOS */
     }
 }
-    
+/* Sección Guardá la fecha */
+.guardar-fecha {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 40px 20px;
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.btn-calendar {
+  display: inline-block;
+  padding: 12px 22px;
+  margin: 10px;
+  background: linear-gradient(135deg, #d4af37, #f1c75c);
+  color: #fff !important;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.btn-calendar:hover {
+  background: linear-gradient(135deg, #b58f2a, #d4af37);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+}
+        
     
     </style>
 </head>
@@ -617,6 +645,23 @@
         </div>
     </section>
 
+    <!-- Guardá la fecha -->
+<section class="guardar-fecha my-5">
+  <div class="container text-center">
+    <h4 class="mb-3">📅 Guardá la fecha</h4>
+    <p>Agendá el evento en tu calendario favorito para no perderte esta noche especial.</p>
+
+    <!-- Botón Google Calendar -->
+    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+Alfonsina&dates=20251101T233000Z/20251102T080000Z&details=Celebramos+los+15+a%C3%B1os+de+Alfonsina.+Dress+code%3A+Elegante.&location=Sal%C3%B3n+Centro+Empleado+de+Comercio%2C+Bv.+Damico+S%2FN%2C+Pergamino&sf=true&output=xml"
+       target="_blank"
+       class="btn-calendar">
+       Google Calendar
+    </a>
+
+    <!-- Botón Outlook / Apple Calendar -->
+    <a href="evento-xv.ics" class="btn-calendar">Outlook / Apple Calendar</a>
+  </div>
+</section>
    
 
     <!-- Galería -->
@@ -1551,5 +1596,6 @@ function isMobileDevice() {
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
 
 
