@@ -2074,29 +2074,35 @@ function showSuccessMessage(message = "¡Operación exitosa!") {
   // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
 function refreshPlayer() {
     const iframe = document.querySelector('.spotify-embed-guest iframe');
-    if (!iframe) return;
-
+    if (!iframe) {
+        console.log('❌ No se encontró el iframe de Spotify');
+        return;
+    }
+    
+    console.log('🔄 Iniciando actualización del reproductor...');
+    
+    // Método 1: Recrear completamente el iframe (más efectivo en móviles)
     const parent = iframe.parentNode;
-    parent.removeChild(iframe);
-
+    const newIframe = iframe.cloneNode();
+    
+    // Agregar parámetros para forzar recarga
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
     const params = new URLSearchParams({
         utm_source: 'generator',
         theme: '0',
-        t: Date.now() // cache busting
+        _t: Date.now(), // Timestamp para cache busting
+        _refresh: '1'
     });
-
- const newIframe = document.createElement("iframe");
+    
     newIframe.src = `${baseUrl}?${params.toString()}`;
-    newIframe.width = "100%";
-    newIframe.height = "380";
-    newIframe.frameBorder = "0";
-    newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-
+    
+    // Reemplazar el iframe
+    parent.removeChild(iframe);
     parent.appendChild(newIframe);
-
-    showAuthStatus("🎵 Actualizando playlist... Espera unos segundos", "success");
-
+    
+    // Mensaje de feedback mejorado
+    showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
+    
     // Timeout más largo para móviles
     setTimeout(() => {
         showAuthStatus("✅ ¡Playlist actualizada! Si no ves los cambios, desliza para refrescar la página", "success");
@@ -2200,41 +2206,4 @@ function isMobileDevice() {
     
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
