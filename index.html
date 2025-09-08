@@ -2074,16 +2074,14 @@ function showSuccessMessage(message = "¡Operación exitosa!") {
   // 🔄 SOLUCIÓN MEJORADA - Actualizar reproductor de Spotify
 function refreshPlayer() {
     const iframe = document.querySelector('.spotify-embed-guest iframe');
-    if (!iframe) {
-        console.log('❌ No se encontró el iframe de Spotify');
-        return;
+    if (!iframe) return;
     }
     
     console.log('🔄 Iniciando actualización del reproductor...');
     
     // Método 1: Recrear completamente el iframe (más efectivo en móviles)
     const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode();
+    const newIframe = iframe.cloneNode(true);
     
     // Agregar parámetros para forzar recarga
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
@@ -2206,3 +2204,4 @@ function isMobileDevice() {
     
 </body>
 </html>
+
