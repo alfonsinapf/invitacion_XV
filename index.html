@@ -970,22 +970,337 @@ color:var(--color-primario);
         </div>
     </section>
 
-<!-- Libro de visitas -->
-<section class="guestbook my-5">
-  <div class="container text-center">
-    <h4 class="mb-3">💌 Deja tu mensaje para Alfonsina</h4>
-    <p class="mb-4">Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
-    
-    <div id="guestbook-form" class="mb-3">
-      <input type="text" id="guestbook-name" placeholder="Tu nombre" class="form-control mb-2" />
-      <textarea id="guestbook-message" placeholder="Tu mensaje" class="form-control mb-2"></textarea>
-      <button id="guestbook-submit" class="btn btn-guestbook">Enviar 💌</button>
-    </div>
+<section class="guestbook">
+    <div class="container">
+        <h4>💌 Deja tu mensaje para Alfonsina</h4>
+        <p>Escribí unas palabras de cariño y alegría antes de la gran fiesta 🎉</p>
+        
+        <!-- Mensajes de estado -->
+        <div id="error-message" class="error-message hidden"></div>
+        <div id="success-message" class="success-message hidden"></div>
+        
+        <form id="guestbook-form">
+            <div class="form-group">
+                <input 
+                    type="text" 
+                    id="guestbook-name" 
+                    placeholder="Tu nombre *" 
+                    required 
+                    maxlength="50"
+                />
+            </div>
+            
+            <div class="form-group">
+                <textarea 
+                    id="guestbook-message" 
+                    placeholder="Escribe tu mensaje aquí... *" 
+                    required
+                    maxlength="500"
+                ></textarea>
+            </div>
+            
+            <button type="submit" id="guestbook-submit" class="btn-guestbook">
+                <span class="btn-text">Enviar 💌</span>
+                <div class="loading hidden">
+                    <div class="spinner"></div>
+                    Enviando...
+                </div>
+            </button>
+        </form>
 
-    <div id="guestbook-messages" class="mt-4"></div>
-    <p class="mt-3">Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
-  </div>
+        <div id="guestbook-messages"></div>
+        
+        <div class="stats">
+            <p>✨ Total de mensajes: <span id="guestbook-count">0</span> 🎊</p>
+        </div>
+    </div>
 </section>
+
+<!-- Confetti Library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    query, 
+    orderBy, 
+    onSnapshot, 
+    serverTimestamp,
+    connectFirestoreEmulator 
+} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+
+// 🔧 Configuración de Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyCewDiHzRv18_FnmBzuyo00rgo__9HtZKc",
+    authDomain: "libro-xv-alfonsina.firebaseapp.com",
+    projectId: "libro-xv-alfonsina",
+    storageBucket: "libro-xv-alfonsina.firebasestorage.app",
+    messagingSenderId: "793654895943",
+    appId: "1:793654895943:web:55db375ccf9b439b761862"
+};
+
+// 🚀 Inicializar Firebase
+let app, db;
+try {
+    app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    console.log('✅ Firebase inicializado correctamente');
+} catch (error) {
+    console.error('❌ Error inicializando Firebase:', error);
+    showError('Error de conexión. Por favor, recarga la página.');
+}
+
+// 📚 Referencias
+const messagesRef = collection(db, "guestbook");
+const messagesQuery = query(messagesRef, orderBy("timestamp", "desc"));
+
+// 🎯 Referencias DOM
+const form = document.getElementById("guestbook-form");
+const nameInput = document.getElementById("guestbook-name");
+const messageInput = document.getElementById("guestbook-message");
+const submitBtn = document.getElementById("guestbook-submit");
+const messagesDiv = document.getElementById("guestbook-messages");
+const countSpan = document.getElementById("guestbook-count");
+const errorDiv = document.getElementById("error-message");
+const successDiv = document.getElementById("success-message");
+const btnText = submitBtn.querySelector('.btn-text');
+const btnLoading = submitBtn.querySelector('.loading');
+
+// 🎨 Funciones de UI
+function showError(message) {
+    errorDiv.textContent = `❌ ${message}`;
+    errorDiv.classList.remove('hidden');
+    successDiv.classList.add('hidden');
+    setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+}
+
+function showSuccess(message) {
+    successDiv.textContent = `✅ ${message}`;
+    successDiv.classList.remove('hidden');
+    errorDiv.classList.add('hidden');
+    setTimeout(() => successDiv.classList.add('hidden'), 3000);
+}
+
+function setLoading(isLoading) {
+    if (isLoading) {
+        submitBtn.disabled = true;
+        btnText.classList.add('hidden');
+        btnLoading.classList.remove('hidden');
+    } else {
+        submitBtn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnLoading.classList.add('hidden');
+    }
+}
+
+function validateForm() {
+    const name = nameInput.value.trim();
+    const message = messageInput.value.trim();
+    
+    if (!name) {
+        showError('Por favor ingresa tu nombre');
+        nameInput.focus();
+        return false;
+    }
+    
+    if (name.length < 2) {
+        showError('El nombre debe tener al menos 2 caracteres');
+        nameInput.focus();
+        return false;
+    }
+    
+    if (!message) {
+        showError('Por favor escribe un mensaje');
+        messageInput.focus();
+        return false;
+    }
+    
+    if (message.length < 5) {
+        showError('El mensaje debe tener al menos 5 caracteres');
+        messageInput.focus();
+        return false;
+    }
+    
+    return true;
+}
+
+function formatDate(timestamp) {
+    if (!timestamp) return '';
+    
+    try {
+        const date = timestamp.toDate();
+        return new Intl.DateTimeFormat('es-AR', {
+            day: 'numeric',
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        }).format(date);
+    } catch (error) {
+        console.error('Error formateando fecha:', error);
+        return '';
+    }
+}
+
+// 🎊 Efecto confetti
+function triggerConfetti() {
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#667eea', '#764ba2', '#ff6b6b', '#4ecdc4', '#45b7d1']
+        });
+    }
+}
+
+// 📝 Enviar mensaje
+async function submitMessage(event) {
+    event.preventDefault();
+    
+    console.log('📝 Intentando enviar mensaje...');
+    
+    if (!validateForm()) return;
+    
+    const name = nameInput.value.trim();
+    const message = messageInput.value.trim();
+    
+    setLoading(true);
+    
+    try {
+        console.log('💾 Guardando en Firestore...');
+        
+        const docRef = await addDoc(messagesRef, {
+            name: name,
+            message: message,
+            timestamp: serverTimestamp()
+        });
+        
+        console.log('✅ Mensaje guardado con ID:', docRef.id);
+        
+        // Limpiar formulario
+        nameInput.value = '';
+        messageInput.value = '';
+        
+        // Mostrar éxito
+        showSuccess(`¡Gracias ${name}! Tu mensaje se envió correctamente.`);
+        
+        // Confetti
+        triggerConfetti();
+        
+    } catch (error) {
+        console.error('❌ Error enviando mensaje:', error);
+        
+        let errorMessage = 'No se pudo enviar el mensaje. ';
+        
+        if (error.code === 'permission-denied') {
+            errorMessage += 'Permisos insuficientes.';
+        } else if (error.code === 'unavailable') {
+            errorMessage += 'Servicio temporalmente no disponible.';
+        } else {
+            errorMessage += 'Intenta nuevamente.';
+        }
+        
+        showError(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+}
+
+// 👂 Escuchar mensajes en tiempo real
+function setupRealtimeListener() {
+    try {
+        console.log('👂 Configurando escucha en tiempo real...');
+        
+        const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+            console.log('📨 Recibidos', snapshot.size, 'mensajes');
+            
+            messagesDiv.innerHTML = '';
+            
+            if (snapshot.empty) {
+                messagesDiv.innerHTML = `
+                    <div style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px; font-style: italic;">
+                        <p>🌟 Sé el primero en dejar un mensaje</p>
+                    </div>
+                `;
+            } else {
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const messageDiv = document.createElement('div');
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-author">${escapeHtml(data.name || 'Anónimo')}</div>
+                        <div class="message-content">${escapeHtml(data.message || '')}</div>
+                        <div class="message-date">${formatDate(data.timestamp)}</div>
+                    `;
+                    
+                    messagesDiv.appendChild(messageDiv);
+                });
+            }
+            
+            // Actualizar contador
+            countSpan.textContent = snapshot.size;
+            
+        }, (error) => {
+            console.error('❌ Error en listener:', error);
+            showError('Error cargando mensajes. Recarga la página.');
+        });
+        
+        // Guardar función de desuscripción
+        window.unsubscribeGuestbook = unsubscribe;
+        
+    } catch (error) {
+        console.error('❌ Error configurando listener:', error);
+        showError('Error de conexión con la base de datos.');
+    }
+}
+
+// 🛡️ Escapar HTML para seguridad
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
+// 🚀 Inicialización
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Iniciando libro de visitas...');
+    
+    if (form && nameInput && messageInput && submitBtn) {
+        form.addEventListener('submit', submitMessage);
+        console.log('📝 Formulario configurado');
+        
+        // Configurar listener en tiempo real
+        setupRealtimeListener();
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+        
+        console.log('✅ Libro de visitas listo');
+    } else {
+        console.error('❌ Error: No se encontraron elementos del DOM');
+        showError('Error de inicialización. Recarga la página.');
+    }
+});
+
+// 🧹 Cleanup al cerrar
+window.addEventListener('beforeunload', () => {
+    if (window.unsubscribeGuestbook) {
+        window.unsubscribeGuestbook();
+    }
+});
+
+</script>
 
     
     <!-- Contacto -->
@@ -1691,77 +2006,9 @@ function isMobileDevice() {
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
     
-<!-- Firebase + Libro de visitas con confeti -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
-  import confetti from 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
-
-  // 🔹 Configuración de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyCewDiHzRv18_FnmBzuyo00rgo__9HtZKc",
-    authDomain: "libro-xv-alfonsina.firebaseapp.com",
-    projectId: "libro-xv-alfonsina",
-    storageBucket: "libro-xv-alfonsina.firebasestorage.app",
-    messagingSenderId: "793654895943",
-    appId: "1:793654895943:web:55db375ccf9b439b761862"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // 🔹 Referencias a Firestore
-  const messagesRef = collection(db, "guestbook");
-  const messagesQuery = query(messagesRef, orderBy("date", "desc"));
-
-  // 🔹 Referencias a DOM
-  const nameInput = document.getElementById("guestbook-name");
-  const messageInput = document.getElementById("guestbook-message");
-  const submitBtn = document.getElementById("guestbook-submit");
-  const messagesDiv = document.getElementById("guestbook-messages");
-  const countSpan = document.getElementById("guestbook-count");
-
-  // 🔹 Evento click en enviar
-  submitBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    if (!nameInput.value || !messageInput.value) return;
-
-    // Guardar en Firestore
-    await addDoc(messagesRef, {
-      name: nameInput.value,
-      message: messageInput.value,
-      date: serverTimestamp()
-    });
-
-    // Confeti 🎉
-    confetti({
-      particleCount: 70,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-
-    nameInput.value = "";
-    messageInput.value = "";
-  });
-
-  // 🔹 Escucha en tiempo real
-  onSnapshot(messagesQuery, (snapshot) => {
-    messagesDiv.innerHTML = "";
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const div = document.createElement("div");
-      div.innerHTML = `<strong>${data.name}:</strong> ${data.message}`;
-      messagesDiv.appendChild(div);
-    });
-    countSpan.textContent = snapshot.size;
-  });
-</script>
-
-
-
-
 </body>
 </html>
+
 
 
 
