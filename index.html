@@ -2083,25 +2083,26 @@ function refreshPlayer() {
     
     // Método 1: Recrear completamente el iframe (más efectivo en móviles)
     const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode();
-    
-    // Agregar parámetros para forzar recarga
+    parent.removeChild(iframe);
+
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
     const params = new URLSearchParams({
         utm_source: 'generator',
         theme: '0',
-        _t: Date.now(), // Timestamp para cache busting
-        _refresh: '1'
+        t: Date.now() // cache busting
     });
-    
+  const newIframe = document.createElement("iframe");
     newIframe.src = `${baseUrl}?${params.toString()}`;
-    
-    // Reemplazar el iframe
-    parent.removeChild(iframe);
+    newIframe.width = "100%";
+    newIframe.height = "380";
+    newIframe.frameBorder = "0";
+    newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+
     parent.appendChild(newIframe);
-    
-    // Mensaje de feedback mejorado
-    showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
+
+    showAuthStatus("🎵 Actualizando playlist... Espera unos segundos", "success");
+}
+ 
     
     // Timeout más largo para móviles
     setTimeout(() => {
@@ -2206,6 +2207,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
