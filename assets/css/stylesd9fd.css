@@ -1446,5 +1446,83 @@ section.cuenta-regresiva{
     }
 }
 
+* NUEVOS ESTILOS - Agregar al final de tu sección <style> */
+
+/* Botón de actualización manual mejorado */
+.manual-refresh-container {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.manual-refresh-btn {
+    background: linear-gradient(135deg, #1DB954, #1ed760) !important;
+    border: 2px solid rgba(29, 185, 84, 0.3) !important;
+    color: white !important;
+    width: 100%;
+    max-width: 400px;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.manual-refresh-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1ed760, #1DB954) !important;
+    border-color: rgba(29, 185, 84, 0.5) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+}
+
+.manual-refresh-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2) !important;
+}
+
+/* Indicador de estado mejorado */
+.auto-refresh-info {
+    text-align: center;
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.refresh-counter {
+    font-weight: 600;
+    color: #1DB954;
+}
+
+/* Mejorar iframe en móviles */
+@media (max-width: 768px) {
+    .spotify-embed-guest iframe {
+        height: 352px !important;
+        border-radius: 12px !important;
+    }
+    
+    .manual-refresh-btn {
+        padding: 18px 25px;
+        font-size: 16px;
+        width: 100%;
+    }
+    
+    .auto-refresh-info {
+        padding: 18px;
+        font-size: 15px;
+    }
+}
 
 
