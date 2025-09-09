@@ -1802,7 +1802,23 @@ window.addEventListener('beforeunload', () => {
             });
         });
     }
+// Botón manual de actualización
+function addManualRefreshButton() {
+    const container = document.querySelector('.spotify-embed-guest');
+    if (!container || document.getElementById('manualRefreshBtn')) return;
 
+    const btn = document.createElement('button');
+    btn.id = 'manualRefreshBtn';
+    btn.className = 'btn btn-alt';
+    btn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualizar playlist';
+    btn.style.marginTop = '15px';
+
+    btn.addEventListener('click', () => {
+        refreshPlayer();
+    });
+
+    container.appendChild(btn);
+}
     // 😕 Mostrar mensaje de sin resultados
     function showNoResults() {
         searchResults.innerHTML = `
@@ -2212,6 +2228,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
