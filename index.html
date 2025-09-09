@@ -1883,7 +1883,7 @@ window.addEventListener('beforeunload', () => {
             setTimeout(() => {
                 showAuthStatus("💡 Consejo: Si no ves la canción, usa el botón 'Actualizar playlist' o desliza para refrescar", "warning");
             }, 5000);
-        }, 4000);
+        }, 8000);
     } else {
         // En escritorio, actualización más rápida
         setTimeout(refreshPlayer, 2500);
@@ -2079,10 +2079,13 @@ function refreshPlayer() {
     }
     
     console.log('🔄 Iniciando actualización del reproductor...');
+
     
     // Método 1: Recrear completamente el iframe (más efectivo en móviles)
     const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode();
+    const newIframe = iframe.cloneNode(true);
+      // Eliminar el viejo
+    iframe.remove();
     
     // Agregar parámetros para forzar recarga
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
@@ -2090,14 +2093,22 @@ function refreshPlayer() {
         utm_source: 'generator',
         theme: '0',
         _t: Date.now(), // Timestamp para cache busting
-        _refresh: '1'
-    });
+         });
     
     newIframe.src = `${baseUrl}?${params.toString()}`;
     
-    // Reemplazar el iframe
-    parent.removeChild(iframe);
+     const newIframe = document.createElement("iframe");
+    newIframe.src = `${baseUrl}?${params.toString()}`;
+    newIframe.width = "100%";
+    newIframe.height = "352";
+    newIframe.frameBorder = "0";
+    newIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+    newIframe.loading = "lazy";
+
     parent.appendChild(newIframe);
+
+    showAuthStatus("🎵 Actualizando playlist...", "success");
+}
     
     // Mensaje de feedback mejorado
     showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
@@ -2210,4 +2221,5 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
