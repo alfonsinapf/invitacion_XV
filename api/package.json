@@ -1,5 +1,5 @@
 {
-  "name": "invitacion-xv-backend",
+  "name": "invitacion-xv-alfonsina",
   "version": "1.0.0",
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
@@ -9,11 +9,10 @@
     "deploy": "vercel --prod"
   },
   "dependencies": {
+    "firebase-admin": "^11.0.0",
     "node-fetch": "^2.6.7"
   },
-   "engines": { "node": "22.x" }
-}
-"dependencies": {
-  "firebase-admin": "^11.0.0"
-  "node-fetch": "^2.6.7"
+  "engines": {
+    "node": "22.x"
+  }
 }
