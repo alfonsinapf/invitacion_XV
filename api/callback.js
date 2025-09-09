@@ -1,37 +1,41 @@
+// /api/callback.js
+import fetch from "node-fetch";
+import db from "../firebase"; // archivo donde inicializás Firebase Admin
+
 export default async function handler(req, res) {
   try {
-    // El code viene en la query string, no en el body
-    const code = req.query.code;
+    const { code } = req.query;
 
     if (!code) {
-      return res.status(400).send("No se recibió 'code' en la URL.");
+      return res.status(400).send("No se recibió el código de Spotify");
     }
 
-    const params = new URLSearchParams();
-    params.append("grant_type", "authorization_code");
-    params.append("code", code);
-    params.append("redirect_uri", "https://invitacion-xv-alfon.vercel.app/api/callback");
-    params.append("client_id", process.env.SPOTIFY_CLIENT_ID);
-    params.append("client_secret", process.env.SPOTIFY_CLIENT_SECRET);
-
-    const response = await fetch("https://accounts.spotify.com/api/token", {
+    const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
+      headers: { 
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic " + Buffer.from(
+          `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
+        ).toString("base64")
+      },
+      body: `grant_type=authorization_code&code=${code}&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}`
     });
 
-    const data = await response.json();
+    const tokenData = await tokenResponse.json();
 
-    if (data.error) {
-      return res.status(400).json(data);
+    if (!tokenData.refresh_token) {
+      return res.status(400).send("Spotify no devolvió refresh_token");
     }
 
-    // ⚠️ Guardá este refresh_token en tu .env, es el que te sirve de por vida
-    console.log("REFRESH TOKEN =>", data.refresh_token);
+    // ✅ Guardar en Firestore
+    await db.collection("spotifyTokens").doc("owner").set({
+      refresh_token: tokenData.refresh_token,
+      updatedAt: Date.now()
+    });
 
-    res.send("✅ Autorización completada. Revisá logs de Vercel para tu refresh_token.");
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error en el callback.");
+    res.send("✅ Refresh token guardado en Firestore");
+  } catch (error) {
+    console.error("❌ Error en callback:", error);
+    res.status(500).send("Error en callback");
   }
 }
