@@ -14,6 +14,6 @@
    "engines": { "node": "22.x" }
 }
 "dependencies": {
-  "firebase-admin": "^11.0.0",
+  "firebase-admin": "^11.0.0"
   "node-fetch": "^2.6.7"
 }
