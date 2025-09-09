@@ -1,41 +1,56 @@
-// /api/callback.js
 import fetch from "node-fetch";
-import db from "../firebase"; // archivo donde inicializás Firebase Admin
+import db from "../firebaseAdmin.js"; // 👈 usa el admin SDK
 
 export default async function handler(req, res) {
   try {
     const { code } = req.query;
 
     if (!code) {
-      return res.status(400).send("No se recibió el código de Spotify");
+      return res.status(400).json({ error: "Falta el code en la query" });
     }
 
+    // 🔄 Intercambiar code por tokens
     const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         "Authorization": "Basic " + Buffer.from(
           `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
-        ).toString("base64")
+        ).toString("base64"),
       },
-      body: `grant_type=authorization_code&code=${code}&redirect_uri=${process.env.SPOTIFY_REDIRECT_URI}`
+      body: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: process.env.SPOTIFY_REDIRECT_URI, // 👈 debe coincidir con el registrado en Spotify
+      }),
     });
 
     const tokenData = await tokenResponse.json();
 
-    if (!tokenData.refresh_token) {
-      return res.status(400).send("Spotify no devolvió refresh_token");
+    if (tokenData.error) {
+      console.error("❌ Error en intercambio:", tokenData);
+      return res.status(500).json({ error: tokenData.error_description || "No se pudo obtener token" });
     }
 
-    // ✅ Guardar en Firestore
-    await db.collection("spotifyTokens").doc("owner").set({
-      refresh_token: tokenData.refresh_token,
-      updatedAt: Date.now()
-    });
+    const { access_token, refresh_token } = tokenData;
 
-    res.send("✅ Refresh token guardado en Firestore");
+    // 📝 Guardar el refresh_token en Firestore
+    if (refresh_token) {
+      await db.collection("spotifyTokens").doc("owner").set({
+        refresh_token,
+        updated_at: new Date(),
+      });
+      console.log("✅ Refresh token guardado en Firestore");
+    }
+
+    // 🔙 Devolver resultado (puede redirigir a tu web)
+    return res.status(200).json({
+      message: "Tokens obtenidos",
+      access_token,
+      refresh_token,
+    });
   } catch (error) {
-    console.error("❌ Error en callback:", error);
-    res.status(500).send("Error en callback");
+    console.error("❌ Error en /api/callback:", error);
+    return res.status(500).json({ error: "Error interno" });
   }
 }
