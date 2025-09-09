@@ -2101,16 +2101,14 @@ function refreshPlayer() {
     const parent = iframe.parentNode;
     iframe.remove(); // eliminar completamente el viejo
     
-    // 🚀 Crear uno nuevo desde cero (NO cloneNode)
+    // 🚀 Crear uno nuevo con parámetro único para mobile
     const newIframe = document.createElement('iframe');
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
-    const params = new URLSearchParams({
-        utm_source: 'generator',
-        theme: '0',
-        _t: Date.now(), // cache busting
-    });
-      
-    newIframe.src = `${baseUrl}?${params.toString()}`;
+    
+    // parámetro que siempre cambia y que Safari no cachea
+    const uniqueParam = `v=${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+
+    newIframe.src = `${baseUrl}?utm_source=generator&theme=0&${uniqueParam}`;
     newIframe.width = "100%";
     newIframe.height = "352";
     newIframe.frameBorder = "0";
@@ -2119,11 +2117,10 @@ function refreshPlayer() {
 
     parent.appendChild(newIframe);
 
-    // ✅ Feedback dentro de la función
     showAuthStatus("🎵 Actualizando playlist... Puede tardar 10-15 segundos", "success");
 
     setTimeout(() => {
-        showAuthStatus("✅ ¡Playlist actualizada! Si no ves los cambios, desliza para refrescar la página", "success");
+        showAuthStatus("✅ Playlist actualizada. Si no ves los cambios, toca 'Actualizar playlist' o recarga la página.", "success");
     }, 8000);
 }
 // Función para detectar si estamos en móvil
@@ -2228,6 +2225,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
