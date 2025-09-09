@@ -125,7 +125,6 @@ export default async function handler(req, res) {
       message: "Canción agregada exitosamente",
       snapshot_id: addData.snapshot_id 
     });
-
   } catch (error) {
     console.error("Error general:", error);
     res.status(500).json({ 
