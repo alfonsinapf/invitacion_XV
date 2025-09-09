@@ -5,6 +5,11 @@
       "runtime": "nodejs22.x"
     }
   },
+  "build": {
+    "env": {
+      "NODE_VERSION": "22"
+    }
+  },
   "env": {
     "FIREBASE_PROJECT_ID": "@firebase_project_id",
     "FIREBASE_CLIENT_EMAIL": "@firebase_client_email", 
