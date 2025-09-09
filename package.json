@@ -1,14 +1,19 @@
+
 {
   "name": "invitacion-xv-alfonsina",
   "version": "1.0.0",
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
-  "scripts": {},
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
   "dependencies": {
-    "firebase-admin": "^11.0.0",
-    "node-fetch": "^2.6.7"
+    "firebase-admin": "^12.0.0",
+    "node-fetch": "^3.3.2"
   },
   "engines": {
-    "node": "22.x"
+    "node": "18.x"
   }
 }
