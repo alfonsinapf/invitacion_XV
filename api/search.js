@@ -1,3 +1,5 @@
+import admin from '../firebaseAdmin.js';
+
 const fetch = require("node-fetch");
 const db = require("../firebaseAdmin.js");
 
