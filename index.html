@@ -2083,21 +2083,17 @@ function refreshPlayer() {
     
     // Método 1: Recrear completamente el iframe (más efectivo en móviles)
     const parent = iframe.parentNode;
-    const newIframe = iframe.cloneNode(true);
-      // Eliminar el viejo
-    iframe.remove();
+    iframe.remove(); // eliminar completamente el viejo
     
-    // Agregar parámetros para forzar recarga
+    // 🚀 Crear uno nuevo desde cero (NO cloneNode)
+    const newIframe = document.createElement('iframe');
     const baseUrl = "https://open.spotify.com/embed/playlist/0a4iq5x0WHzzn0ox7ea77u";
     const params = new URLSearchParams({
         utm_source: 'generator',
         theme: '0',
-        _t: Date.now(), // Timestamp para cache busting
-         });
-    
-    newIframe.src = `${baseUrl}?${params.toString()}`;
-    
-     
+        _t: Date.now(), // cache busting
+    });
+      
     newIframe.src = `${baseUrl}?${params.toString()}`;
     newIframe.width = "100%";
     newIframe.height = "352";
@@ -2216,6 +2212,7 @@ function isMobileDevice() {
     
 </body>
 </html>
+
 
 
 
