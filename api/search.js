@@ -1,6 +1,6 @@
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     const REFRESH_TOKEN = process.env.REFRESH_TOKEN_OWNER;
     const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -45,4 +45,13 @@ export default async function handler(req, res) {
     console.log('🎵 Respuesta Spotify:', searchData);
 
     // 4️⃣ Validar estructura antes de acceder a items
-    const tracks = (searchData.tracks && Array.isArray(searchData.t
+    const tracks = (searchData.tracks && Array.isArray(searchData.tracks.items))
+      ? searchData.tracks.items
+      : [];
+
+    return res.status(200).json({ tracks });
+  } catch (error) {
+    console.error('❌ Error en handler:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
