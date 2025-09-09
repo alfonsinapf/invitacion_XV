@@ -1,6 +1,5 @@
-// /api/search.js
 import fetch from "node-fetch";
-import db from "../firebase";
+import db from "../firebaseAdmin"; // ✅ ahora usa el admin
 
 export default async function handler(req, res) {
   try {
