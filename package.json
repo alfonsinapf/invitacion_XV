@@ -1,4 +1,3 @@
-
 {
   "name": "invitacion-xv-alfonsina",
   "version": "1.0.0",
@@ -14,6 +13,6 @@
     "node-fetch": "^3.3.2"
   },
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   }
 }
