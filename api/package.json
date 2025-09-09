@@ -4,7 +4,6 @@
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
   "scripts": {
-    "build": "echo 'No build step required'",
     "start": "node index.js"
   },
   "dependencies": {
@@ -13,9 +12,5 @@
   },
   "engines": {
     "node": "22.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/alfonsinapf/invitacion_XV.git"
   }
 }
