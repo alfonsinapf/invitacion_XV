@@ -10,7 +10,6 @@ export default async function handler(req, res) {
     if (!doc.exists) return res.status(500).json({ error: "No hay refresh token en Firestore" });
 
     const REFRESH_TOKEN = doc.data().refresh_token;
-
     const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
