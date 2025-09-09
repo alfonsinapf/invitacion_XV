@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import db from "../firebaseAdmin.js"; // 👈 usa el admin SDK
+import db from "../firebaseAdmin.js"; // Admin SDK para backend
 
 export default async function handler(req, res) {
   try {
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
       body: new URLSearchParams({
         grant_type: "authorization_code",
         code,
-        redirect_uri: process.env.SPOTIFY_REDIRECT_URI, // 👈 debe coincidir con el registrado en Spotify
+        redirect_uri: process.env.SPOTIFY_REDIRECT_URI, // debe coincidir con Spotify Dashboard
       }),
     });
 
@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
     const { access_token, refresh_token } = tokenData;
 
-    // 📝 Guardar el refresh_token en Firestore
+    // 📝 Guardar refresh_token en Firestore
     if (refresh_token) {
       await db.collection("spotifyTokens").doc("owner").set({
         refresh_token,
@@ -43,14 +43,14 @@ export default async function handler(req, res) {
       console.log("✅ Refresh token guardado en Firestore");
     }
 
-    // 🔙 Devolver resultado (puede redirigir a tu web)
+    // 🔙 Podés redirigir al frontend o devolver JSON
     return res.status(200).json({
-      message: "Tokens obtenidos",
+      message: "Tokens obtenidos correctamente",
       access_token,
       refresh_token,
     });
   } catch (error) {
     console.error("❌ Error en /api/callback:", error);
-    return res.status(500).json({ error: "Error interno" });
+    return res.status(500).json({ error: "Error interno del servidor" });
   }
 }
