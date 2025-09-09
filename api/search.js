@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Variables de entorno faltantes" });
     }
 
-    // Obtener access token de Spotify
+    // Obtener access token
     const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     const searchData = await searchResponse.json();
     const tracks = searchData.tracks?.items || [];
 
-    // Opcional: guardar logs en Firebase
+    // Guardar búsqueda en Firebase
     await db.collection("spotify_searches").add({
       query,
       timestamp: new Date(),
