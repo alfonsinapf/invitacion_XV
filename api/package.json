@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "build": "echo 'No build step required'",
     "start": "node index.js"
   },
   "dependencies": {
@@ -12,5 +14,4 @@
   },
   "engines": {
     "node": "20.x"
-  }
-}
+  },
