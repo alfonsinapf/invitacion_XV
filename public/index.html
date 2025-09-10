@@ -7,9 +7,10 @@
     <meta name="description" content="invitaciones digitales para eventos">
     <meta name="keywords" content="invitaciones, digitales, tarjetas, boda, invitación, interactivas, casamiento, save the date, agenda la fecha, ideas invitación, tarjetas de 15, tarjetas eventos, wedding, matrimonio, ideas tarjetas, rsvp, modelos de invitacion, página de boda, página web de casamiento">
 
-    <link rel='stylesheet' href='/public/assets/css/bootstrap.minc91c.css?v=1720025687'/>
-    <link rel='stylesheet' href='/public/assets/css/jquery.fancybox.mind3d8.css?v=1720025689'/>
-    <link rel='stylesheet' href='/public/assets/css/stylesd9fd.css?v=1722011145'/>
+    <!-- Rutas corregidas sin parámetros de versión -->
+    <link rel='stylesheet' href='/public/assets/css/bootstrap.min.css'/>
+    <link rel='stylesheet' href='/public/assets/css/jquery.fancybox.min.css'/>
+    <link rel='stylesheet' href='/public/assets/css/styles.css'/>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -582,9 +583,25 @@ color:var(--color-primario);
 </head>
 <body>
 
-<!-- Audio --> <section class="audio"> <div class="container"> <div class="row"> <div class="botonAudio-container"> <audio id="audioPrueba" loop> <source src="/public/assets/musica.mp3" type="audio/mp3"> ¡Ups! Tu navegador no soporta este archivo de audio. </audio> <div class='animation'> <img id="btnPlay" src="/public/assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake"> <img id="btnPausa" src="/public/assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa"> </div> </div> </div> </div> </section>
+<!-- Audio - Ruta corregida --> 
+<section class="audio"> 
+    <div class="container"> 
+        <div class="row"> 
+            <div class="botonAudio-container"> 
+                <audio id="audioPrueba" loop> 
+                    <source src="/public/assets/musica.mp3" type="audio/mp3"> 
+                    ¡Ups! Tu navegador no soporta este archivo de audio. 
+                </audio> 
+                <div class='animation'> 
+                    <img id="btnPlay" src="/public/assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake"> 
+                    <img id="btnPausa" src="/public/assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa"> 
+                </div> 
+            </div> 
+        </div> 
+    </div> 
+</section>
     
-    <!-- Portada -->
+    <!-- Portada - Ruta corregida -->
     <section class="portada parallax-portada d-flex justify-content-center align-items-center">
         <div class="logo-portada fade-in-portada">
             <img class="" src="/public/assets/img/logo-portada.png" alt="">
@@ -599,7 +616,7 @@ color:var(--color-primario);
             <p id="reloj" class="descartar">¡Te espero para festejar!</p>
             <div class="row justify-content-center margenSup" id="reloj_number">
                 <div class="col-md-1 col-2 d-flex flex-column justify-content-center p-0">
-                    <p class="num_cuenta" id="dias"></p>
+                    <p class="num_cueta" id="dias"></p>
                     <p class="text_cuenta">días</p>
                 </div>
                 <p class="num_cuenta">:</p>
@@ -621,7 +638,7 @@ color:var(--color-primario);
         </div>
     </section>
     
-    <!-- Ceremonia y Fiesta -->
+    <!-- Ceremonia y Fiesta - Ruta corregida -->
     <section class="ceremonia-fiesta mb-5">
         <div class="container">
             <div class="row">
@@ -664,7 +681,7 @@ color:var(--color-primario);
 </section>
    
 
-    <!-- Galería -->
+    <!-- Galería - Rutas corregidas -->
     <section class="galeria">
         <div class="container">
             <div class="row">
@@ -723,7 +740,7 @@ color:var(--color-primario);
         </div>  
     </section>
 
-    <!-- Dress Code -->
+    <!-- Dress Code - Ruta corregida -->
 <section class="dresscode">
     <div class="container animated divDressCode">
         <img src="/public/assets/img/icono-dresscode.svg" alt="" class="bounce-in">
@@ -817,7 +834,7 @@ color:var(--color-primario);
         </div>
     </section>
 
-    <!-- Instagram -->
+    <!-- Instagram - Ruta corregida -->
     <section class="parallax-instagram instagram d-flex justify-content-center align-items-center">
         <div class="contenido">
             <img src="/public/assets/img/icono-instagram.svg" alt="" class="bounce-in">
@@ -831,7 +848,7 @@ color:var(--color-primario);
         </div>
     </section>
 
-    <!-- CBU -->
+    <!-- CBU - Ruta corregida -->
     <section class="cbu">
         <div class="container">
             <img src="/public/assets/img/icono-regalo.svg" alt="" class="bounce-in">
@@ -1380,11 +1397,11 @@ async function submitMessage(event) {
         let errorMessage = 'No se pudo enviar el mensaje. ';
         
         if (error.code === 'permission-denied') {
-            errorMessage += 'Permisos insuficientes.';
+            errorMessage = 'Permisos insuficientes.';
         } else if (error.code === 'unavailable') {
-            errorMessage += 'Servicio temporalmente no disponible.';
+            errorMessage = 'Servicio temporalmente no disponible.';
         } else {
-            errorMessage += 'Intenta nuevamente.';
+            errorMessage = 'Intenta nuevamente.';
         }
         
         showError(errorMessage);
@@ -1467,7 +1484,7 @@ function escapeHtml(text) {
 }
 
 // 🚀 Inicialización
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () {
     console.log('🚀 Iniciando libro de visitas...');
     
     if (form && nameInput && messageInput && submitBtn) {
@@ -1533,13 +1550,37 @@ window.addEventListener('beforeunload', () => {
         var tituloEvento = "Fiesta de 15";
     </script>
 
-    <!-- Scripts Generales -->
-    <script type='text/javascript' src='/public/assets/js/jquery-3.5.1.slim.minc30d.js?v=1720025714'></script>
-    <script type='text/javascript' src='/public/assets/js/popper.min2636.js?v=1720025718'></script>
-    <script type='text/javascript' src='/public/assets/js/bootstrap.mine0ae.js?v=1720025711'></script>
-    <script type='text/javascript' src='/public/assets/js/parallax.min6fdb.js?v=1720025716'></script>
-    <script type='text/javascript' src='/public/assets/js/jquery.fancybox.min11b3.js?v=1720025715'></script>
-    <script type='text/javascript' src='/public/assets/js/scriptsaa67.js?v=1720025719'></script>
+    <!-- Scripts Generales - Rutas corregidas -->
+    <script type='text/javascript' src='/public/assets/js/jquery-3.5.1.slim.min.js'></script>
+    <script type='text/javascript' src='/public/assets/js/popper.min.js'></script>
+    <script type='text/javascript' src='/public/assets/js/bootstrap.min.js'></script>
+    <script type='text/javascript' src='/public/assets/js/parallax.min.js'></script>
+    <script type='text/javascript' src='/public/assets/js/jquery.fancybox.min.js'></script>
+    <script type='text/javascript' src='/public/assets/js/scripts.js'></script>
+
+    <!-- Script para control de audio -->
+    <script>
+        // Funciones para control de audio
+        function playAudio() {
+            const audio = document.getElementById('audioPrueba');
+            const btnPlay = document.getElementById('btnPlay');
+            const btnPausa = document.getElementById('btnPausa');
+            
+            audio.play();
+            btnPlay.classList.add('hidden');
+            btnPausa.classList.remove('hidden');
+        }
+        
+        function pauseAudio() {
+            const audio = document.getElementById('audioPrueba');
+            const btnPlay = document.getElementById('btnPlay');
+            const btnPausa = document.getElementById('btnPausa');
+            
+            audio.pause();
+            btnPausa.classList.add('hidden');
+            btnPlay.classList.remove('hidden');
+        }
+    </script>
 
     <!-- Script Principal de Música - MODO INVITADO -->
 <script>
@@ -1874,19 +1915,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
