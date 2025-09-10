@@ -1,116 +1,25 @@
-// api/search.js
-import fetch from "node-fetch";
-import db from "../firebaseAdmin.js";
+import { db } from "../../firebaseAdmin.js";
 
 export default async function handler(req, res) {
-  // Configurar CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido" });
+  const { query } = req.body;
 
-  // Manejar preflight OPTIONS
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método no permitido" });
-  }
+  if (!query) return res.status(400).json({ error: "Falta el término de búsqueda" });
 
   try {
-    console.log("🔍 Iniciando búsqueda de Spotify");
-    
-    const REFRESH_TOKEN = process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN;
-    const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-    const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+    const docSnap = await db.collection("spotifyTokens").doc("spotify_dev").get();
+    if (!docSnap.exists) return res.status(401).json({ error: "No hay token de Spotify" });
 
-    if (!REFRESH_TOKEN || !SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
-      console.error("❌ Variables de entorno faltantes de Spotify");
-      return res.status(500).json({ 
-        error: "Configuración de Spotify incompleta. Contacta al administrador." 
-      });
-    }
+    const { access_token } = docSnap.data();
 
-    // Obtener access token de Spotify
-    console.log("🔄 Obteniendo token de acceso de Spotify");
-    const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: "Basic " + Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64"),
-      },
-      body: `grant_type=refresh_token&refresh_token=${REFRESH_TOKEN}`,
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`, {
+      headers: { Authorization: `Bearer ${access_token}` }
     });
 
-    if (!tokenResponse.ok) {
-      const errorText = await tokenResponse.text();
-      console.error("❌ Error obteniendo token de Spotify:", errorText);
-      return res.status(500).json({ 
-        error: "Error de autenticación con Spotify. Intenta nuevamente." 
-      });
-    }
-
-    const tokenData = await tokenResponse.json();
-    if (!tokenData.access_token) {
-      console.error("❌ No se pudo obtener access token:", tokenData);
-      return res.status(500).json({ 
-        error: "No se pudo obtener acceso a Spotify. Intenta nuevamente." 
-      });
-    }
-
-    const accessToken = tokenData.access_token;
-    const { query } = req.body;
-
-    if (!query || query.trim().length === 0) {
-      return res.status(400).json({ error: "Por favor, ingresa una canción o artista para buscar." });
-    }
-
-    // Buscar canciones en Spotify
-    console.log(`🎵 Buscando: "${query}"`);
-    const searchResponse = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query.trim())}&type=track&limit=12`,
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!searchResponse.ok) {
-      const errorText = await searchResponse.text();
-      console.error("❌ Error en búsqueda de Spotify:", errorText);
-      return res.status(500).json({ 
-        error: "Error al buscar en Spotify. Intenta nuevamente." 
-      });
-    }
-
-    const searchData = await searchResponse.json();
-    const tracks = searchData.tracks?.items || [];
-    console.log(`✅ Encontradas ${tracks.length} canciones`);
-
-    // Guardar búsqueda en Firebase (opcional)
-    try {
-      await db.collection("spotify_searches").add({
-        query: query.trim(),
-        timestamp: new Date(),
-        results_count: tracks.length,
-        user_agent: req.headers["user-agent"] || "unknown",
-      });
-      console.log("✅ Búsqueda guardada en Firebase");
-    } catch (firebaseError) {
-      console.error("⚠️ Error guardando en Firebase (no crítico):", firebaseError);
-    }
-
-    res.status(200).json({
-      tracks,
-      query: query.trim(),
-      count: tracks.length,
-    });
-  } catch (error) {
-    console.error("❌ Error general en búsqueda:", error);
-    res.status(500).json({
-      error: "Error interno del servidor. Por favor, intenta nuevamente.",
-    });
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error en búsqueda" });
   }
 }
