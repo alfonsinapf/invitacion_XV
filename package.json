@@ -3,15 +3,20 @@
   "version": "1.0.0",
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
-  "type": "module",
+  "type": "module",   <-- 🔑 ESTA ES LA CLAVE
   "scripts": {
+    "build": "echo 'No build step required'",
     "start": "node index.js"
   },
-  "dependencies": {
+ "dependencies": {
     "firebase-admin": "13.5.0",
     "node-fetch": "2.7.0"
   },
   "engines": {
     "node": "20.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alfonsinapf/invitacion_XV.git"
   }
 }
