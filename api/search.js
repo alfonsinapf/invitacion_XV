@@ -1,6 +1,6 @@
 // api/search.js
 import fetch from "node-fetch";
-import db from "./firebaseAdmin.js";
+import db from "../firebaseAdmin.js";
 
 export default async function handler(req, res) {
   // Configurar CORS
@@ -18,18 +18,21 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log("🔍 Iniciando búsqueda de Spotify");
+    
     const REFRESH_TOKEN = process.env.SPOTIFY_DEVELOPER_REFRESH_TOKEN;
     const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
     const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
     if (!REFRESH_TOKEN || !SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
-      console.error("Variables de entorno faltantes");
+      console.error("❌ Variables de entorno faltantes de Spotify");
       return res.status(500).json({ 
         error: "Configuración de Spotify incompleta. Contacta al administrador." 
       });
     }
 
-    // Obtener access token
+    // Obtener access token de Spotify
+    console.log("🔄 Obteniendo token de acceso de Spotify");
     const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
       method: "POST",
       headers: {
@@ -41,7 +44,7 @@ export default async function handler(req, res) {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error("Error obteniendo token de Spotify:", errorText);
+      console.error("❌ Error obteniendo token de Spotify:", errorText);
       return res.status(500).json({ 
         error: "Error de autenticación con Spotify. Intenta nuevamente." 
       });
@@ -49,7 +52,7 @@ export default async function handler(req, res) {
 
     const tokenData = await tokenResponse.json();
     if (!tokenData.access_token) {
-      console.error("No se pudo obtener access token:", tokenData);
+      console.error("❌ No se pudo obtener access token:", tokenData);
       return res.status(500).json({ 
         error: "No se pudo obtener acceso a Spotify. Intenta nuevamente." 
       });
@@ -62,7 +65,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Por favor, ingresa una canción o artista para buscar." });
     }
 
-    // Buscar canciones
+    // Buscar canciones en Spotify
+    console.log(`🎵 Buscando: "${query}"`);
     const searchResponse = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(query.trim())}&type=track&limit=12`,
       {
@@ -75,7 +79,7 @@ export default async function handler(req, res) {
 
     if (!searchResponse.ok) {
       const errorText = await searchResponse.text();
-      console.error("Error en búsqueda de Spotify:", errorText);
+      console.error("❌ Error en búsqueda de Spotify:", errorText);
       return res.status(500).json({ 
         error: "Error al buscar en Spotify. Intenta nuevamente." 
       });
@@ -83,6 +87,7 @@ export default async function handler(req, res) {
 
     const searchData = await searchResponse.json();
     const tracks = searchData.tracks?.items || [];
+    console.log(`✅ Encontradas ${tracks.length} canciones`);
 
     // Guardar búsqueda en Firebase (opcional)
     try {
@@ -92,9 +97,9 @@ export default async function handler(req, res) {
         results_count: tracks.length,
         user_agent: req.headers["user-agent"] || "unknown",
       });
+      console.log("✅ Búsqueda guardada en Firebase");
     } catch (firebaseError) {
-      console.error("Error guardando en Firebase (no crítico):", firebaseError);
-      // No fallar la request por esto
+      console.error("⚠️ Error guardando en Firebase (no crítico):", firebaseError);
     }
 
     res.status(200).json({
@@ -103,7 +108,7 @@ export default async function handler(req, res) {
       count: tracks.length,
     });
   } catch (error) {
-    console.error("Error general en búsqueda:", error);
+    console.error("❌ Error general en búsqueda:", error);
     res.status(500).json({
       error: "Error interno del servidor. Por favor, intenta nuevamente.",
     });
