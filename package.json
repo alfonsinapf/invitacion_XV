@@ -15,8 +15,4 @@
   "engines": {
     "node": "20.x"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/alfonsinapf/invitacion_XV.git"
-  }
-}
+
