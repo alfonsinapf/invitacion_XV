@@ -1,57 +1,37 @@
+import { db } from "../../firebaseAdmin.js";
+
 export default async function handler(req, res) {
-  // Configurar CORS
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  const { code, state } = req.query;
 
-  if (req.method === "GET") {
-    // Manejar el callback de autenticación de Spotify
-    const { code, error } = req.query;
+  if (!code) return res.status(400).send("Falta el código de Spotify");
+
+  try {
+    const params = new URLSearchParams();
+    params.append("grant_type", "authorization_code");
+    params.append("code", code);
+    params.append("redirect_uri", "https://invitacion-xv-alfon.vercel.app/");
     
-    if (error) {
-      console.error("Error en callback de Spotify:", error);
-      return res.status(400).json({ error: "Autenticación fallida" });
-    }
-    
-    if (code) {
-      try {
-        // Intercambiar código por token de acceso
-        const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-        const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-        
-        const tokenResponse = await fetch("https://accounts.spotify.com/api/token", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            Authorization: "Basic " + Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64"),
-          },
-          body: new URLSearchParams({
-            grant_type: "authorization_code",
-            code: code,
-            redirect_uri: "https://invitacion-xv-alfon.vercel.app/api/callback",
-          }),
-        });
+    const authHeader = "Basic " + Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString("base64");
 
-        if (!tokenResponse.ok) {
-          throw new Error("Error obteniendo token de acceso");
-        }
+    const response = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: { Authorization: authHeader, "Content-Type": "application/x-www-form-urlencoded" },
+      body: params
+    });
 
-        const tokenData = await tokenResponse.json();
-        
-        // Aquí podrías guardar el refresh token en tu base de datos
-        console.log("Token obtenido exitosamente");
-        
-        // Redirigir a una página de éxito o mostrar mensaje
-        res.writeHead(302, { Location: 'https://invitacion-xv-alfon.vercel.app/?auth=success' });
-        res.end();
-        
-      } catch (error) {
-        console.error("Error en callback:", error);
-        res.writeHead(302, { Location: 'https://invitacion-xv-alfon.vercel.app/?auth=error' });
-        res.end();
-      }
-    }
-  } else {
-    res.status(405).json({ error: "Método no permitido" });
+    const data = await response.json();
+
+    // Guardar tokens en Firebase
+    await db.collection("spotifyTokens").doc(state).set({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+      expires_in: data.expires_in,
+      updatedAt: new Date()
+    });
+
+    res.redirect("/?auth=success"); // Redirige al frontend
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error almacenando token");
   }
 }
