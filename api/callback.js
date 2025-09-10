@@ -28,7 +28,7 @@ export default async function handler(req, res) {
           body: new URLSearchParams({
             grant_type: "authorization_code",
             code: code,
-            redirect_uri: "https://invitacion-xv-alfon.vercel.app/",
+            redirect_uri: "https://invitacion-xv-alfon.vercel.app/api/callback",
           }),
         });
 
