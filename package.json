@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Backend para invitación XV con integración Spotify",
   "main": "index.js",
-  "type": "module",   <-- 🔑 ESTA ES LA CLAVE
+  "type": "module",  
   "scripts": {
     "build": "echo 'No build step required'",
     "start": "node index.js"
