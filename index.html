@@ -1542,9 +1542,10 @@ window.addEventListener('beforeunload', () => {
     <script type='text/javascript' src='assets/js/scriptsaa67.js?v=1720025719'></script>
 
     <!-- Script Principal de Música - MODO INVITADO -->
- <script>
+<script>
 // 🎵 SISTEMA DE MÚSICA PARA INVITADOS - CON BACKEND EN VERCEL
 const BACKEND_URL = 'https://invitacion-xv-alfon.vercel.app/api';
+
 // Elementos del DOM
 const guestOptions = document.getElementById('guestOptions');
 const spotifySearchSection = document.getElementById('spotifySearchSection');
@@ -1607,6 +1608,14 @@ async function searchSong() {
       body: JSON.stringify({ query })
     });
     
+    // Verificar si la respuesta es JSON válido
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      console.error('Respuesta no JSON:', textResponse.substring(0, 100));
+      throw new Error('El servidor respondió con un formato incorrecto. Intenta nuevamente.');
+    }
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Error en búsqueda');
@@ -1624,7 +1633,7 @@ async function searchSong() {
     }
   } catch (error) {
     console.error('Error en búsqueda:', error);
-    showAuthStatus("❌ Error en búsqueda: " + error.message, "error");
+    showAuthStatus("❌ Error: " + error.message, "error");
     showBackendError();
   } finally {
     isSearching = false;
@@ -1718,6 +1727,14 @@ async function addToPlaylist(trackUri, trackName, artistName, button) {
       body: JSON.stringify({ trackUri })
     });
     
+    // Verificar si la respuesta es JSON válido
+    const contentType = response.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const textResponse = await response.text();
+      console.error('Respuesta no JSON:', textResponse.substring(0, 100));
+      throw new Error('Error de comunicación con el servidor.');
+    }
+    
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || 'Error agregando canción');
@@ -1808,6 +1825,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
 </body>
 </html>
+
 
 
 
