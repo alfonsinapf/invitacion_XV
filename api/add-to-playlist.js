@@ -1,7 +1,8 @@
-const fetch = require("node-fetch");
-const db = require("../firebaseAdmin.js");
+// add-to-playlist.js
+import fetch from "node-fetch";
+import db from "../firebaseAdmin.js";
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Configurar CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -118,7 +119,7 @@ module.exports = async function handler(req, res) {
       });
     } catch (firebaseError) {
       console.error("Error guardando en Firebase:", firebaseError);
-      // No fallar la request por esto
+      // No romper el flujo por error en log
     }
 
     res.status(200).json({ 
@@ -134,4 +135,4 @@ module.exports = async function handler(req, res) {
       timestamp: new Date().toISOString()
     });
   }
-};
+}
