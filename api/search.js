@@ -1,20 +1,18 @@
-import admin from '../firebaseAdmin.js';
+import fetch from "node-fetch";
+import db from "../firebaseAdmin.js";
 
-const fetch = require("node-fetch");
-const db = require("../firebaseAdmin.js");
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   // Configurar CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
   // Manejar preflight OPTIONS
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
-  if (req.method !== 'POST') {
+  if (req.method !== "POST") {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
@@ -27,7 +25,7 @@ module.exports = async function handler(req, res) {
       console.error("Variables de entorno faltantes:", {
         REFRESH_TOKEN: !!REFRESH_TOKEN,
         SPOTIFY_CLIENT_ID: !!SPOTIFY_CLIENT_ID,
-        SPOTIFY_CLIENT_SECRET: !!SPOTIFY_CLIENT_SECRET
+        SPOTIFY_CLIENT_SECRET: !!SPOTIFY_CLIENT_SECRET,
       });
       return res.status(500).json({ error: "Variables de entorno faltantes" });
     }
@@ -37,9 +35,13 @@ module.exports = async function handler(req, res) {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic " + Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString("base64")
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+          ).toString("base64"),
       },
-      body: `grant_type=refresh_token&refresh_token=${REFRESH_TOKEN}`
+      body: `grant_type=refresh_token&refresh_token=${REFRESH_TOKEN}`,
     });
 
     if (!tokenResponse.ok) {
@@ -50,7 +52,9 @@ module.exports = async function handler(req, res) {
     const tokenData = await tokenResponse.json();
     if (!tokenData.access_token) {
       console.error("Token data:", tokenData);
-      return res.status(500).json({ error: "No se pudo obtener token de Spotify" });
+      return res
+        .status(500)
+        .json({ error: "No se pudo obtener token de Spotify" });
     }
 
     const accessToken = tokenData.access_token;
@@ -62,12 +66,14 @@ module.exports = async function handler(req, res) {
 
     // Buscar canciones
     const searchResponse = await fetch(
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(query.trim())}&type=track&limit=12`,
-      { 
-        headers: { 
+      `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+        query.trim()
+      )}&type=track&limit=12`,
+      {
+        headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json'
-        } 
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -85,24 +91,23 @@ module.exports = async function handler(req, res) {
         query: query.trim(),
         timestamp: new Date(),
         results_count: tracks.length,
-        user_agent: req.headers['user-agent'] || 'unknown'
+        user_agent: req.headers["user-agent"] || "unknown",
       });
     } catch (firebaseError) {
       console.error("Error guardando en Firebase:", firebaseError);
       // No fallar la request por esto
     }
 
-    res.status(200).json({ 
+    res.status(200).json({
       tracks,
       query: query.trim(),
-      count: tracks.length 
+      count: tracks.length,
     });
-
   } catch (error) {
     console.error("Error general:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: error.message || "Error interno del servidor",
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
-};
+}
