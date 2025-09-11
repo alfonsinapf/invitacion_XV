@@ -6,15 +6,35 @@
       "use": "@vercel/static"
     },
     {
-      "src": "css/*.css",
+      "src": "assets/**/*",
       "use": "@vercel/static"
     },
     {
-      "src": "js/*.js",
+      "src": "*.css",
       "use": "@vercel/static"
     },
     {
-      "src": "images/*",
+      "src": "*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.png",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.jpg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.jpeg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.gif",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.svg",
       "use": "@vercel/static"
     }
   ],
