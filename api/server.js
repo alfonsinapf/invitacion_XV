@@ -1,21 +1,27 @@
-// server.js
+// server.js - VERSION MEJORADA
 require('dotenv').config();
 const express = require('express');
-const fetch = require('node-fetch'); // o undici
+const fetch = require('node-fetch');
 const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const fs = require('fs');
+const cors = require('cors'); // <- Agregar este paquete
 
 const app = express();
+
+// Middlewares
+app.use(cors()); // <- Habilitar CORS para todas las rutas
 app.use(bodyParser.json());
+app.use(express.static('public')); // Servir archivos estáticos
+
 const PORT = process.env.PORT || 3000;
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI; // e.g. https://tudomain.com/auth/callback
-const PLAYLIST_ID = process.env.SPOTIFY_PLAYLIST_ID; // la playlist a controlar
+const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
+const PLAYLIST_ID = process.env.SPOTIFY_PLAYLIST_ID;
 
-// ---------- Storage simple (ejemplo) ----------
+// ---------- Storage simple ----------
 const TOKEN_FILE = './spotify_owner_token.json';
 
 function saveOwnerToken(obj) {
@@ -24,7 +30,11 @@ function saveOwnerToken(obj) {
 
 function loadOwnerToken() {
   if (!fs.existsSync(TOKEN_FILE)) return null;
-  return JSON.parse(fs.readFileSync(TOKEN_FILE));
+  try {
+    return JSON.parse(fs.readFileSync(TOKEN_FILE));
+  } catch (error) {
+    return null;
+  }
 }
 
 // ---------- Helpers ----------
@@ -41,21 +51,21 @@ async function refreshAccessToken(refresh_token) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body
   });
+  
   if (!res.ok) {
     const txt = await res.text();
     throw new Error('Error refresh token: ' + txt);
   }
-  return res.json(); // contains access_token (+ maybe new refresh_token)
+  return res.json();
 }
 
-// Middleware to get a valid access token for owner
 async function getOwnerAccessToken() {
   const owner = loadOwnerToken();
-  if (!owner || !owner.refresh_token) throw new Error('Owner not authenticated');
+  if (!owner || !owner.refresh_token) throw new Error('Owner not authenticated. Please authenticate first at /auth/login');
 
   const data = await refreshAccessToken(owner.refresh_token);
   const access_token = data.access_token;
-  // If Spotify returns a new refresh_token (rare), store it
+  
   if (data.refresh_token) {
     owner.refresh_token = data.refresh_token;
     saveOwnerToken(owner);
@@ -63,7 +73,7 @@ async function getOwnerAccessToken() {
   return access_token;
 }
 
-// ---------- OAuth endpoints for owner (one-time) ----------
+// ---------- OAuth endpoints ----------
 app.get('/auth/login', (req, res) => {
   const scope = [
     'playlist-modify-public',
@@ -71,7 +81,8 @@ app.get('/auth/login', (req, res) => {
     'playlist-read-private',
     'playlist-read-collaborative',
     'user-modify-playback-state',
-    'user-read-playback-state'
+    'user-read-playback-state',
+    'streaming' // <- Importante para Web Playback SDK
   ].join(' ');
 
   const params = querystring.stringify({
@@ -87,136 +98,107 @@ app.get('/auth/login', (req, res) => {
 
 app.get('/auth/callback', async (req, res) => {
   const code = req.query.code;
-  if (!code) return res.status(400).send('No code');
+  if (!code) return res.status(400).send('No code provided');
 
-  const body = querystring.stringify({
-    grant_type: 'authorization_code',
-    code,
-    redirect_uri: REDIRECT_URI,
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET
-  });
-
-  const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
-
-  if (!tokenRes.ok) {
-    const t = await tokenRes.text();
-    return res.status(500).send('Token error: ' + t);
-  }
-
-  const tokenData = await tokenRes.json();
-  // tokenData: access_token, token_type, scope, expires_in, refresh_token
-  // Guardamos refresh_token del owner (persistir en DB en producción)
-  const ownerData = {
-    obtained_at: Date.now(),
-    refresh_token: tokenData.refresh_token,
-    scopes: tokenData.scope
-  };
-  saveOwnerToken(ownerData);
-
-  res.send('Autenticación completada. Ya podés cerrar esta ventana.'); // o redirect a admin page
-});
-
-// ---------- API: Search ----------
-app.post('/api/search', async (req, res) => {
   try {
-    const query = req.body.query;
-    if (!query) return res.status(400).json({ error: 'query required' });
-
-    const token = await getOwnerAccessToken();
-    const params = querystring.stringify({ q: query, type: 'track', limit: 12 });
-    const r = await fetch(`https://api.spotify.com/v1/search?${params}`, {
-      headers: { Authorization: `Bearer ${token}` }
+    const body = querystring.stringify({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: REDIRECT_URI,
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET
     });
-    const data = await r.json();
-    // Normalizar: devolver tracks array
-    const tracks = (data.tracks && data.tracks.items) ? data.tracks.items : [];
-    res.json({ tracks });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
 
-// ---------- API: Add to playlist ----------
-app.post('/api/add-to-playlist', async (req, res) => {
-  try {
-    const { trackUri } = req.body;
-    if (!trackUri) return res.status(400).json({ error: 'trackUri required' });
-
-    const token = await getOwnerAccessToken();
-    // Add tracks
-    const r = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks`, {
+    const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body
+    });
+
+    if (!tokenRes.ok) {
+      const errorText = await tokenRes.text();
+      return res.status(500).send('Error obteniendo token: ' + errorText);
+    }
+
+    const tokenData = await tokenRes.json();
+    const ownerData = {
+      obtained_at: Date.now(),
+      refresh_token: tokenData.refresh_token,
+      scopes: tokenData.scope,
+      access_token: tokenData.access_token,
+      expires_in: tokenData.expires_in
+    };
+    
+    saveOwnerToken(ownerData);
+    res.send('✅ Autenticación completada. Ya puedes cerrar esta ventana y usar tu reproductor.');
+
+  } catch (error) {
+    console.error('Error en callback:', error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+// ---------- API: Search (CORREGIDO) ----------
+app.get('/api/search', async (req, res) => { // Cambiado a GET
+  try {
+    const query = req.query.q; // Cambiado a req.query para GET
+    if (!query) return res.status(400).json({ error: 'Query parameter "q" is required' });
+
+    const token = await getOwnerAccessToken();
+    const params = querystring.stringify({ 
+      q: query, 
+      type: 'track', 
+      limit: 12,
+      market: 'AR' // Agregar market
+    });
+    
+    const searchResponse = await fetch(`https://api.spotify.com/v1/search?${params}`, {
+      headers: { 
+        'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ uris: [trackUri] })
-    });
-
-    if (r.status === 201 || r.status === 200) {
-      return res.json({ ok: true });
-    } else if (r.status === 409) {
-      const txt = await r.text();
-      return res.status(409).json({ error: 'Conflict', text: txt });
-    } else {
-      const txt = await r.text();
-      return res.status(r.status).json({ error: txt });
-    }
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// ---------- API: Get playlist items ----------
-app.get('/api/playlist', async (req, res) => {
-  try {
-    const token = await getOwnerAccessToken();
-    const r = await fetch(`https://api.spotify.com/v1/playlists/${PLAYLIST_ID}/tracks?limit=100`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!r.ok) {
-      const txt = await r.text();
-      return res.status(r.status).json({ error: txt });
-    }
-    const data = await r.json();
-    // send items => map to minimal fields for frontend
-    const items = data.items.map(i => ({
-      added_at: i.added_at,
-      added_by: i.added_by?.id,
-      track: {
-        id: i.track.id,
-        name: i.track.name,
-        uri: i.track.uri,
-        artists: i.track.artists.map(a => a.name),
-        album: { images: i.track.album.images }
       }
-    }));
-    res.json({ items });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
+    });
+
+    if (!searchResponse.ok) {
+      const errorData = await searchResponse.json();
+      return res.status(searchResponse.status).json({ 
+        error: 'Spotify API error', 
+        details: errorData 
+      });
+    }
+
+    const data = await searchResponse.json();
+    const tracks = data.tracks?.items || [];
+    
+    res.json({ 
+      tracks,
+      total: data.tracks?.total || 0
+    });
+
+  } catch (error) {
+    console.error('Search error:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// ---------- API: Player token (access token para inicializar Web Playback SDK) ----------
-app.get('/api/player-token', async (req, res) => {
+// ... (mantén el resto de tus endpoints como están)
+
+// Ruta de verificación de estado
+app.get('/api/status', async (req, res) => {
   try {
-    // Devolvemos un access_token temporal que el frontend usará para inicializar Web Playback SDK.
-    // IMPORTANTE: accesos a playback implican que el owner (cuenta que autorizó) sea la que controla playback.
-    const token = await getOwnerAccessToken();
-    // token viene con expires_in en refreshAccessToken response normally (we're returning it directly)
-    res.json({ access_token: token });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: e.message });
+    const owner = loadOwnerToken();
+    const isAuthenticated = !!(owner && owner.refresh_token);
+    
+    res.json({ 
+      authenticated: isAuthenticated,
+      message: isAuthenticated ? '✅ Conectado a Spotify' : '❌ No autenticado'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
-app.listen(PORT, () => console.log(`Server listening ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🎵 Servidor de Spotify ejecutándose en http://localhost:${PORT}`);
+  console.log(`🔑 Autentica primero en: http://localhost:${PORT}/auth/login`);
+});
