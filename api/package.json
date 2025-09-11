@@ -1,0 +1,17 @@
+{
+  "name": "invitacion-xv-backend",
+  "version": "1.0.0",
+  "description": "Backend para invitación XV con integración Spotify",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "vercel build",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
