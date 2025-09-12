@@ -1,12 +1,9 @@
+
 {
   "name": "invitacion-xv-alfonsina",
   "version": "1.0.0",
   "description": "Invitación digital con playlist colaborativa",
-  "dependencies": {
-    "firebase-admin": "13.5.0",
-    "node-fetch": "2.7.0"
-  },
   "engines": {
-    "node": "20.x"
+    "node": "18.x"
   }
 }
