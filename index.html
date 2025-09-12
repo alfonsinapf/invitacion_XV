@@ -468,121 +468,27 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-/* NUEVOS ESTILOS PARA MEJORAR ACTUALIZACIÓN DE PLAYLIST */
-
-/* Botón de actualización manual */
-.manual-refresh-btn {
-    background: linear-gradient(135deg, #1DB954, #1ed760) !important;
-    border: 2px solid rgba(29, 185, 84, 0.3) !important;
-    color: white !important;
-    margin-top: 15px;
-    width: 100%;
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 12px 20px;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.manual-refresh-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #1ed760, #1DB954) !important;
-    border-color: rgba(29, 185, 84, 0.5) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(29, 185, 84, 0.3);
-}
-
-.manual-refresh-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-/* Mejorar iframe en móviles */
-.spotify-embed-guest iframe {
-    border-radius: 12px !important;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    width: 100% !important;
-    min-height: 380px !important;
-}
-
-/* Optimizaciones adicionales para dispositivos móviles */
-@media (max-width: 768px) {
-    .spotify-embed-guest iframe {
-        height: 352px !important;
-    }
-    
-    .manual-refresh-btn {
-        padding: 15px 20px;
-        font-size: 16px;
-    }
-    
-    .auth-status {
-        padding: 15px;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-    
-    .success-message {
-        padding: 18px;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-}
-
-/* Optimizaciones para dispositivos táctiles */
-@media (hover: none) and (pointer: coarse) {
-    .add-btn, .search-btn, .manual-refresh-btn {
-        min-height: 48px;
-    }
-    
-    .track-item {
-        padding: 20px 15px;
-    }
-    
-    .search-box input {
-        font-size: 16px; /* Previene zoom en iOS */
-    }
-}
-/* Sección Guardá la fecha */
-.guardar-fecha {
-  padding: 40px 20px;
-}
-
-.btn-calendar {
-  display: inline-block;
-  padding: 10px 40px;
-  margin: 10px 0;              /* 👈 margen vertical */
-  background-color: var;   /* relleno verde pastel */
-  color: white;      /* texto blanco */
-  border:  1px solid var(--color-primario);   /* mismo color en borde */
-  border-radius: 30px;
-  font-size: 15px;
-  font-weight: normal;  
-  font-family: 'Montserrat', sans-serif; /* tipografía igual */
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  width: 100%;                 /* 👈 ocupa todo el ancho en móvil */
-  max-width: 320px;            /* 👈 para que no sea gigante */
-}
-
-.btn-calendar:hover {
-  background-color: white; 
-color:var(--color-primario);    
-  transform: translateY(-2px);
-}  
-    
     </style>
 </head>
 <body>
 
-<!-- Audio --> <section class="audio"> <div class="container"> <div class="row"> <div class="botonAudio-container"> <audio id="audioPrueba" loop> <source src="assets/musica.mp3" type="audio/mp3"> ¡Ups! Tu navegador no soporta este archivo de audio. </audio> <div class='animation'> <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake"> <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa"> </div> </div> </div> </div> </section>
+    <!-- Audio -->
+    <section class="audio">
+        <div class="container">
+            <div class="row">
+                <div class="botonAudio-container">
+                    <audio id="audioPrueba" loop>
+                        <source src="assets/musica.mp3" type="audio/mp3">
+                        ¡Ups! Tu navegador no soporta este archivo de audio.
+                    </audio>
+                    <div class='animation'>
+                        <img id="btnPlay" src="assets/img/icono-musica_play.svg" alt="boton play" onclick="playAudio()" class="botonAudio vertical_shake">
+                        <img id="btnPausa" src="assets/img/icono-musica_pausa.svg" class="botonAudio hidden" onclick="pauseAudio()" alt="boton pausa">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
     
     <!-- Portada -->
     <section class="portada parallax-portada d-flex justify-content-center align-items-center">
@@ -633,7 +539,7 @@ color:var(--color-primario);
                     <h4>FIESTA</h4>
                     <p>
                         Sábado 1 de noviembre </br>
-                        20:30 a 05:00 hs.</br>
+                        21:00 a 05:00 hs.</br>
                         Salón Centro Empleado de comercio</br>
                         Bv. Damico S/N, Pergamino</br>
                         Clickeá en el botón de abajo y encontrá las indicaciones para llegar,</br>
@@ -645,23 +551,6 @@ color:var(--color-primario);
         </div>
     </section>
 
-   <!-- Guardá la fecha -->
-<section class="guardar-fecha my-5">
-  <div class="container text-center">
-    <h4 class="mb-3">📅 Guardá la fecha</h4>
-    <p>Agendá el evento en tu calendario favorito para no perderte esta noche especial.</p>
-   <p>
-    <!-- Botón Google Calendar -->
-    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=XV+Alfonsina&dates=20251101T233000Z/20251102T080000Z&details=Celebramos+los+15+a%C3%B1os+de+Alfonsina.+Dress+code%3A+Elegante.&location=Sal%C3%B3n+Centro+Empleado+de+Comercio%2C+Bv.+Damico+S%2FN%2C+Pergamino&sf=true&output=xml"
-       target="_blank"
-       class="btn">
-       Google Calendar
-    </a>
-   </p>
-    <!-- Botón Outlook / Apple Calendar -->
-    <a href="XV_Alfon.ics" class="btn">Outlook / Apple Calendar</a>
-  </div>
-</section>
    
 
     <!-- Galería -->
@@ -724,14 +613,13 @@ color:var(--color-primario);
     </section>
 
     <!-- Dress Code -->
-<section class="dresscode">
-    <div class="container animated divDressCode">
-        <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
-        <h4>DRESS CODE</h4>
-        <p>Elegante<br>
-          <br>Por favor eviten los tonos blanco o beige para que el vestido de la quinceañera brille ✨</p>
-    </div>
-</section>
+    <section class="dresscode">
+        <div class="container animated divDressCode">
+            <img src="assets/img/icono-dresscode.svg" alt="" class="bounce-in">
+            <h4>DRESS CODE</h4>
+            <p>Elegante</p>
+        </div>
+    </section>
     <!-- Sección de Música Mejorada -->
     <section class="canciones">
         <div class="container">
@@ -890,386 +778,8 @@ color:var(--color-primario);
         <div class="container animated divGracias">
             <p>¡Gracias por acompañarme en este momento tan importante!</p>
         </div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    query, 
-    orderBy, 
-    onSnapshot, 
-    serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
+    </section>
 
-console.log('🔥 Iniciando módulo Firebase...');
-
-// 🔧 Configuración de Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyCewDiHzRv18_FnmBzuyo00rgo__9HtZKc",
-    authDomain: "libro-xv-alfonsina.firebaseapp.com",
-    projectId: "libro-xv-alfonsina",
-    storageBucket: "libro-xv-alfonsina.firebasestorage.app",
-    messagingSenderId: "793654895943",
-    appId: "1:793654895943:web:55db375ccf9b439b761862"
-};
-
-// 🚀 Inicializar Firebase
-let app, db;
-try {
-    console.log('🔄 Inicializando Firebase...');
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    console.log('✅ Firebase inicializado correctamente');
-} catch (error) {
-    console.error('❌ Error inicializando Firebase:', error);
-}
-
-// 📚 Referencias
-let messagesRef, messagesQuery;
-if (db) {
-    messagesRef = collection(db, "guestbook");
-    messagesQuery = query(messagesRef, orderBy("timestamp", "desc"));
-    console.log('✅ Referencias de Firestore creadas');
-} else {
-    console.error('❌ No se pudo crear referencia a Firestore - db no está definido');
-}
-
-// 🎯 Referencias DOM
-console.log('🔍 Buscando elementos DOM...');
-const form = document.getElementById("guestbook-form");
-const nameInput = document.getElementById("guestbook-name");
-const messageInput = document.getElementById("guestbook-message");
-const submitBtn = document.getElementById("guestbook-submit");
-const messagesDiv = document.getElementById("guestbook-messages");
-const countSpan = document.getElementById("guestbook-count");
-const errorDiv = document.getElementById("error-message");
-const successDiv = document.getElementById("success-message");
-
-console.log('Elementos encontrados:', {
-    form: !!form,
-    nameInput: !!nameInput,
-    messageInput: !!messageInput,
-    submitBtn: !!submitBtn,
-    messagesDiv: !!messagesDiv,
-    countSpan: !!countSpan,
-    errorDiv: !!errorDiv,
-    successDiv: !!successDiv
-});
-
-// 🎨 Funciones de UI
-function showError(message) {
-    console.error('❌ Error:', message);
-    if (!errorDiv) {
-        console.error('No se encontró el div de error');
-        return;
-    }
-    errorDiv.textContent = `❌ ${message}`;
-    errorDiv.classList.remove('hidden');
-    if (successDiv) successDiv.classList.add('hidden');
-    setTimeout(() => {
-        if (errorDiv) errorDiv.classList.add('hidden');
-    }, 5000);
-}
-
-function showSuccess(message) {
-    console.log('✅ Éxito:', message);
-    if (!successDiv) {
-        console.error('No se encontró el div de éxito');
-        return;
-    }
-    successDiv.textContent = `✅ ${message}`;
-    successDiv.classList.remove('hidden');
-    if (errorDiv) errorDiv.classList.add('hidden');
-    setTimeout(() => {
-        if (successDiv) successDiv.classList.add('hidden');
-    }, 3000);
-}
-
-function setLoading(isLoading) {
-    console.log('🔄 Cambiando estado de carga:', isLoading);
-    if (!submitBtn) {
-        console.error('No se encontró el botón de submit');
-        return;
-    }
-    
-    const btnText = submitBtn.querySelector('.btn-text');
-    const btnLoading = submitBtn.querySelector('.loading');
-    
-    if (isLoading) {
-        submitBtn.disabled = true;
-        if (btnText) btnText.classList.add('hidden');
-        if (btnLoading) btnLoading.classList.remove('hidden');
-    } else {
-        submitBtn.disabled = false;
-        if (btnText) btnText.classList.remove('hidden');
-        if (btnLoading) btnLoading.classList.add('hidden');
-    }
-}
-
-function validateForm() {
-    console.log('📋 Validando formulario...');
-    const name = nameInput.value.trim();
-    const message = messageInput.value.trim();
-    
-    console.log('Datos del formulario:', { name, message });
-    
-    if (!name) {
-        showError('Por favor ingresa tu nombre');
-        nameInput.focus();
-        return false;
-    }
-    
-    if (name.length < 2) {
-        showError('El nombre debe tener al menos 2 caracteres');
-        nameInput.focus();
-        return false;
-    }
-    
-    if (!message) {
-        showError('Por favor escribe un mensaje');
-        messageInput.focus();
-        return false;
-    }
-    
-    if (message.length < 5) {
-        showError('El mensaje debe tener al menos 5 caracteres');
-        messageInput.focus();
-        return false;
-    }
-    
-    console.log('✅ Formulario válido');
-    return true;
-}
-
-function formatDate(timestamp) {
-    if (!timestamp) return '';
-    
-    try {
-        const date = timestamp.toDate();
-        return new Intl.DateTimeFormat('es-AR', {
-            day: 'numeric',
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-        }).format(date);
-    } catch (error) {
-        console.error('Error formateando fecha:', error);
-        return '';
-    }
-}
-
-// 🎊 Efecto confetti
-function triggerConfetti() {
-    if (typeof confetti === 'function') {
-        confetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#667eea', '#764ba2', '#ff6b6b', '#4ecdc4', '#45b7d1']
-        });
-    }
-}
-
-// 📝 Enviar mensaje
-async function submitMessage(event) {
-    console.log('📤 Iniciando envío de mensaje...');
-    
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        console.log('✅ Evento prevenido');
-    }
-    
-    if (!validateForm()) {
-        console.log('❌ Validación fallida');
-        return;
-    }
-    
-    // Verificar que Firebase está inicializado
-    if (!db || !messagesRef) {
-        const errorMsg = 'Error de conexión con la base de datos. Recarga la página.';
-        console.error(errorMsg);
-        showError(errorMsg);
-        return;
-    }
-    
-    const name = nameInput.value.trim();
-    const message = messageInput.value.trim();
-    
-    setLoading(true);
-    console.log('⏳ Enviando mensaje...');
-    
-    try {
-        console.log('💾 Guardando en Firestore...');
-        
-        const docRef = await addDoc(messagesRef, {
-            name: name,
-            message: message,
-            timestamp: serverTimestamp()
-        });
-        
-        console.log('✅ Mensaje guardado con ID:', docRef.id);
-        
-        // Limpiar formulario
-        nameInput.value = '';
-        messageInput.value = '';
-        
-        // Mostrar éxito
-        showSuccess(`¡Gracias ${name}! Tu mensaje se envió correctamente.`);
-        
-        // Confetti
-        triggerConfetti();
-        
-    } catch (error) {
-        console.error('❌ Error enviando mensaje:', error);
-        
-        let errorMessage = 'No se pudo enviar el mensaje. ';
-        
-        if (error.code === 'permission-denied') {
-            errorMessage = 'Permisos insuficientes.';
-        } else if (error.code === 'unavailable') {
-            errorMessage = 'Servicio temporalmente no disponible.';
-        } else {
-            errorMessage = 'Intenta nuevamente.';
-        }
-        
-        showError(errorMessage);
-    } finally {
-        setLoading(false);
-        console.log('✅ Proceso de envío completado');
-    }
-}
-
-// Función para el listener de mensajes
-function setupRealtimeListener() {
-    console.log('👂 Configurando escucha en tiempo real...');
-    
-    if (!db || !messagesQuery) {
-        console.error('❌ No se puede configurar listener - Firestore no inicializado');
-        return;
-    }
-    
-    try {
-        const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-            console.log('📨 Mensajes recibidos:', snapshot.size);
-            
-            if (!messagesDiv) {
-                console.error('❌ No se encontró el contenedor de mensajes');
-                return;
-            }
-            
-            messagesDiv.innerHTML = '';
-            
-            if (snapshot.empty) {
-                messagesDiv.innerHTML = `
-                    <div class="guestbook-empty-messages">
-                        <i class="fas fa-comments"></i>
-                        <p>🌟 Sé el primero en dejar un mensaje a Alfon</p>
-                    </div>
-                `;
-            } else {
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const messageDiv = document.createElement('div');
-                    messageDiv.className = 'guestbook-message-item';
-                    
-                    messageDiv.innerHTML = `
-                        <div class="guestbook-message-author">
-                            📝 ${escapeHtml(data.name || 'Anónimo')}
-                        </div>
-                        <div class="guestbook-message-content">
-                            "${escapeHtml(data.message || '')}"
-                        </div>
-                        <div class="guestbook-message-date">
-                            📅 ${formatDate(data.timestamp)}
-                        </div>
-                    `;
-                    
-                    messagesDiv.appendChild(messageDiv);
-                });
-            }
-            
-            // Actualizar contador
-            if (countSpan) {
-                countSpan.textContent = snapshot.size;
-            }
-            
-        }, (error) => {
-            console.error('❌ Error en listener:', error);
-            showError('Error cargando mensajes. Recarga la página.');
-        });
-        
-        // Guardar función de desuscripción
-        window.unsubscribeGuestbook = unsubscribe;
-        
-    } catch (error) {
-        console.error('❌ Error configurando listener:', error);
-        showError('Error de conexión con la base de datos.');
-    }
-}
-
-// 🛡️ Escapar HTML para seguridad
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, (m) => map[m]);
-}
-
-// 🚀 Inicialización
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 DOM cargado - Iniciando libro de visitas...');
-    
-    // Verificar que los elementos existen
-    if (!form || !nameInput || !messageInput || !submitBtn) {
-        const errorMsg = 'Error: No se encontraron elementos del formulario';
-        console.error('❌', errorMsg);
-        showError(errorMsg);
-        return;
-    }
-    
-    console.log('✅ Todos los elementos del formulario encontrados');
-    
-    // Configurar el formulario con prevención robusta
-    form.addEventListener('submit', function(e) {
-        console.log('🎯 Evento submit capturado');
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        submitMessage(e);
-        return false;
-    });
-    
-    console.log('📝 Event listener del formulario configurado');
-    
-    // Configurar listener en tiempo real
-    setupRealtimeListener();
-    
-    // Auto-resize textarea
-    messageInput.addEventListener('input', function() {
-        this.style.height = 'auto';
-        this.style.height = this.scrollHeight + 'px';
-    });
-    
-    console.log('✅ Libro de visitas completamente inicializado');
-});
-
-// 🧹 Cleanup al cerrar
-window.addEventListener('beforeunload', () => {
-    if (window.unsubscribeGuestbook) {
-        console.log('🧹 Limpiando listener de Firestore');
-        window.unsubscribeGuestbook();
-    }
-});
-
-console.log('📝 Script del libro de visitas cargado');
-</script>
-   
     <!-- Contacto -->
     <section class="contacto">
         <div class="container">
@@ -1297,8 +807,8 @@ console.log('📝 Script del libro de visitas cargado');
     <!-- Scripts -->
     <script>
         // Variables para JS desde config
-        var fechaCuentaRegresiva = "11/01/2025 20:30:00";
-        var fechaInicioEvento = "11/01/2024 20:30:00";
+        var fechaCuentaRegresiva = "11/01/2025 21:00:00";
+        var fechaInicioEvento = "11/01/2024 21:00:00";
         var fechaFinEvento = "11/02/2024 05:00:00";
         var tituloEvento = "Fiesta de 15";
     </script>
@@ -1924,11 +1434,30 @@ console.log('📝 Script del libro de visitas cargado');
         console.log('✅ Sistema de música listo para usar');
     });
 
-// 🎵 Funciones del reproductor de audio de la página function playAudio() { const audio = document.getElementById('audioPrueba'); audio.play(); document.getElementById('btnPlay').classList.add('hidden'); document.getElementById('btnPausa').classList.remove('hidden'); } function pauseAudio() { const audio = document.getElementById('audioPrueba'); audio.pause(); document.getElementById('btnPausa').classList.add('hidden'); document.getElementById('btnPlay').classList.remove('hidden'); } </script>
+    // 🎵 Funciones del reproductor de audio de la página
+   function playAudio() {
+            const audio = document.getElementById('audioPrueba');
+            audio.play();
+            document.getElementById('btnPlay').classList.add('hidden');
+            document.getElementById('btnPausa').classList.remove('hidden');
+        }
+
+        function pauseAudio() {
+            const audio = document.getElementById('audioPrueba');
+            audio.pause();
+            document.getElementById('btnPausa').classList.add('hidden');
+            document.getElementById('btnPlay').classList.remove('hidden');
+        }
+    </script>
     <!-- Scripts de seguimiento -->
     <script>'undefined'=== typeof _trfq || (window._trfq = []);'undefined'=== typeof _trfd && (window._trfd=[]),_trfd.push({'tccl.baseHost':'secureserver.net'},{'ap':'cpbh-mt'},{'server':'p3plmcpnl486752'},{'dcenter':'p3'},{'cp_id':'3446280'},{'cp_cl':'8'})</script>
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
+
+
+
+
 
 
