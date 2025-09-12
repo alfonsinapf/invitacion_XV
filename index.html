@@ -1227,13 +1227,22 @@ const firebaseConfig = {
 
 // 🚀 Inicializar Firebase
 let app, db;
-try {
+ttry {
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    console.log('✅ Firebase inicializado correctamente');
+    
+    // Verificar que la conexión funciona
+    const testConnection = await getDocs(collection(db, "guestbook"));
+    console.log('✅ Firebase inicializado correctamente y conectado');
 } catch (error) {
     console.error('❌ Error inicializando Firebase:', error);
     showError('Error de conexión. Por favor, recarga la página.');
+    
+    // Deshabilitar el formulario si no hay conexión
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Error de conexión';
+    }
 }
 
 // 📚 Referencias
@@ -1341,7 +1350,8 @@ function triggerConfetti() {
 
 // 📝 Enviar mensaje
 async function submitMessage(event) {
-    event.preventDefault();
+    event.preventDefault(); // Asegurar que previene el comportamiento por defecto
+    event.stopPropagation(); // Prevenir propagación del evento
     
     console.log('📝 Intentando enviar mensaje...');
     
@@ -1466,7 +1476,7 @@ function escapeHtml(text) {
 }
 
 // 🚀 Inicialización
-document.addEventListener('DOMContentLoaded', () {
+document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Iniciando libro de visitas...');
     
     if (form && nameInput && messageInput && submitBtn) {
@@ -1488,12 +1498,43 @@ document.addEventListener('DOMContentLoaded', () {
         showError('Error de inicialización. Recarga la página.');
     }
 });
-
+    // 🚀 Inicialización
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Iniciando libro de visitas...');
+    
+    if (form && nameInput && messageInput && submitBtn) {
+        form.addEventListener('submit', submitMessage);
+        console.log('📝 Formulario configurado');
+        
+        // Configurar listener en tiempo real
+        setupRealtimeListener();
+        
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+        
+        console.log('✅ Libro de visitas listo');
+    } else {
+        console.error('❌ Error: No se encontraron elementos del DOM');
+        showError('Error de inicialización. Recarga la página.');
+    }
+});
 // 🧹 Cleanup al cerrar
 window.addEventListener('beforeunload', () => {
     if (window.unsubscribeGuestbook) {
         window.unsubscribeGuestbook();
     }
+});
+
+    // Prevención adicional para formularios
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    });
 });
 
 </script>
@@ -2159,3 +2200,4 @@ window.addEventListener('beforeunload', () => {
     <script src='https://img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
 </body>
 </html>
+
