@@ -1212,7 +1212,7 @@ import {
     orderBy, 
     onSnapshot, 
     serverTimestamp,
-    connectFirestoreEmulator 
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-firestore.js";
 
 // 🔧 Configuración de Firebase
@@ -1227,22 +1227,12 @@ const firebaseConfig = {
 
 // 🚀 Inicializar Firebase
 let app, db;
-ttry {
+try {
     app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-    
-    // Verificar que la conexión funciona
-    const testConnection = await getDocs(collection(db, "guestbook"));
-    console.log('✅ Firebase inicializado correctamente y conectado');
+    console.log('✅ Firebase inicializado correctamente');
 } catch (error) {
     console.error('❌ Error inicializando Firebase:', error);
-    showError('Error de conexión. Por favor, recarga la página.');
-    
-    // Deshabilitar el formulario si no hay conexión
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'Error de conexión';
-    }
 }
 
 // 📚 Referencias
@@ -1258,33 +1248,38 @@ const messagesDiv = document.getElementById("guestbook-messages");
 const countSpan = document.getElementById("guestbook-count");
 const errorDiv = document.getElementById("error-message");
 const successDiv = document.getElementById("success-message");
-const btnText = submitBtn.querySelector('.btn-text');
-const btnLoading = submitBtn.querySelector('.loading');
 
 // 🎨 Funciones de UI
 function showError(message) {
+    if (!errorDiv) return;
     errorDiv.textContent = `❌ ${message}`;
     errorDiv.classList.remove('hidden');
-    successDiv.classList.add('hidden');
+    if (successDiv) successDiv.classList.add('hidden');
     setTimeout(() => errorDiv.classList.add('hidden'), 5000);
 }
 
 function showSuccess(message) {
+    if (!successDiv) return;
     successDiv.textContent = `✅ ${message}`;
     successDiv.classList.remove('hidden');
-    errorDiv.classList.add('hidden');
+    if (errorDiv) errorDiv.classList.add('hidden');
     setTimeout(() => successDiv.classList.add('hidden'), 3000);
 }
 
 function setLoading(isLoading) {
+    if (!submitBtn) return;
+    
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.loading');
+    
     if (isLoading) {
         submitBtn.disabled = true;
-        btnText.classList.add('hidden');
-        btnLoading.classList.remove('hidden');
+        if (btnText) btnText.classList.add('hidden');
+        if (btnLoading) btnLoading.classList.remove('hidden');
     } else {
         submitBtn.disabled = false;
-        btnText.classList.remove('hidden');
-        btnLoading.classList.add('hidden');
+        if (btnText) btnText.classList.remove('hidden');
+        if (btnLoading) btnLoading.classList.add('hidden');
     }
 }
 
@@ -1350,8 +1345,10 @@ function triggerConfetti() {
 
 // 📝 Enviar mensaje
 async function submitMessage(event) {
-    event.preventDefault(); // Asegurar que previene el comportamiento por defecto
-    event.stopPropagation(); // Prevenir propagación del evento
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
     
     console.log('📝 Intentando enviar mensaje...');
     
@@ -1402,7 +1399,7 @@ async function submitMessage(event) {
     }
 }
 
-// Función actualizada para el listener de mensajes
+// Función para el listener de mensajes
 function setupRealtimeListener() {
     try {
         console.log('👂 Configurando escucha en tiempo real...');
@@ -1410,19 +1407,16 @@ function setupRealtimeListener() {
         const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
             console.log('📨 Recibidos', snapshot.size, 'mensajes');
             
+            if (!messagesDiv) return;
+            
             messagesDiv.innerHTML = '';
             
             if (snapshot.empty) {
                 messagesDiv.innerHTML = `
-                    
-
-                        
-                        
-🌟 Sé el primero en dejar un mensaje a Alfon
-
-
-                    
-
+                    <div class="guestbook-empty-messages">
+                        <i class="fas fa-comments"></i>
+                        <p>🌟 Sé el primero en dejar un mensaje a Alfon</p>
+                    </div>
                 `;
             } else {
                 snapshot.forEach((doc) => {
@@ -1431,15 +1425,15 @@ function setupRealtimeListener() {
                     messageDiv.className = 'guestbook-message-item';
                     
                     messageDiv.innerHTML = `
-                        
-📝 ${escapeHtml(data.name || 'Anónimo')}
-
-                        
-"${escapeHtml(data.message || '')}"
-
-                        
-📅 ${formatDate(data.timestamp)}
-
+                        <div class="guestbook-message-author">
+                            📝 ${escapeHtml(data.name || 'Anónimo')}
+                        </div>
+                        <div class="guestbook-message-content">
+                            "${escapeHtml(data.message || '')}"
+                        </div>
+                        <div class="guestbook-message-date">
+                            📅 ${formatDate(data.timestamp)}
+                        </div>
                     `;
                     
                     messagesDiv.appendChild(messageDiv);
@@ -1447,7 +1441,9 @@ function setupRealtimeListener() {
             }
             
             // Actualizar contador
-            countSpan.textContent = snapshot.size;
+            if (countSpan) {
+                countSpan.textContent = snapshot.size;
+            }
             
         }, (error) => {
             console.error('❌ Error en listener:', error);
@@ -1475,52 +1471,46 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-// 🚀 Inicialización
+// 🚀 Inicialización - SOLO UNA VEZ
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Iniciando libro de visitas...');
     
-    if (form && nameInput && messageInput && submitBtn) {
-        form.addEventListener('submit', submitMessage);
-        console.log('📝 Formulario configurado');
-        
-        // Configurar listener en tiempo real
-        setupRealtimeListener();
-        
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-        
-        console.log('✅ Libro de visitas listo');
-    } else {
-        console.error('❌ Error: No se encontraron elementos del DOM');
+    // Verificar que los elementos existen
+    if (!form || !nameInput || !messageInput || !submitBtn) {
+        console.error('❌ Error: No se encontraron elementos del formulario');
         showError('Error de inicialización. Recarga la página.');
+        return;
     }
-});
-    // 🚀 Inicialización
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Iniciando libro de visitas...');
     
-    if (form && nameInput && messageInput && submitBtn) {
-        form.addEventListener('submit', submitMessage);
-        console.log('📝 Formulario configurado');
-        
-        // Configurar listener en tiempo real
-        setupRealtimeListener();
-        
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = this.scrollHeight + 'px';
-        });
-        
-        console.log('✅ Libro de visitas listo');
-    } else {
-        console.error('❌ Error: No se encontraron elementos del DOM');
-        showError('Error de inicialización. Recarga la página.');
-    }
+    // Configurar el formulario con prevención robusta
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        submitMessage(e);
+        return false;
+    });
+    
+    // Prevención adicional
+    form.addEventListener('click', function(e) {
+        if (e.target === submitBtn || e.target.closest('button')) {
+            e.preventDefault();
+        }
+    });
+    
+    console.log('📝 Formulario configurado con prevención adicional');
+    
+    // Configurar listener en tiempo real
+    setupRealtimeListener();
+    
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+    
+    console.log('✅ Libro de visitas listo');
 });
+
 // 🧹 Cleanup al cerrar
 window.addEventListener('beforeunload', () => {
     if (window.unsubscribeGuestbook) {
@@ -1528,15 +1518,20 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
-    // Prevención adicional para formularios
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
+// Prevención global para formularios
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (form.id !== 'guestbook-form') {
+                // Solo prevenir otros formularios, no el libro de visitas
+                return;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
     });
 });
-
 </script>
 
    
