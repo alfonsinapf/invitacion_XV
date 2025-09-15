@@ -737,7 +737,7 @@ section.canciones p{
 }
 
 section.canciones img.icon{
-  width: 150px;
+  width: 60px;
 }
 
 /* ---------- */
@@ -1445,4 +1445,5 @@ section.cuenta-regresiva{
         margin-bottom: 16px;
     }
 }
+
 
