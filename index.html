@@ -1466,9 +1466,9 @@ window.addEventListener('beforeunload', () => {
     <!-- Scripts -->
     <script>
         // Variables para JS desde config
-        var fechaCuentaRegresiva = "11/01/2025 20:30:00";
-        var fechaInicioEvento = "11/01/2025 20:30:00";
-        var fechaFinEvento = "11/02/2025 05:00:00";
+        var fechaCuentaRegresiva = new Date("2025-11-01T20:30:00"); 
+        var fechaInicioEvento    = new Date("2025-11-01T20:30:00");
+        var fechaFinEvento       = new Date("2025-11-02T05:00:00");
         var tituloEvento = "Fiesta de 15";
     </script>
 
@@ -2117,6 +2117,7 @@ window.addEventListener('beforeunload', () => {
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
+
 
 
 
