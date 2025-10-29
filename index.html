@@ -707,7 +707,31 @@ color:var(--color-primario);
                             loading="lazy"
                             style="border-radius: 12px;">
                         </iframe>
-                    </div>
+
+                        
+                        <div id="spotify-error" class="hidden" style="
+                                background: linear-gradient(135deg, rgba(255, 193, 7, 0.3), rgba(255, 193, 7, 0.2));
+                                border: 2px solid rgba(255, 193, 7, 0.4);
+                                border-radius: 12px;
+                                padding: 30px;
+                                text-align: center;
+                                color: white;
+                            ">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                                <h3 style="margin-bottom: 10px;">El reproductor está teniendo problemas</h3>
+                                <p style="margin-bottom: 20px;">Pero no te preocupes, puedes:</p>
+                                <div style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                                    <button onclick="retrySpotifyPlayer()" class="btn" style="max-width: 300px;">
+                                        <i class="fas fa-redo"></i> Reintentar cargar
+                                    </button>
+                                    <a href="https://open.spotify.com/playlist/0a4iq5x0WHzzn0ox7ea77u" target="_blank" class="btn" style="max-width: 300px;">
+                                        <i class="fab fa-spotify"></i> Abrir en Spotify
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                 
+                </div>
                     
                     <!-- Panel de Colaboración -->
                     <div class="collab-panel">
@@ -2130,6 +2154,7 @@ window.addEventListener('beforeunload', () => {
 <script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
+
 
 
 
